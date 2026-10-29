@@ -1,0 +1,599 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#102c51"><title>Montagem segura de hardware | Arquitetura de Computadores</title><link rel="stylesheet" href="../../assets/deck.css"><script src="../../assets/deck.js" defer></script></head><body class="deck" data-deck="montagem-slides"><div class="deck-shell"><header class="deck-topbar"><div class="deck-brand"><span class="deck-brand-icon">AC</span><span><strong>Arquitetura de Computadores</strong><small>Aula 2 · Material teórico</small></span></div><a class="topbar-return" href="../../index.html#/montagem" target="_top">Ir para atividade ↗</a></header><div class="deck-tools"><div class="deck-progress-track" role="progressbar" aria-label="Progresso na apresentação" aria-valuemin="1" aria-valuemax="25" aria-valuenow="1"><div id="deck-progress" class="deck-progress"></div></div><div class="tools-row"><label for="deck-jump">Ir para slide</label><select id="deck-jump" aria-label="Ir para um slide"></select><div class="deck-buttons"><button type="button" id="deck-prev" aria-label="Slide anterior">← Anterior</button><button type="button" id="deck-next" aria-label="Próximo slide">Próximo →</button></div></div></div><main id="deck-main" tabindex="-1"><section class="deck-slide" data-section="Apresentação" aria-label="Slide 1: Montagem segura de hardware" id="s-1"><header class="slide-header"><span class="slide-kicker">Apresentação</span><h2>Montagem segura de hardware</h2></header><div class="slide-body"><div class="cover-inner"><span class="eyebrow">Aula 2 · Arquitetura de Computadores</span><h2>Montagem segura de hardware</h2><p>Do gabinete à memória RAM</p><div class="cover-authors">Emanuel Peixoto Gomes · Zadoque Carneiro<br>Prof. Dr. Luis Ramirez · UENF — CCT<br>30 de março de 2026</div></div></div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>1 / 25</small></div></section><section class="deck-slide" data-section="Apresentação" aria-label="Slide 2: Roteiro da Aula" id="s-2"><header class="slide-header"><span class="slide-kicker">Apresentação</span><h2>Roteiro da Aula</h2></header><div class="slide-body"><div class="toc-grid"><div class="toc-item"><span>01</span><strong>O Inimigo Invisível: ESD</strong></div><div class="toc-item"><span>02</span><strong>Manuseio da Placa-mãe</strong></div><div class="toc-item"><span>03</span><strong>Gabinete e Standoffs</strong></div><div class="toc-item"><span>04</span><strong>Ordem de Montagem</strong></div><div class="toc-item"><span>05</span><strong>CPU</strong></div><div class="toc-item"><span>06</span><strong>Pasta Térmica e Cooler</strong></div><div class="toc-item"><span>07</span><strong>RAM</strong></div><div class="toc-item"><span>08</span><strong>Colocando dentro do Gabinete</strong></div><div class="toc-item"><span>09</span><strong>Teste do Gabinete com Multímetro</strong></div><div class="toc-item"><span>10</span><strong>Atividade Prática</strong></div><div class="toc-item"><span>11</span><strong>Dúvidas Comuns</strong></div><div class="toc-item"><span>12</span><strong>Entrega e Próxima Aula</strong></div></div></div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>2 / 25</small></div></section><section class="deck-slide" data-section="O Inimigo Invisível: ESD" aria-label="Slide 3: O Inimigo Invisível: Descarga Eletrostática (ESD)" id="s-3"><header class="slide-header"><span class="slide-kicker">O Inimigo Invisível: ESD</span><h2>O Inimigo Invisível: Descarga Eletrostática (ESD)</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>O que é ESD?</h3>
+<p> O corpo humano acumula carga estática pelo atrito com roupas, cadeiras e carpetes.<br/>
+Uma descarga <strong>abaixo de 3.000 mV</strong> — imperceptível ao toque — já é suficiente para danificar siliciosamente transistores da placa-mãe ou da CPU.</p>
+</div>
+<div class="alertblock"><h3>Sintoma Traiçoeiro</h3>
+<p> O componente pode <strong>parecer funcionar</strong> por dias ou semanas e parar sem motivo aparente.</p>
+</div>
+</div><div class="column">
+
+<p><img alt="Pulseira antiestatica" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/montagem-slides/media/img_pulseira_antiestatica.webp"/><br/>
+<span>Pulseira antiestática: equaliza<br/>
+o potencial entre você e o hardware.</span></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>3 / 25</small></div></section><section class="deck-slide" data-section="O Inimigo Invisível: ESD" aria-label="Slide 4: Como Neutralizar a ESD" id="s-4"><header class="slide-header"><span class="slide-kicker">O Inimigo Invisível: ESD</span><h2>Como Neutralizar a ESD</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="exampleblock"><h3>Faça sempre</h3>
+
+<ul>
+<li><p>Toque no <strong>chassi metálico</strong> do gabinete antes de pegar qualquer componente</p></li>
+<li><p>Segure componentes <strong>pelas bordas</strong> — nunca pelos contatos dourados ou chips</p></li>
+<li><p>Repita o toque ao chassi a cada troca de componente</p></li>
+<li><p>Se disponível: use <strong>pulseira antiestática</strong></p></li>
+</ul>
+</div>
+</div><div class="column">
+
+<div class="alertblock"><h3>Nunca faça</h3>
+
+<ul>
+<li><p>Trabalhar em superfície de <strong>plástico ou isopor</strong> (geram carga estática)</p></li>
+<li><p>Tocar nos chips ou trilhas da placa-mãe</p></li>
+<li><p>Arrastar componentes sobre a bancada</p></li>
+</ul>
+</div>
+<div class="block"><h3>Curiosidade</h3>
+<p> Um choque que você sente tem entre<br/>
+4.000mV e 35.000mV. Um CI pode morrer<br/>
+com apenas <strong>100 mV</strong>.</p>
+</div>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>4 / 25</small></div></section><section class="deck-slide" data-section="Manuseio da Placa-mãe" aria-label="Slide 5: Como Segurar a Placa-mãe" id="s-5"><header class="slide-header"><span class="slide-kicker">Manuseio da Placa-mãe</span><h2>Como Segurar a Placa-mãe</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>Regras de Manuseio</h3>
+
+<ul>
+<li><p>Segurar <strong>pelas extremidades plásticas</strong> — bordas sem componentes nem contatos</p></li>
+<li><p>Nunca apoiar a face inferior sobre superfície metálica (curto nas trilhas do verso)</p></li>
+<li><p>Ao tirar da embalagem antiestática, apoiar a placa <strong>sobre a própria embalagem</strong> enquanto instala componentes</p></li>
+<li><p>Nunca dobrar ou torcer — trilhas internas rompem</p></li>
+<li><p>Nunca tocar: slot PCIe, pinos do soquete, contatos dourados da RAM</p></li>
+</ul>
+</div>
+</div><div class="column">
+
+<p><img alt="Segurar placa mae" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/montagem-slides/media/img_segurar_placa_mae.webp"/><br/>
+<span>Não segure como esse cara.<br/>
+</span> <span>Segure sempre<br/>
+pelas bordas plásticas.</span></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>5 / 25</small></div></section><section class="deck-slide" data-section="Gabinete e Standoffs" aria-label="Slide 6: O Gabinete como Proteção Elétrica" id="s-6"><header class="slide-header"><span class="slide-kicker">Gabinete e Standoffs</span><h2>O Gabinete como Proteção Elétrica</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>Por que o gabinete protege?</h3>
+<p> O gabinete metálico está conectado ao <strong>fio terra</strong> da tomada via fonte de alimentação → está em potencial de referência 0 V (GND).<br/>
+Se a placa-mãe encostasse <em>diretamente</em> na chapa, as trilhas do verso criariam <strong>curtos em múltiplos pontos</strong> simultaneamente.</p>
+</div>
+<div class="block"><h3>Função dos Standoffs (espaçadores)</h3>
+
+<ul>
+<li><p>Elevam a placa <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≈</mo><annotation encoding="application/x-tex">\approx</annotation></semantics></math>5–6 mm da chapa metálica</p></li>
+<li><p>Criam contato elétrico <strong>apenas nos pontos de GND</strong> planejados pela placa</p></li>
+<li><p>Suporte mecânico contra flexão.</p></li>
+</ul>
+</div>
+</div><div class="column">
+
+<p><img alt="Standoffs gabinete" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/montagem-slides/media/img_standoffs_gabinete.webp"/><br/>
+<span>Espaçadores de latão:<br/>
+a placa <strong>nunca</strong> toca na chapa.</span></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>6 / 25</small></div></section><section class="deck-slide" data-section="Gabinete e Standoffs" aria-label="Slide 7: Erro Clássico dos Standoffs" id="s-7"><header class="slide-header"><span class="slide-kicker">Gabinete e Standoffs</span><h2>Erro Clássico dos Standoffs</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="alertblock"><h3>Atenção Crítica</h3>
+<p> Instalar standoff em posição que <strong>não tem furo</strong> na placa-mãe significa que o espaçador ficará embaixo de uma área com trilhas vivas.<br/>
+Ao apertar o parafuso, cria-se um <strong>curto direto</strong> nessa trilha.</p>
+</div>
+<div class="exampleblock"><h3>Regra Prática</h3>
+<p> Antes de colocar a placa:<br/>
+</p>
+<ol>
+<li><p>Contar os furos de fixação da placa-mãe</p></li>
+<li><p>Verificar se os standoffs do gabinete estão <strong>exatamente nessas posições</strong></p></li>
+<li><p>Nem um standoff a mais, nem a menos</p></li>
+</ol>
+</div>
+</div><div class="column">
+
+<p><img alt="Standoff posicao correta" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/montagem-slides/media/img_standoff_posicao_correta.webp"/><br/>
+<span>Alinhado ao furo Sem furo</span></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>7 / 25</small></div></section><section class="deck-slide" data-section="Ordem de Montagem" aria-label="Slide 8: Ordem de Montagem e o Porquê" id="s-8"><header class="slide-header"><span class="slide-kicker">Ordem de Montagem</span><h2>Ordem de Montagem e o Porquê</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><strong><span style="color: white">Etapa</span></strong></th>
+<th style="text-align: left;"><span style="color: white">Componente</span></th>
+<th style="text-align: left;"><span style="color: white">Motivo da Ordem</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>1 ª</strong></td>
+<td style="text-align: left;">Standoffs + Backplate I/O</td>
+<td style="text-align: left;">Base necessária; backplate encaixa de fora para dentro</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>2 ª</strong></td>
+<td style="text-align: left;">CPU na placa-mãe</td>
+<td style="text-align: left;">Exige pressão/força — mais seguro <strong>fora</strong> do gabinete</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>3 ª</strong></td>
+<td style="text-align: left;">Cooler na placa-mãe</td>
+<td style="text-align: left;">Acesso ao verso da placa em muitos modelos</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>4 ª</strong></td>
+<td style="text-align: left;">RAM na placa-mãe</td>
+<td style="text-align: left;">Mais espaço, menos risco de torção</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>5 ª</strong></td>
+<td style="text-align: left;">Placa-mãe no gabinete</td>
+<td style="text-align: left;">Agora leve e sem risco de bater CPU/RAM</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>6 ª</strong></td>
+<td style="text-align: left;">Fonte no gabinete</td>
+<td style="text-align: left;">Menos cabos atrapalhando as etapas anteriores</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>7 ª</strong></td>
+<td style="text-align: left;">Teste do gabinete</td>
+<td style="text-align: left;">Descarta o gabinete como causa de falha futura</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div><div class="column">
+
+<div class="alertblock"><h3>Regra de Ouro</h3>
+<p> CPU, cooler e RAM <strong>antes</strong> de entrar no gabinete. Dentro do gabinete o espaço é restrito e o risco de escorregar e danificar é muito maior.</p>
+</div>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>8 / 25</small></div></section><section class="deck-slide" data-section="CPU" aria-label="Slide 9: CPU — Como Segurar e Cuidados" id="s-9"><header class="slide-header"><span class="slide-kicker">CPU</span><h2>CPU — Como Segurar e Cuidados</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>Como Segurar</h3>
+<p> Pelos <strong>cantos laterais</strong> do chip, nunca na face inferior (onde ficam pinos ou contatos).</p>
+</div>
+<div class="alertblock"><h3>Intel LGA</h3>
+<p> Os pinos estão no <strong>soquete da placa-mãe</strong>, não na CPU. A base da CPU é lisa.<br/>
+<strong>Nunca</strong> deixar dedo ou ferramenta tocar nos pinos do soquete.</p>
+</div>
+<div class="alertblock"><h3>AMD AM4/AM5</h3>
+<p> Os pinos estão <strong>na CPU</strong>. Qualquer dobramento de pino pode inutilizar o processador.</p>
+</div>
+</div><div class="column">
+
+<p><img alt="Segurar cpu" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/montagem-slides/media/img_segurar_cpu.webp"/><br/>
+<span>Segure pelos cantos.<br/>
+Nunca toque na base.</span><br/>
+</p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>9 / 25</small></div></section><section class="deck-slide" data-section="CPU" aria-label="Slide 10: CPU — Instalação Passo a Passo (1/2)" id="s-10"><header class="slide-header"><span class="slide-kicker">CPU</span><h2>CPU — Instalação Passo a Passo (1/2)</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>Intel LGA</h3>
+
+<ol>
+<li><p>Levantar a alavanca de retenção (movimento lateral + cima)</p></li>
+<li><p>Abrir a tampa protetora dos pinos</p></li>
+<li><p>Alinhar o <strong>triângulo/ponto dourado</strong> da CPU com o triângulo do soquete</p></li>
+<li><p>Pousar sem pressão — cai pelo peso se alinhada</p></li>
+<li><p>Fechar a tampa e baixar a alavanca<br/>
+<span>(10–15 kgf é normal em LGA1700 — não se assuste)</span></p></li>
+</ol>
+</div>
+</div><div class="column">
+
+<div class="block"><h3>AMD AM4/AM5</h3>
+
+<ol>
+<li><p>Levantar a alavanca ZIF <span>(Zero Insertion Force)</span></p></li>
+<li><p>Alinhar o triângulo da CPU com o triângulo do soquete</p></li>
+<li><p>Pousar <strong>sem nenhuma força</strong> — se precisar forçar, está errado</p></li>
+<li><p>Baixar e travar a alavanca</p></li>
+</ol>
+</div>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>10 / 25</small></div></section><section class="deck-slide" data-section="CPU" aria-label="Slide 11: CPU — Instalação Passo a Passo (2/2)" id="s-11"><header class="slide-header"><span class="slide-kicker">CPU</span><h2>CPU — Instalação Passo a Passo (2/2)</h2></header><div class="slide-body">
+
+<div class="alertblock"><h3>Regra Absoluta</h3>
+<p> <strong>Nunca forçar a CPU.</strong><br/>
+Se não entrar com toque leve:<br/>
+→ checar orientação pelo triângulo.<br/>
+Pino dobrado = dano permanente.</p>
+</div>
+<p><img alt="Triangulo alinhamento cpu" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/montagem-slides/media/img_triangulo_alinhamento_cpu.webp"/><br/>
+<span>O triângulo é o guia de orientação — existe nos dois lados.</span></p>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>11 / 25</small></div></section><section class="deck-slide" data-section="Pasta Térmica e Cooler" aria-label="Slide 12: Pasta Térmica — Função e Aplicação" id="s-12"><header class="slide-header"><span class="slide-kicker">Pasta Térmica e Cooler</span><h2>Pasta Térmica — Função e Aplicação</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>Por que a pasta é necessária?</h3>
+<p> Preenche as <strong>microrrugosidades</strong> entre o IHS da CPU e a base do cooler, reduzindo a resistência térmica.<br/>
+Sem ela, a temperatura sobe 15–30 °C e o sistema fará <em>throttling</em> (redução de clock) ou desligará por proteção.</p>
+</div>
+<div class="exampleblock"><h3>Método Grão de Arroz</h3>
+<p> Aplicar um ponto central do tamanho de um <strong>grão de arroz cru (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≈</mo><annotation encoding="application/x-tex">\approx</annotation></semantics></math>3 mm)</strong> no centro do IHS.<br/>
+A pressão do cooler distribui uniformemente.</p>
+</div>
+</div><div class="column">
+
+<p><img alt="Pasta termica aplicacao" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/montagem-slides/media/img_pasta_termica_aplicacao.webp"/><br/>
+<span>Método grão de arroz:<br/>
+ponto central, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≈</mo><annotation encoding="application/x-tex">\approx</annotation></semantics></math>3 mm.</span></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>12 / 25</small></div></section><section class="deck-slide" data-section="Pasta Térmica e Cooler" aria-label="Slide 13: Cooler — Fixação e Verificação" id="s-13"><header class="slide-header"><span class="slide-kicker">Pasta Térmica e Cooler</span><h2>Cooler — Fixação e Verificação</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>Tipos de Fixação</h3>
+
+<ul>
+<li><p><strong>Push-pin Intel:</strong> 4 clipes nos cantos — apertar em <strong>X</strong> (diagonal), nunca em sequência circular</p></li>
+<li><p><strong>AMD parafusado:</strong> backplate no verso + 4 parafusos na frente — apertar em X também</p></li>
+</ul>
+</div>
+<div class="exampleblock"><h3>Como Verificar a Fixação</h3>
+<p> Após instalar, <strong>puxar levemente</strong> o cooler para cima.<br/>
+Se sair → pelo menos um pino não travou.<br/>
+Repetir até ficar firme nos 4 pontos.</p>
+</div>
+</div><div class="column">
+
+<p><img alt="Cooler aperto x" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/montagem-slides/media/img_cooler_aperto_x.webp"/><br/>
+<span>Padrão X de aperto:<br/>
+pressão uniforme em todos os cantos.</span></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>13 / 25</small></div></section><section class="deck-slide" data-section="RAM" aria-label="Slide 14: RAM -- Cuidados " id="s-14"><header class="slide-header"><span class="slide-kicker">RAM</span><h2>RAM -- Cuidados </h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>Como Segurar</h3>
+<p> Pelos <strong>cantos laterais</strong>, nunca nos contatos dourados do conector.</p>
+</div>
+<div class="block"><h3>Cuidados</h3>
+
+<ul>
+<li><p>DDR4 e DDR5 têm entalhes em posições diferentes — <strong>fisicamente incompatíveis</strong></p></li>
+<li><p>Módulos têm orientação única — o entalhe alinha com a projeção no slot</p></li>
+</ul>
+</div>
+</div><div class="column">
+
+<p><img alt="Ram instalacao" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/montagem-slides/media/img_ram_instalacao.webp"/><br/>
+</p>
+<div class="alertblock"><h3>Dual Channel</h3>
+<p> 4 slots disponíveis (A1, A2, B1, B2)?<br/>
+Use <strong>A2 e B2</strong> para dois módulos.<br/>
+A1+A2 = mesmo canal = sem ganho.</p>
+</div>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>14 / 25</small></div></section><section class="deck-slide" data-section="RAM" aria-label="Slide 15: RAM -- instalação" id="s-15"><header class="slide-header"><span class="slide-kicker">RAM</span><h2>RAM -- instalação</h2></header><div class="slide-body">
+
+<div class="block"><h3>Instalação</h3>
+
+<ol>
+<li><p>Abrir as travas nas duas extremidades do slot</p></li>
+<li><p>Alinhar o entalhe com a projeção</p></li>
+<li><p>Pressão firme e <strong>simultânea</strong> nas duas extremidades</p></li>
+<li><p>Travas fecham com <strong>clique audível</strong></p></li>
+<li><p>Verificar: puxar levemente para cima</p></li>
+</ol>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>15 / 25</small></div></section><section class="deck-slide" data-section="Colocando dentro do Gabinete" aria-label="Slide 16: Colocando dentro do Gabinete (1/2)" id="s-16"><header class="slide-header"><span class="slide-kicker">Colocando dentro do Gabinete</span><h2>Colocando dentro do Gabinete (1/2)</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>Preparação antes de entrar no gabinete</h3>
+
+<ul>
+<li><p>CPU, cooler e RAM já instalados na placa-mãe</p></li>
+<li><p>Standoffs e backplate I/O já fixados no gabinete</p></li>
+<li><p>Toque no chassi metálico para descarregar estática</p></li>
+</ul>
+</div>
+</div><div class="column">
+
+<div class="block"><h3>Parafusamento</h3>
+
+<ol start="5">
+<li><p>Insira <strong>todos</strong> os parafusos antes de apertar qualquer um — garante alinhamento</p></li>
+<li><p>Aperte em <strong>padrão X</strong> (diagonal), com pressão moderada — sem forçar</p></li>
+<li><p>Verifique que o <strong>verso da placa não toca</strong> na chapa metálica em nenhum ponto</p></li>
+</ol>
+</div>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>16 / 25</small></div></section><section class="deck-slide" data-section="Colocando dentro do Gabinete" aria-label="Slide 17: Colocando dentro do Gabinete (2/2)" id="s-17"><header class="slide-header"><span class="slide-kicker">Colocando dentro do Gabinete</span><h2>Colocando dentro do Gabinete (2/2)</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>Procedimento de encaixe</h3>
+
+<ol>
+<li><p>Incline levemente a placa e <strong>alinhe os conectores traseiros com o backplate I/O</strong> — cada porta deve encaixar em seu recorte</p></li>
+<li><p>Aproxime a placa dos standoffs mantendo-a paralela à chapa do gabinete</p></li>
+<li><p><strong>Verifique visualmente</strong> se cada standoff está sob um furo de fixação antes de pousar</p></li>
+<li><p>Pouse a placa sobre os standoffs sem pressionar</p></li>
+</ol>
+</div>
+</div><div class="column">
+
+<div class="alertblock"><h3>Erros Comuns</h3>
+
+<ul>
+<li><p>Backplate desencaixado ao pousar a placa</p></li>
+<li><p>Parafuso sem standoff embaixo — cria curto</p></li>
+<li><p>Cabo do cooler preso entre placa e chapa</p></li>
+</ul>
+</div>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>17 / 25</small></div></section><section class="deck-slide" data-section="Teste do Gabinete com Multímetro" aria-label="Slide 18: Etapa 7 — Teste do Painel Frontal com Multímetro (1/2)" id="s-18"><header class="slide-header"><span class="slide-kicker">Teste do Gabinete com Multímetro</span><h2>Etapa 7 — Teste do Painel Frontal com Multímetro (1/2)</h2></header><div class="slide-body">
+
+<div class="block"><h3>Por que testar o gabinete?</h3>
+<p> Verificar o painel frontal <strong>antes</strong> de ligar o sistema permite descartar o gabinete como causa de falhas futuras.<br/>
+Se o PC não ligar na Aula 3, já sabemos que o botão Power e o HDD LED <strong>não são o problema</strong>.</p>
+</div>
+<div class="exampleblock"><h3>Teste 1 — HDD LED</h3>
+
+<ol>
+<li><p>Multímetro em modo <strong>diodo/tensão</strong></p></li>
+<li><p>Ponta <strong>preta (−)</strong> no fio negativo do HDD LED</p></li>
+<li><p>Ponta <strong>vermelha (+)</strong> no fio positivo</p></li>
+<li><p><strong>LED acende</strong> → polaridade e continuidade OK</p></li>
+</ol>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>18 / 25</small></div></section><section class="deck-slide" data-section="Teste do Gabinete com Multímetro" aria-label="Slide 19: Etapa 7 — Teste do Painel Frontal com Multímetro (2/2)" id="s-19"><header class="slide-header"><span class="slide-kicker">Teste do Gabinete com Multímetro</span><h2>Etapa 7 — Teste do Painel Frontal com Multímetro (2/2)</h2></header><div class="slide-body">
+
+<div class="alertblock"><h3>Teste 2 — Botão Power</h3>
+
+<ol>
+<li><p>Multímetro em modo <strong>continuidade</strong> (bip )</p></li>
+<li><p>Pontas nos dois terminais do conector Power SW</p></li>
+<li><p><strong>Pressionar</strong> o botão</p></li>
+<li><p>Multímetro <strong>apita</strong> → circuito fecha corretamente</p></li>
+</ol>
+</div>
+<div class="block"><h3>Atenção à Polaridade</h3>
+<p> Inverter as pontas no LED não causa dano,<br/>
+mas ele não acenderá.<br/>
+O bip do Power só ocorre <strong>com o botão pressionado</strong> — em repouso o circuito está aberto.</p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>19 / 25</small></div></section><section class="deck-slide" data-section="Atividade Prática" aria-label="Slide 20: Roteiro da Atividade Prática — 100 min" id="s-20"><header class="slide-header"><span class="slide-kicker">Atividade Prática</span><h2>Roteiro da Atividade Prática — 100 min</h2></header><div class="slide-body">
+
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><strong><span style="color: white">Etapa</span></strong></th>
+<th style="text-align: left;"><span style="color: white">Ação</span></th>
+<th style="text-align: left;"><span style="color: white">Verificação</span></th>
+<th style="text-align: center;"><span style="color: white">Tempo</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>1</strong></td>
+<td style="text-align: left;">Standoffs + Backplate I/O</td>
+<td style="text-align: left;">Standoffs só nas posições corretas</td>
+<td style="text-align: center;">10 min</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>2</strong></td>
+<td style="text-align: left;">CPU no soquete</td>
+<td style="text-align: left;">Alavanca travada, triângulo alinhado</td>
+<td style="text-align: center;">15 min</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>3</strong></td>
+<td style="text-align: left;">Cooler + fan CPU_FAN</td>
+<td style="text-align: left;">Puxão leve: não sai</td>
+<td style="text-align: center;">15 min</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>4</strong></td>
+<td style="text-align: left;">RAM nos slots corretos</td>
+<td style="text-align: left;">Clique dos dois lados</td>
+<td style="text-align: center;">10 min</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>5</strong></td>
+<td style="text-align: left;">Placa-mãe no gabinete</td>
+<td style="text-align: left;">Todos os parafusos + verso sem contato</td>
+<td style="text-align: center;">20 min</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>6</strong></td>
+<td style="text-align: left;">Fonte no gabinete</td>
+<td style="text-align: left;">4 parafusos, fan orientado</td>
+<td style="text-align: center;">15 min</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>7</strong></td>
+<td style="text-align: left;">Teste do gabinete</td>
+<td style="text-align: left;">HDD LED acende; Power bipa</td>
+<td style="text-align: center;">10 min</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span style="color: accent"></span>  Cada etapa tem <strong>checkpoint obrigatório</strong> com o professor antes de avançar.</p>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>20 / 25</small></div></section><section class="deck-slide" data-section="Atividade Prática" aria-label="Slide 21: Checkpoints -- Monitores verificam (1/2)" id="s-21"><header class="slide-header"><span class="slide-kicker">Atividade Prática</span><h2>Checkpoints -- Monitores verificam (1/2)</h2></header><div class="slide-body">
+
+<div class="block"><h3>A — Standoffs</h3>
+<p> Nenhum standoff em posição sem furo. Backplate encaixado antes da placa (se tiver).</p>
+</div>
+<div class="block"><h3>B — CPU</h3>
+<p> Alavanca travada. Triângulo alinhado (sem pinos dobrados).</p>
+</div>
+<div class="block"><h3>C — Cooler</h3>
+<p> Puxão leve: cooler não sai. Conector no CPU_FAN (não SYS_FAN).</p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>21 / 25</small></div></section><section class="deck-slide" data-section="Atividade Prática" aria-label="Slide 22: Checkpoints -- Monitores verificam (2/2)" id="s-22"><header class="slide-header"><span class="slide-kicker">Atividade Prática</span><h2>Checkpoints -- Monitores verificam (2/2)</h2></header><div class="slide-body">
+
+<div class="block"><h3>D — RAM</h3>
+<p> Módulos nos slots de dual channel. Travas fechadas dos dois lados.</p>
+</div>
+<div class="block"><h3>E — Placa-mãe no gabinete</h3>
+<p> Todos os parafusos apertados. Verso da placa sem contato com a chapa.</p>
+</div>
+<div class="block"><h3>F — Fonte</h3>
+<p> 4 parafusos fixados. Orientação do fan correta.</p>
+</div>
+<div class="block"><h3>G — Teste do gabinete</h3>
+<p> HDD LED acende com multímetro. Botão Power gera bip de continuidade.</p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>22 / 25</small></div></section><section class="deck-slide" data-section="Dúvidas Comuns" aria-label="Slide 23: Dúvidas Comuns — Respostas Rápidas" id="s-23"><header class="slide-header"><span class="slide-kicker">Dúvidas Comuns</span><h2>Dúvidas Comuns — Respostas Rápidas</h2></header><div class="slide-body">
+
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><span style="color: white">Dúvida</span></th>
+<th style="text-align: left;"><span style="color: white">Resposta</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">“Posso tocar na placa para apoiá-la?”</td>
+<td style="text-align: left;">Sim — pelas bordas plásticas. Nunca nos chips ou contatos.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">“A alavanca do soquete precisa muita força?”</td>
+<td style="text-align: left;">Sim. 10–15 kgf é normal em LGA1700.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">“O cooler balança um pouco, é normal?”</td>
+<td style="text-align: left;">Não. Verificar se todos os pinos travaram.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">“A RAM não encaixa, forço?”</td>
+<td style="text-align: left;">Nunca. Verificar orientação do entalhe antes.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">“Quantos parafusos a fonte precisa?”</td>
+<td style="text-align: left;">4 nos cantos. Menos que 4 gera vibração e ruído.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">“Fan de 3 pinos no header de 4 pinos?”</td>
+<td style="text-align: left;">Funciona normalmente — só sem controle PWM.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">“O LED não acendeu no teste, o gabinete quebrou?”</td>
+<td style="text-align: left;">Verifique a polaridade das pontas antes de concluir.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>23 / 25</small></div></section><section class="deck-slide" data-section="Entrega e Próxima Aula" aria-label="Slide 24: Entrega de Hoje" id="s-24"><header class="slide-header"><span class="slide-kicker">Entrega e Próxima Aula</span><h2>Entrega de Hoje</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>O que entregar</h3>
+
+<ol>
+<li><p><strong>Foto</strong> da placa-mãe montada no gabinete com CPU, cooler e RAM instalados (interior do gabinete)</p></li>
+<li><p><strong>Ficha respondida:</strong></p>
+<ul>
+<li><p>Qual foi a etapa mais difícil e por quê?</p></li>
+<li><p>O cooler travou nos 4 pontos? Como verificou?</p></li>
+<li><p>Os módulos de RAM ficaram nos slots de dual channel corretos? Quais slots?</p></li>
+<li><p>A pasta térmica foi aplicada? O que ocorreria em operação real sem ela?</p></li>
+<li><p>O HDD LED acendeu? O botão Power gerou bip?</p></li>
+</ul></li>
+</ol>
+</div>
+</div><div class="column">
+
+<div class="alertblock"><h3>O que NÃO fazer hoje</h3>
+<p> Os cabos da fonte <strong>não serão conectados</strong> nesta aula.<br/>
+O PC <strong>não será ligado</strong> hoje.</p>
+</div>
+<div class="exampleblock"><h3>Próxima Aula — Lab 03</h3>
+<p> Cabos, conectores do painel frontal e <strong>primeiro POST</strong>.<br/>
+Antes de apertar o botão, entenderemos o que acontece nos bastidores — e como identificar <strong>em qual etapa</strong> o PC travou só pelo comportamento da máquina.</p>
+</div>
+</div>
+</div>
+<a class="form-link" href="../../index.html#/montagem" target="_top">Abrir ficha digital e registrar respostas ↗</a><img class="qr-img" alt="QR code da ficha integrada" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/montagem-slides/media/qr-atividade.png"></div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>24 / 25</small></div></section><section class="deck-slide" data-section="Entrega e Próxima Aula" aria-label="Slide 25: Obrigado!" id="s-25"><header class="slide-header"><span class="slide-kicker">Entrega e Próxima Aula</span><h2>Obrigado!</h2></header><div class="slide-body"><div class="columns">
+<div class="column">
+
+<div class="center">
+<p><span><span style="color: primary">Obrigado!</span></span><br/>
+<span>Dúvidas e discussão</span><br/>
+</p>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><strong>Alunos:</strong></td>
+<td style="text-align: left;">Emanuel Peixoto Gomes</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"></td>
+<td style="text-align: left;">Zadoque Carneiro</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><strong>Orientador:</strong></td>
+<td style="text-align: left;">Prof. Dr. Luis Ramirez</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"></td>
+<td style="text-align: left;"><code>luis.ramirez@uenf.br</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div><div class="column">
+<p> <span><span style="color: primary"><strong>Material da disciplina</strong></span></span><br/>
+<br/>
+<span><code>zadoque.github.io/aquitetura_2</code></span></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>25 / 25</small></div></section></main><footer class="deck-endnote">Navegue com as setas do teclado ou deslize no celular. A apresentação é HTML real, sem PDF embutido.</footer></div></body></html>
