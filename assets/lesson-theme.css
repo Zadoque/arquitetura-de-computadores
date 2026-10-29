@@ -42,7 +42,6 @@ html[data-module="inicializacao"]{--p:#1e55ad;--pd:#16458d;--pl:#eaf1ff;--plb:#c
 html[data-module="inicializacao"] #app{max-width:850px}
 html[data-module="inicializacao"] .nav-inner{max-width:850px}
 html[data-module="inicializacao"] .card{border:1px solid var(--adc-border);box-shadow:0 6px 20px #142e4b0e}
-html[data-module="inicializacao"] #nav-wrap{position:sticky;bottom:0;z-index:100}
 html[data-module="aula4-relatorio"] body{padding:12px;background:#f3f6fb;display:block}
 html[data-module="aula4-relatorio"] .app-shell{max-width:900px;margin:0 auto;box-shadow:0 14px 32px #132a451c}
 html[data-module="aula4-relatorio"] input:not([type="file"]),html[data-module="aula4-relatorio"] textarea{font-size:16px}
