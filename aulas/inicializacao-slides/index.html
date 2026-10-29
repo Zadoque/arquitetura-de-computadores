@@ -1,0 +1,402 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#102c51"><title>Cabos, headers e boot | Arquitetura de Computadores</title><link rel="stylesheet" href="../../assets/deck.css"><script src="../../assets/deck.js" defer></script></head><body class="deck" data-deck="inicializacao-slides"><div class="deck-shell"><header class="deck-topbar"><div class="deck-brand"><span class="deck-brand-icon">AC</span><span><strong>Arquitetura de Computadores</strong><small>Aula 3 · Material teórico</small></span></div><a class="topbar-return" href="../../index.html#/inicializacao" target="_top">Ir para atividade ↗</a></header><div class="deck-tools"><div class="deck-progress-track" role="progressbar" aria-label="Progresso na apresentação" aria-valuemin="1" aria-valuemax="24" aria-valuenow="1"><div id="deck-progress" class="deck-progress"></div></div><div class="tools-row"><label for="deck-jump">Ir para slide</label><select id="deck-jump" aria-label="Ir para um slide"></select><div class="deck-buttons"><button type="button" id="deck-prev" aria-label="Slide anterior">← Anterior</button><button type="button" id="deck-next" aria-label="Próximo slide">Próximo →</button></div></div></div><main id="deck-main" tabindex="-1"><section class="deck-slide" data-section="Apresentação" aria-label="Slide 1: Cabos, headers e boot" id="s-1"><header class="slide-header"><span class="slide-kicker">Apresentação</span><h2>Cabos, headers e boot</h2></header><div class="slide-body"><div class="cover-inner"><span class="eyebrow">Aula 3 · Arquitetura de Computadores</span><h2>Cabos, headers e boot</h2><p>Painel frontal, conectores e diagnóstico da inicialização</p><div class="cover-authors">Emanuel Peixoto Gomes · Zadoque Carneiro<br>Prof. Dr. Luis Ramirez · UENF — CCT<br>6 de abril de 2026</div></div></div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>1 / 24</small></div></section><section class="deck-slide" data-section="Apresentação" aria-label="Slide 2: Roteiro" id="s-2"><header class="slide-header"><span class="slide-kicker">Apresentação</span><h2>Roteiro</h2></header><div class="slide-body"><div class="toc-grid"><div class="toc-item"><span>01</span><strong>Cabos</strong></div><div class="toc-item"><span>02</span><strong>Painel Frontal</strong></div><div class="toc-item"><span>03</span><strong>USB e Áudio Frontal</strong></div><div class="toc-item"><span>04</span><strong>Boot</strong></div><div class="toc-item"><span>05</span><strong>Diagnóstico</strong></div><div class="toc-item"><span>06</span><strong>Encerramento</strong></div></div></div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>2 / 24</small></div></section><section class="deck-slide" data-section="Cabos" aria-label="Slide 3: Ordem de Conexão" id="s-3"><header class="slide-header"><span class="slide-kicker">Cabos</span><h2>Ordem de Conexão</h2></header><div class="slide-body">
+
+<div class="block"><h3>Por que importa?</h3>
+<p> A ordem é definida por <strong>acesso físico</strong>.</p>
+</div>
+<div class="alertblock"><h3>Problema comum</h3>
+<p> Cooler pode bloquear o ATX 12V.</p>
+</div>
+<p><img alt="Atx12v conector" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/inicializacao-slides/media/img_atx12v_conector.webp"/></p>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>3 / 24</small></div></section><section class="deck-slide" data-section="Cabos" aria-label="Slide 4: Sequência Recomendada" id="s-4"><header class="slide-header"><span class="slide-kicker">Cabos</span><h2>Sequência Recomendada</h2></header><div class="slide-body">
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Ordem</th>
+<th style="text-align: left;">Cabo</th>
+<th style="text-align: left;">Motivo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1º</td>
+<td style="text-align: left;">ATX 12V</td>
+<td style="text-align: left;">Pode ser bloqueado pelo cooler</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2º</td>
+<td style="text-align: left;">ATX 24p</td>
+<td style="text-align: left;">Conector maior, mais fácil com espaço</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3º</td>
+<td style="text-align: left;">Painel frontal</td>
+<td style="text-align: left;">Requer precisão no silkscreen</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4º</td>
+<td style="text-align: left;">Fans</td>
+<td style="text-align: left;">Ventilação e organização</td>
+</tr>
+</tbody>
+</table>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>4 / 24</small></div></section><section class="deck-slide" data-section="Painel Frontal" aria-label="Slide 5: Headers — Atenção" id="s-5"><header class="slide-header"><span class="slide-kicker">Painel Frontal</span><h2>Headers — Atenção</h2></header><div class="slide-body">
+
+<div class="center">
+<p><img alt="Standards" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/inicializacao-slides/media/standards.webp"/></p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>5 / 24</small></div></section><section class="deck-slide" data-section="Painel Frontal" aria-label="Slide 6: Headers — Atenção" id="s-6"><header class="slide-header"><span class="slide-kicker">Painel Frontal</span><h2>Headers — Atenção</h2></header><div class="slide-body">
+
+<div class="alertblock"><h3>Alto índice de erro</h3>
+<p> Layout varia por fabricante.</p>
+</div>
+<div class="block"><h3>Regra</h3>
+<p> Nunca memorize — use o silkscreen.</p>
+</div>
+<p><img alt="Fpanel pinos" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/inicializacao-slides/media/img_fpanel_pinos.webp"/></p>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>6 / 24</small></div></section><section class="deck-slide" data-section="Painel Frontal" aria-label="Slide 7: Tabela de Conectores" id="s-7"><header class="slide-header"><span class="slide-kicker">Painel Frontal</span><h2>Tabela de Conectores</h2></header><div class="slide-body">
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Conector</th>
+<th style="text-align: center;">Sigla</th>
+<th style="text-align: left;">Polaridade</th>
+<th style="text-align: left;">Se errar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Power</td>
+<td style="text-align: center;">PWR SW</td>
+<td style="text-align: left;">Não</td>
+<td style="text-align: left;">Funciona igual</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Reset</td>
+<td style="text-align: center;">RESET</td>
+<td style="text-align: left;">Não</td>
+<td style="text-align: left;">Funciona igual</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">LED</td>
+<td style="text-align: center;">PWR LED</td>
+<td style="text-align: left;">Sim</td>
+<td style="text-align: left;">Não acende</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HDD</td>
+<td style="text-align: center;">HDD LED</td>
+<td style="text-align: left;">Sim</td>
+<td style="text-align: left;">Não acende</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Speaker</td>
+<td style="text-align: center;">SPK</td>
+<td style="text-align: left;">Sim</td>
+<td style="text-align: left;">Sem beep codes</td>
+</tr>
+</tbody>
+</table>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>7 / 24</small></div></section><section class="deck-slide" data-section="Painel Frontal" aria-label="Slide 8: LED vs Botão — Por quê?" id="s-8"><header class="slide-header"><span class="slide-kicker">Painel Frontal</span><h2>LED vs Botão — Por quê?</h2></header><div class="slide-body">
+
+<div class="block"><h3>Botões (PWR SW, RESET)</h3>
+<p> Apenas um <strong>curto-circuito momentâneo</strong> entre dois pinos.<br/>
+Não há fluxo contínuo — a corrente pode ir em qualquer direção.</p>
+</div>
+<div class="block"><h3>LEDs (PWR LED, HDD LED)</h3>
+<p> São <strong>diodos</strong>: conduzem corrente em apenas uma direção.<br/>
+Polaridade invertida → LED apagado. Sem risco de queima.</p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>8 / 24</small></div></section><section class="deck-slide" data-section="Painel Frontal" aria-label="Slide 9: Speaker — A Voz do Sistema" id="s-9"><header class="slide-header"><span class="slide-kicker">Painel Frontal</span><h2>Speaker — A Voz do Sistema</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>O que é?</h3>
+<p> Pequeno alto-falante interno que emite sinais durante o POST.</p>
+</div>
+<div class="alertblock"><h3>Importante</h3>
+<p> Sem speaker <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>→</mo><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math> diagnóstico sonoro não existe.</p>
+</div>
+<div class="exampleblock"><h3>Função</h3>
+<p> Indicar falhas mesmo sem vídeo na tela.</p>
+</div>
+</div><div class="column">
+
+<p><img alt="Speaker interno" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/inicializacao-slides/media/img_speaker_interno.webp"/> <span>Speaker interno (4 pinos)</span></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>9 / 24</small></div></section><section class="deck-slide" data-section="Painel Frontal" aria-label="Slide 10: Beep Codes — Exemplos" id="s-10"><header class="slide-header"><span class="slide-kicker">Painel Frontal</span><h2>Beep Codes — Exemplos</h2></header><div class="slide-body">
+
+<ul>
+<li><p>1 beep curto <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>→</mo><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math> sistema OK</p></li>
+<li><p>Beep contínuo / 3 beeps <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>→</mo><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math> problema na RAM</p></li>
+<li><p>1 longo + 2 curtos <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>→</mo><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math> problema na GPU</p></li>
+</ul>
+<div class="block"><h3>Placas modernas</h3>
+<p> Substituem beeps por LEDs de diagnóstico:<br/>
+<strong>CPU</strong> — <strong>DRAM</strong> — <strong>VGA</strong> — <strong>BOOT</strong></p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>10 / 24</small></div></section><section class="deck-slide" data-section="Painel Frontal" aria-label="Slide 11: LEDs em Placas Modernas" id="s-11"><header class="slide-header"><span class="slide-kicker">Painel Frontal</span><h2>LEDs em Placas Modernas</h2></header><div class="slide-body">
+
+<p><img alt="Led moderno" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/inicializacao-slides/media/img_led_moderno.webp"/><br/>
+<span>LED aceso em vermelho indica o ponto exato de falha no POST.</span></p>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>11 / 24</small></div></section><section class="deck-slide" data-section="USB e Áudio Frontal" aria-label="Slide 12: USB Frontal — Visão Geral" id="s-12"><header class="slide-header"><span class="slide-kicker">USB e Áudio Frontal</span><h2>USB Frontal — Visão Geral</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>Função</h3>
+<p> Conectar as portas USB do gabinete à placa-mãe.</p>
+</div>
+<div class="block"><h3>Tipos comuns</h3>
+
+<ul>
+<li><p>USB 2.0 (9 pinos)</p></li>
+<li><p>USB 3.0 (19 pinos)</p></li>
+</ul>
+</div>
+<div class="alertblock"><h3>Importante</h3>
+<p> Cada padrão usa um conector diferente<br/>
+— <strong>não são compatíveis entre si</strong>.</p>
+</div>
+</div><div class="column">
+
+<p><img alt="Usb header" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/inicializacao-slides/media/img_usb_header.webp"/> <span>Headers USB na placa-mãe</span></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>12 / 24</small></div></section><section class="deck-slide" data-section="USB e Áudio Frontal" aria-label="Slide 13: USB Frontal — Conexão" id="s-13"><header class="slide-header"><span class="slide-kicker">USB e Áudio Frontal</span><h2>USB Frontal — Conexão</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="exampleblock"><h3>Procedimento</h3>
+
+<ol>
+<li><p>Localizar header USB na placa</p></li>
+<li><p>Identificar o tipo (2.0 ou 3.0)</p></li>
+<li><p>Alinhar pelo pino bloqueado (chave)</p></li>
+<li><p>Encaixar sem forçar</p></li>
+</ol>
+</div>
+<div class="alertblock"><h3>Erro comum</h3>
+<p> Forçar USB 3.0 fora de posição<br/>
+pode entortar pinos da placa-mãe.</p>
+</div>
+</div><div class="column">
+
+<p><img alt="Usb conector" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/inicializacao-slides/media/img_usb_conector.webp"/> <span>Cabo USB frontal</span></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>13 / 24</small></div></section><section class="deck-slide" data-section="USB e Áudio Frontal" aria-label="Slide 14: USB Frontal — Estrutura do Sinal" id="s-14"><header class="slide-header"><span class="slide-kicker">USB e Áudio Frontal</span><h2>USB Frontal — Estrutura do Sinal</h2></header><div class="slide-body">
+
+<div class="block"><h3>Como funciona?</h3>
+<p> USB transmite dados e energia pelo mesmo cabo:</p>
+</div>
+<ul>
+<li><p>+5V (alimentação do dispositivo)</p></li>
+<li><p>GND (terra de referência)</p></li>
+<li><p>Linhas de dados D+ e D<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>−</mi><annotation encoding="application/x-tex">-</annotation></semantics></math></p></li>
+</ul>
+<div class="exampleblock"><h3>Analogia</h3>
+<p> Como uma API: energia = servidor ligado<br/>
+dados = requisições trafegando</p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>14 / 24</small></div></section><section class="deck-slide" data-section="USB e Áudio Frontal" aria-label="Slide 15: Áudio Frontal — Visão Geral" id="s-15"><header class="slide-header"><span class="slide-kicker">USB e Áudio Frontal</span><h2>Áudio Frontal — Visão Geral</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="block"><h3>Função</h3>
+<p> Conectar fone de ouvido e microfone do gabinete.</p>
+</div>
+<div class="block"><h3>Padrões</h3>
+
+<ul>
+<li><p><strong>HD Audio</strong> — moderno, qualidade superior</p></li>
+<li><p><strong>AC’97</strong> — legado, compatível por software</p></li>
+</ul>
+</div>
+<div class="alertblock"><h3>Importante</h3>
+<p> Sempre prefira HD Audio.<br/>
+AC’97 pode causar ruído ou falhas.</p>
+</div>
+</div><div class="column">
+
+<p><img alt="Audio header" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/inicializacao-slides/media/img_audio_header.webp"/> <span>Header de áudio (AAFP)</span></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>15 / 24</small></div></section><section class="deck-slide" data-section="USB e Áudio Frontal" aria-label="Slide 16: Áudio Frontal — Conexão" id="s-16"><header class="slide-header"><span class="slide-kicker">USB e Áudio Frontal</span><h2>Áudio Frontal — Conexão</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="column">
+
+<div class="exampleblock"><h3>Procedimento</h3>
+
+<ol>
+<li><p>Localizar header AAFP na placa</p></li>
+<li><p>Identificar o cabo HD AUDIO</p></li>
+<li><p>Alinhar pelo pino bloqueado</p></li>
+<li><p>Conectar sem forçar</p></li>
+</ol>
+</div>
+<div class="alertblock"><h3>Erro comum</h3>
+<p> Conectar AC’97 no lugar de HD Audio<br/>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>→</mo><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math> som com ruído ou sem microfone.</p>
+</div>
+</div><div class="column">
+
+<p><img alt="Audio cabo" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/inicializacao-slides/media/img_audio_cabo.webp"/> <span>Cabo HD AUDIO</span></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>16 / 24</small></div></section><section class="deck-slide" data-section="USB e Áudio Frontal" aria-label="Slide 17: USB vs Áudio — Comparação" id="s-17"><header class="slide-header"><span class="slide-kicker">USB e Áudio Frontal</span><h2>USB vs Áudio — Comparação</h2></header><div class="slide-body">
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>USB</strong></th>
+<th style="text-align: left;"><strong>Áudio</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Tipo de sinal</td>
+<td style="text-align: left;">Digital</td>
+<td style="text-align: left;">Analógico</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sensível a ruído</td>
+<td style="text-align: left;">Baixo</td>
+<td style="text-align: left;">Alto</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Função</td>
+<td style="text-align: left;">Dados + energia</td>
+<td style="text-align: left;">Som</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Erro comum</td>
+<td style="text-align: left;">Pino torto</td>
+<td style="text-align: left;">Ruído / sem mic</td>
+</tr>
+</tbody>
+</table>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>17 / 24</small></div></section><section class="deck-slide" data-section="Boot" aria-label="Slide 18: Sequência de Boot — Ideia Central" id="s-18"><header class="slide-header"><span class="slide-kicker">Boot</span><h2>Sequência de Boot — Ideia Central</h2></header><div class="slide-body">
+
+<div class="block"><h3>Por que estudar a sequência?</h3>
+<p> Cada etapa tem um <strong>sintoma de falha único</strong>.<br/>
+Saber onde o sistema parou elimina 90% das hipóteses<br/>
+sem precisar desmontar nada.</p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>18 / 24</small></div></section><section class="deck-slide" data-section="Boot" aria-label="Slide 19: Fluxo de Boot (Visão Geral)" id="s-19"><header class="slide-header"><span class="slide-kicker">Boot</span><h2>Fluxo de Boot (Visão Geral)</h2></header><div class="slide-body">
+
+<div aria-label="Fluxo de boot: Botão Power, Placa-mãe, Fonte ATX, CPU, BIOS / Flash, POST, Vídeo, Dispositivo de Boot" class="flow-diagram" role="img"><span>Botão Power</span><span>Placa-mãe</span><span>Fonte ATX</span><span>CPU</span><span>BIOS / Flash</span><span>POST</span><span>Vídeo</span><span>Dispositivo de Boot</span></div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>19 / 24</small></div></section><section class="deck-slide" data-section="Boot" aria-label="Slide 20: Boot Passo a Passo" id="s-20"><header class="slide-header"><span class="slide-kicker">Boot</span><h2>Boot Passo a Passo</h2></header><div class="slide-body">
+
+<ol>
+<li><p>Botão pressionado</p></li>
+<li><p>PWR SW fecha o circuito</p></li>
+<li><p>Placa-mãe envia PS-ON à fonte</p></li>
+<li><p>Tensões ATX sobem (+12V, +5V, +3,3V)</p></li>
+<li><p>CPU recebe energia e inicia</p></li>
+<li><p>CPU busca BIOS na memória flash</p></li>
+<li><p>BIOS executa o POST</p></li>
+<li><p>Sinal de vídeo disponível na tela</p></li>
+<li><p>BIOS varre dispositivos de boot</p></li>
+<li><p>Sem HD <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>→</mo><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math> “No Boot Device” <span style="color: okgreen"><strong>(esperado hoje)</strong></span></p></li>
+</ol>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>20 / 24</small></div></section><section class="deck-slide" data-section="Diagnóstico" aria-label="Slide 21: Diagnóstico por Sintoma — Parte 1" id="s-21"><header class="slide-header"><span class="slide-kicker">Diagnóstico</span><h2>Diagnóstico por Sintoma — Parte 1</h2></header><div class="slide-body">
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Sintoma</th>
+<th style="text-align: left;">Etapa</th>
+<th style="text-align: left;">Causa provável</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Absolutamente nada</td>
+<td style="text-align: left;">2–3</td>
+<td style="text-align: left;">PWR SW errado ou ATX 24p solto</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fans giram, mais nada</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">ATX 12V desconectado</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fans + beep longo</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">RAM não encaixada</td>
+</tr>
+</tbody>
+</table>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>21 / 24</small></div></section><section class="deck-slide" data-section="Diagnóstico" aria-label="Slide 22: Diagnóstico por Sintoma — Parte 2" id="s-22"><header class="slide-header"><span class="slide-kicker">Diagnóstico</span><h2>Diagnóstico por Sintoma — Parte 2</h2></header><div class="slide-body">
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Sintoma</th>
+<th style="text-align: left;">Etapa</th>
+<th style="text-align: left;">Causa provável</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1 longo + 2 curtos</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">GPU não encaixada</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cursor / “No Boot”</td>
+<td style="text-align: left;">9–10</td>
+<td style="text-align: left;"><span style="color: okgreen"><strong>Normal — sem HD</strong></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Tela do BIOS aparece</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;"><span style="color: okgreen"><strong>POST completo. Sucesso!</strong></span></td>
+</tr>
+</tbody>
+</table>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>22 / 24</small></div></section><section class="deck-slide" data-section="Diagnóstico" aria-label="Slide 23: {\faQrcode}\enspace Ficha Digital da Atividade" id="s-23"><header class="slide-header"><span class="slide-kicker">Diagnóstico</span><h2>{\faQrcode}\enspace Ficha Digital da Atividade</h2></header><div class="slide-body">
+
+<div class="columns">
+<p><span> zadoque.github.io/arquitetura3</span></p><p><span><strong>Como usar a ficha digital:</strong></span></p><ol>
+<li><p>Aponte a câmera para o QR code</p></li>
+<li><p>Insira os nomes do grupo (até 8 alunos)</p></li>
+<li><p>Siga cada etapa: fotografe e descreva</p></li>
+<li><p>Responda a pergunta dissertativa <span>(mínimo 100 caracteres)</span></p></li>
+<li><p>Copie o código LaTeX gerado ao final</p></li>
+<li><p>Compile em <code>texpage.com</code></p></li>
+</ol><div class="alertblock"><h3>Atenção</h3>
+<p> Caso feche o navegador durante a atividade.<br/>
+O progresso é <strong>salvo automaticamente</strong>!</p>
+</div>
+</div>
+<a class="form-link" href="../../index.html#/inicializacao" target="_top">Abrir ficha digital e registrar respostas ↗</a><img class="qr-img" alt="QR code da ficha integrada" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/inicializacao-slides/media/qr-atividade.png"></div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>23 / 24</small></div></section><section class="deck-slide" data-section="Encerramento" aria-label="Slide 24: Obrigado!" id="s-24"><header class="slide-header"><span class="slide-kicker">Encerramento</span><h2>Obrigado!</h2></header><div class="slide-body">
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><strong>Alunos:</strong></td>
+<td style="text-align: left;">Emanuel Peixoto Gomes</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"></td>
+<td style="text-align: left;">Zadoque Carneiro</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><strong>Orientador:</strong></td>
+<td style="text-align: left;">Prof. Dr. Luis Ramirez</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"></td>
+<td style="text-align: left;"><code>luis.ramirez@uenf.br</code></td>
+</tr>
+</tbody>
+</table>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>24 / 24</small></div></section></main><footer class="deck-endnote">Navegue com as setas do teclado ou deslize no celular. A apresentação é HTML real, sem PDF embutido.</footer></div></body></html>

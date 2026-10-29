@@ -1,0 +1,403 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#102c51"><title>Multímetro e diagnóstico de hardware | Arquitetura de Computadores</title><link rel="stylesheet" href="../../assets/deck.css"><script src="../../assets/deck.js" defer></script></head><body class="deck" data-deck="multimetro-slides"><div class="deck-shell"><header class="deck-topbar"><div class="deck-brand"><span class="deck-brand-icon">AC</span><span><strong>Arquitetura de Computadores</strong><small>Aula 1 · Material teórico</small></span></div><a class="topbar-return" href="../../index.html#/multimetro" target="_top">Ir para atividade ↗</a></header><div class="deck-tools"><div class="deck-progress-track" role="progressbar" aria-label="Progresso na apresentação" aria-valuemin="1" aria-valuemax="17" aria-valuenow="1"><div id="deck-progress" class="deck-progress"></div></div><div class="tools-row"><label for="deck-jump">Ir para slide</label><select id="deck-jump" aria-label="Ir para um slide"></select><div class="deck-buttons"><button type="button" id="deck-prev" aria-label="Slide anterior">← Anterior</button><button type="button" id="deck-next" aria-label="Próximo slide">Próximo →</button></div></div></div><main id="deck-main" tabindex="-1"><section class="deck-slide" data-section="Apresentação" aria-label="Slide 1: Multímetro e diagnóstico de hardware" id="s-1"><header class="slide-header"><span class="slide-kicker">Apresentação</span><h2>Multímetro e diagnóstico de hardware</h2></header><div class="slide-body"><div class="cover-inner"><span class="eyebrow">Aula 1 · Arquitetura de Computadores</span><h2>Multímetro e diagnóstico de hardware</h2><p>Grandezas elétricas, medições e fonte ATX</p><div class="cover-authors">Emanuel Peixoto Gomes · Zadoque Carneiro<br>Prof. Dr. Luis Ramirez · UENF — CCT<br>23 de março de 2026</div></div></div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>1 / 17</small></div></section><section class="deck-slide" data-section="Apresentação" aria-label="Slide 2: Sum\&#x27;ario" id="s-2"><header class="slide-header"><span class="slide-kicker">Apresentação</span><h2>Sum\&#x27;ario</h2></header><div class="slide-body"><div class="toc-grid"><div class="toc-item"><span>01</span><strong>Introdução</strong></div><div class="toc-item"><span>02</span><strong>Conhecendo o Multímetro</strong></div><div class="toc-item"><span>03</span><strong>Grandezas Elétricas</strong></div><div class="toc-item"><span>04</span><strong>Diagnóstico de Hardware</strong></div><div class="toc-item"><span>05</span><strong>Segurança e Boas Práticas</strong></div><div class="toc-item"><span>06</span><strong>Atividade Prática</strong></div></div></div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>2 / 17</small></div></section><section class="deck-slide" data-section="Introdução" aria-label="Slide 3: Por que usar o mult\&#x27;imetro em Arq. de Computadores?" id="s-3"><header class="slide-header"><span class="slide-kicker">Introdução</span><h2>Por que usar o mult\&#x27;imetro em Arq. de Computadores?</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="block"><h3>Contexto da Disciplina</h3>
+<p> A disciplina aborda desde a organização básica do computador até arquiteturas paralelas avançadas. Falhas de <strong>hardware físico</strong> impactam diretamente a execução das arquiteturas estudadas.</p>
+</div><p><strong>O multímetro permite:</strong></p><ul>
+<li><p>Verificar tensões nas linhas da fonte ATX</p></li>
+<li><p>Testar continuidade de trilhas e cabos</p></li>
+<li><p>Diagnosticar baterias CMOS com defeito</p></li>
+<li><p>Medir resistência de componentes passivos</p></li>
+<li><p>Validar o funcionamento elétrico antes de ligar o PC</p></li>
+</ul><div class="alertblock"><h3>Atenção</h3>
+<p> Sem medições corretas, é impossível saber se uma falha é de <strong>software/firmware</strong> ou de <strong>hardware</strong>.</p>
+</div><div class="exampleblock"><h3>Aula prática – 2h</h3>
+<p>  PC desmontado<br/>
+ Fonte ATX<br/>
+ Kit multímetro</p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>3 / 17</small></div></section><section class="deck-slide" data-section="Conhecendo o Multímetro" aria-label="Slide 4: O Mult\&#x27;imetro Digital -- Vis\~ao Geral" id="s-4"><header class="slide-header"><span class="slide-kicker">Conhecendo o Multímetro</span><h2>O Mult\&#x27;imetro Digital -- Vis\~ao Geral</h2></header><div class="slide-body">
+
+<div class="columns">
+<p><img alt="Image" class="slide-image" decoding="async" loading="lazy" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/multimetro-slides/media/image.webp"/> <strong>Componentes identificados:</strong></p><ol>
+<li><p><span style="color: Dourado"><strong>Display LCD</strong></span> – exibe o valor medido com sinal e unidade</p></li>
+<li><p><span style="color: Dourado"><strong>Botão de Ligar/Desligar</strong></span> – alguns modelos usam o próprio seletor rotativo para desligar (posição OFF)</p></li>
+<li><p><span style="color: Dourado"><strong>Seletor Rotativo</strong></span> – escolhe grandeza e faixa de medição</p></li>
+<li><p><span style="color: Dourado"><strong>Terminal COM (preto)</strong></span> – polo negativo / comum / terra de referência</p></li>
+<li><p><span style="color: Dourado"><strong>Terminal V<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math>mA (vermelho)</strong></span> – voltagem, resistência, corrente baixa (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>&lt;</mo><annotation encoding="application/x-tex">&lt;</annotation></semantics></math>200 mA)</p></li>
+<li><p><span style="color: Dourado"><strong>Terminal 10A (vermelho/separado)</strong></span> – correntes altas (sem fusível em muitos modelos – cuidado!)</p></li>
+</ol>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>4 / 17</small></div></section><section class="deck-slide" data-section="Conhecendo o Multímetro" aria-label="Slide 5: Conex\~ao dos Cabos -- Vermelho e Preto" id="s-5"><header class="slide-header"><span class="slide-kicker">Conhecendo o Multímetro</span><h2>Conex\~ao dos Cabos -- Vermelho e Preto</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="block"><h3>Cabo PRETO – Terminal COM</h3>
+
+<ul>
+<li><p>Sempre inserido na entrada <strong>COM</strong></p></li>
+<li><p>Representa o ponto de <strong>referência</strong> (GND)</p></li>
+<li><p>No PC, toca o chassi ou fios pretos da fonte</p></li>
+<li><p>Nunca mudar de conector durante a manutenção</p></li>
+</ul>
+</div><div class="alertblock"><h3>Erros Críticos</h3>
+
+<ul>
+<li><p>Tentar medir <strong>tensão</strong> com o cabo na entrada <strong>10A</strong> causa curto-circuito direto!</p></li>
+<li><p>Inverter os cabos em medição de <strong>corrente</strong> pode queimar o fusível interno!</p></li>
+</ul>
+</div><div class="exampleblock"><h3>Cabo VERMELHO – Terminal V Ω \Omega mA</h3>
+
+<ul>
+<li><p>Inserido em <strong>V<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math>mA</strong> para:</p>
+<ul>
+<li><p>Tensão (V AC e V DC)</p></li>
+<li><p>Resistência (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math>) e Continuidade</p></li>
+</ul></li>
+<li><p>Inserido em <strong>10A</strong> para correntes altas</p></li>
+<li><p>Toca o ponto de medição (positivo/sinal)</p></li>
+</ul>
+</div><p><strong>Dica:</strong> O display indica a diferença de potencial do cabo <span style="color: red">vermelho</span> em relação ao <span style="color: gray!60">preto</span>.</p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>5 / 17</small></div></section><section class="deck-slide" data-section="Conhecendo o Multímetro" aria-label="Slide 6: O Seletor Rotativo -- Fun\c{c}\~ao Geral" id="s-6"><header class="slide-header"><span class="slide-kicker">Conhecendo o Multímetro</span><h2>O Seletor Rotativo -- Fun\c{c}\~ao Geral</h2></header><div class="slide-body">
+
+<div aria-label="Seletor do multímetro: OFF, corrente AC à esquerda, tensão DC e resistência à direita" class="meter-dial" role="img"><div class="meter-label top">OFF</div><div class="meter-label left">AC / mA / hFE</div><div class="dial-outer"><div class="dial-center"><div class="dial-hand"></div></div></div><div class="meter-label right">DC / Ω / Diodo</div></div>
+<div class="block"><h3>Posição inicial</h3>
+<p> Seletor sempre no <strong>OFF</strong> antes de conectar os cabos.</p>
+</div>
+<p>Girando <strong>para a esquerda</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>→</mo><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math> grandezas de <strong>corrente e AC</strong><br/>
+Girando <strong>para a direita</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>→</mo><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math> grandezas de <strong>tensão DC e resistência</strong></p>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>6 / 17</small></div></section><section class="deck-slide" data-section="Conhecendo o Multímetro" aria-label="Slide 7: Seletor: Girando para a \textcolor{red!70}{Esquerda} \faArrowLeft" id="s-7"><header class="slide-header"><span class="slide-kicker">Conhecendo o Multímetro</span><h2>Seletor: Girando para a \textcolor{red!70}{Esquerda} \faArrowLeft</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="block"><h3>Faixas disponíveis (sentido anti-horário)</h3>
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Posição</strong></th>
+<th style="text-align: left;"><strong>Função</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>V~ 200</code></td>
+<td style="text-align: left;">Tensão AC até 200 V</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>V~ 500</code></td>
+<td style="text-align: left;">Tensão AC até 500 V</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>200</code><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math><code>A</code></td>
+<td style="text-align: left;">Corrente DC até 200 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>A</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>2mA</code></td>
+<td style="text-align: left;">Corrente DC até 2 mA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>20mA</code></td>
+<td style="text-align: left;">Corrente DC até 20 mA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>200mA</code></td>
+<td style="text-align: left;">Corrente DC até 200 mA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>hFE</code></td>
+<td style="text-align: left;">Ganho de transistor</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Quando usar (contexto PC):</strong></p><ul>
+<li><p><strong>V~ 200/500</strong> – Verificar tomada e entrada da fonte</p></li>
+<li><p><strong>mA</strong> – Corrente consumida por periféricos USB</p></li>
+<li><p><strong>hFE</strong> – Testar transistores de circuitos reguladores</p></li>
+</ul><div class="alertblock"><h3>Segurança</h3>
+<p> Ao medir tensão AC da rede (127 V / 220 V), nunca toque nas ponteiras metálicas. Use apenas a parte isolada do cabo.</p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>7 / 17</small></div></section><section class="deck-slide" data-section="Conhecendo o Multímetro" aria-label="Slide 8: Seletor: Girando para a \textcolor{green!70}{Direita} \faArrowRight" id="s-8"><header class="slide-header"><span class="slide-kicker">Conhecendo o Multímetro</span><h2>Seletor: Girando para a \textcolor{green!70}{Direita} \faArrowRight</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="block"><h3>Faixas disponíveis (sentido horário)</h3>
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Posição</strong></th>
+<th style="text-align: left;"><strong>Função</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>V= 2</code></td>
+<td style="text-align: left;">Tensão DC até 2 V</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>V= 20</code></td>
+<td style="text-align: left;">Tensão DC até 20 V</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>V= 200</code></td>
+<td style="text-align: left;">Tensão DC até 200 V</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>V= 500</code></td>
+<td style="text-align: left;">Tensão DC até 500 V</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>200</code><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math></td>
+<td style="text-align: left;">Resistência até 200 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>2k / 20k</code></td>
+<td style="text-align: left;">Resistência até 2 k<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math> / 20 k<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>200k / 2M</code></td>
+<td style="text-align: left;">Resistência até 200 k<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math> / 2 M<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Diodo</code></td>
+<td style="text-align: left;">Teste de diodo / LED</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Uso no diagnóstico de PC:</strong></p><ul>
+<li><p><strong>V= 20</strong> – Escala ideal para medir as linhas ATX <strong>+12V, +5V e +3<span>,</span>3V</strong> sem risco de sobrecarga</p></li>
+<li><p><strong>V= 2</strong> – Para pilhas de <strong>1<span>,</span>5 V</strong> (AA/AAA); <strong>não</strong> usar para CR2032 (3 V) nem linhas ATX</p></li>
+<li><p><strong>200k<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math></strong> – Testar continuidade de cabos</p></li>
+<li><p><strong>Diodo</strong> – Verificar integridade de diodos da placa-mãe</p></li>
+</ul><div class="exampleblock"><h3>Dica</h3>
+<p> Para medir tensões do PC, use sempre <strong>V= 20</strong>: cobre as três linhas principais (+12 V, +5 V, +3<span>,</span>3 V) sem risco de sobrecarga.</p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>8 / 17</small></div></section><section class="deck-slide" data-section="Grandezas Elétricas" aria-label="Slide 9: Grandezas Fundamentais" id="s-9"><header class="slide-header"><span class="slide-kicker">Grandezas Elétricas</span><h2>Grandezas Fundamentais</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="block"><h3>Tensão (V)</h3>
+<p> Diferença de potencial entre dois pontos. <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo>=</mo><mi>R</mi><mo>⋅</mo><mi>I</mi></mrow><annotation encoding="application/x-tex">V = R \cdot I</annotation></semantics></math> <strong>DC:</strong> corrente contínua<br/>
+<strong>AC:</strong> corrente alternada<br/>
+<em>Fonte ATX usa DC.</em></p>
+</div><div class="block"><h3>Corrente (A)</h3>
+<p> Fluxo de elétrons no circuito. <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mo>=</mo><mfrac><mi>V</mi><mi>R</mi></mfrac></mrow><annotation encoding="application/x-tex">I = \frac{V}{R}</annotation></semantics></math> Mede quantos ampères passam pelo componente.<br/>
+<em>Medida em série no circuito.</em></p>
+</div><div class="block"><h3>Resistência ( Ω \Omega )</h3>
+<p> Oposição ao fluxo de corrente. <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>=</mo><mfrac><mi>V</mi><mi>I</mi></mfrac></mrow><annotation encoding="application/x-tex">R = \frac{V}{I}</annotation></semantics></math> Mede com o circuito <strong>desligado</strong>.<br/>
+<em>Cabos bons: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≈</mo><mn>0</mn><mspace width="0.167em"></mspace><mi>Ω</mi></mrow><annotation encoding="application/x-tex">\approx 0\,\Omega</annotation></semantics></math>.</em></p>
+</div>
+</div>
+<div class="alertblock"><h3>Regra de ouro</h3>
+<p> Resistência e continuidade <strong>SEMPRE</strong> com o equipamento <strong>desligado e desconectado da tomada</strong>.</p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>9 / 17</small></div></section><section class="deck-slide" data-section="Diagnóstico de Hardware" aria-label="Slide 10: Tens\~oes Padr\~ao da Fonte ATX" id="s-10"><header class="slide-header"><span class="slide-kicker">Diagnóstico de Hardware</span><h2>Tens\~oes Padr\~ao da Fonte ATX</h2></header><div class="slide-body">
+
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Linha</strong></th>
+<th style="text-align: center;"><strong>Cor do Fio</strong></th>
+<th style="text-align: center;"><strong>Valor Nominal</strong></th>
+<th style="text-align: center;"><strong>Tolerância</strong></th>
+<th style="text-align: center;"><strong>Uso principal</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">+12V</td>
+<td style="text-align: center;">Amarelo</td>
+<td style="text-align: center;">12<span>,</span>0 V</td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math>5%</td>
+<td style="text-align: center;">CPU, GPU, motores HDD</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">+5V</td>
+<td style="text-align: center;">Vermelho</td>
+<td style="text-align: center;">5<span>,</span>0 V</td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math>5%</td>
+<td style="text-align: center;">Dispositivos USB, lógica</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">+3<span>,</span>3V</td>
+<td style="text-align: center;">Laranja</td>
+<td style="text-align: center;">3<span>,</span>3 V</td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math>5%</td>
+<td style="text-align: center;">RAM, chipsets modernos</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">-12V</td>
+<td style="text-align: center;">Azul</td>
+<td style="text-align: center;">-12<span>,</span>0 V</td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math>10%</td>
+<td style="text-align: center;">Porta serial legada</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">+5VSB</td>
+<td style="text-align: center;">Roxo/Violeta</td>
+<td style="text-align: center;">5<span>,</span>0 V</td>
+<td style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math>5%</td>
+<td style="text-align: center;">Standby (WOL, USB)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GND</td>
+<td style="text-align: center;">Preto</td>
+<td style="text-align: center;">0 V</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">Referência / terra</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PS-ON</td>
+<td style="text-align: center;">Verde</td>
+<td style="text-align: center;">0 V (curto)</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">Liga a fonte (aterrar p/ testar)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="exampleblock"><h3>Como ligar a fonte sem a placa-mãe</h3>
+<p> Conecte um fio (ou clipe) entre o pino <strong>PS-ON (verde)</strong> e qualquer <strong>GND (preto)</strong> no conector ATX de 24 pinos para acionar a fonte isoladamente.</p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>10 / 17</small></div></section><section class="deck-slide" data-section="Diagnóstico de Hardware" aria-label="Slide 11: Passo a Passo: Testando a Fonte ATX" id="s-11"><header class="slide-header"><span class="slide-kicker">Diagnóstico de Hardware</span><h2>Passo a Passo: Testando a Fonte ATX</h2></header><div class="slide-body">
+
+<div class="columns">
+<ol>
+<li><p><strong>Desligue</strong> o PC e desconecte da tomada</p></li>
+<li><p>Remova o conector ATX de 24 pinos da placa-mãe</p></li>
+<li><p>Curto-circuite <strong>PS-ON</strong> (verde) com <strong>GND</strong> (preto)</p></li>
+<li><p>Reconecte <strong>apenas a fonte</strong> na tomada</p></li>
+<li><p>Seletor no <strong>V= 20</strong>; cabo preto no GND</p></li>
+<li><p>Toque o cabo vermelho em cada linha colorida</p></li>
+<li><p>Anote os valores e compare com os padrões</p></li>
+</ol><div class="alertblock"><h3>Fonte com defeito se:</h3>
+
+<ul>
+<li><p>Leitura <strong>fora da tolerância</strong> de <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math>5%</p></li>
+<li><p>Display mostra <strong>0 V</strong> numa linha ativa</p></li>
+<li><p>Leitura <strong>instável</strong> (oscila muito)</p></li>
+<li><p>Linha +5VSB morta (PC não dá standby)</p></li>
+</ul>
+</div><div class="exampleblock"><h3>✓ Exemplo prático</h3>
+<p> +12V medido = 11<span>,</span>2 V<br/>
+Valor mínimo aceitável = <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>12</mn><mo>×</mo><mn>0</mn><mo>,</mo><mn>95</mn><mo>=</mo><mn>11</mn><mo>,</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">12 \times 0{,}95 = 11{,}4</annotation></semantics></math> V<br/>
+<strong>Resultado: reprovado!</strong></p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>11 / 17</small></div></section><section class="deck-slide" data-section="Diagnóstico de Hardware" aria-label="Slide 12: Teste de Continuidade e Cabos" id="s-12"><header class="slide-header"><span class="slide-kicker">Diagnóstico de Hardware</span><h2>Teste de Continuidade e Cabos</h2></header><div class="slide-body">
+
+<div class="columns">
+<p><strong>O que é continuidade?</strong><br/>
+Verifica se existe caminho elétrico entre dois pontos. Seletor na posição <strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math> / Diodo</strong> (alguns multímetros emitem bip sonoro).</p><div class="block"><h3>Procedimento</h3>
+
+<ol>
+<li><p>Desconecte o cabo do equipamento</p></li>
+<li><p>Toque as ponteiras nas duas extremidades do fio</p></li>
+<li><p>Cabo bom: resistência <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≈</mo><annotation encoding="application/x-tex">\approx</annotation></semantics></math> <strong>0–2 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math></strong></p></li>
+<li><p>Cabo rompido: display mostra <strong>OL</strong> ou <strong>1</strong></p></li>
+</ol>
+</div><p><strong>Aplicações no PC:</strong></p><ul>
+<li><p>Cabos SATA de dados e alimentação</p></li>
+<li><p>Cabos do painel frontal (Power SW, Reset SW)</p></li>
+<li><p>Conexões do cooler (12 V no fio amarelo)</p></li>
+<li><p>Trilhas da placa-mãe (avançado)</p></li>
+</ul><div class="exampleblock"><h3>Bateria CMOS (CR2032)</h3>
+<p> Seletor em <strong>V= 20</strong>; medir diretamente nos polos da bateria CR2032 (nominal <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≈</mo><annotation encoding="application/x-tex">\approx</annotation></semantics></math>3 V).<br/>
+Valor abaixo de <strong>2<span>,</span>7 V</strong>: substituir!<br/>
+(Sintoma: BIOS perde data/hora e configurações)</p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>12 / 17</small></div></section><section class="deck-slide" data-section="Segurança e Boas Práticas" aria-label="Slide 13: Seguran\c{c}a no Uso do Mult\&#x27;imetro" id="s-13"><header class="slide-header"><span class="slide-kicker">Segurança e Boas Práticas</span><h2>Seguran\c{c}a no Uso do Mult\&#x27;imetro</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="alertblock"><h3>NUNCA faça:</h3>
+
+<ul>
+<li><p>Medir resistência/continuidade com circuito <strong>energizado</strong></p></li>
+<li><p>Trocar de faixa com as ponteiras <strong>conectadas</strong></p></li>
+<li><p>Usar a entrada <strong>V<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math>mA</strong> para correntes <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>&gt;</mo><annotation encoding="application/x-tex">&gt;</annotation></semantics></math>200 mA</p></li>
+<li><p>Exceder os limites do equipamento (CAT II 500 V)</p></li>
+<li><p>Deixar baterias descarregadas no multímetro</p></li>
+</ul>
+</div><div class="exampleblock"><h3>SEMPRE faça:</h3>
+
+<ul>
+<li><p>Inspecionar os cabos antes do uso (isolamento intacto)</p></li>
+<li><p>Escolher a faixa <strong>maior</strong> antes de medir valor desconhecido</p></li>
+<li><p>Desligar o multímetro após o uso (<strong>economiza bateria</strong>)</p></li>
+<li><p>Usar EPI: óculos e luvas ao trabalhar com AC</p></li>
+<li><p>Posicionar o multímetro em superfície estável</p></li>
+</ul>
+</div>
+</div>
+<div class="block"><h3>Padrão CAT do multímetro MAS830L</h3>
+<p> Classificado como <strong>CAT II 500 V</strong>: adequado para medições em tomadas domésticas e fontes de alimentação de computadores. Não usar em painéis elétricos industriais.</p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>13 / 17</small></div></section><section class="deck-slide" data-section="Atividade Prática" aria-label="Slide 14: Roteiro da Aula Pr\&#x27;atica (2 horas)" id="s-14"><header class="slide-header"><span class="slide-kicker">Atividade Prática</span><h2>Roteiro da Aula Pr\&#x27;atica (2 horas)</h2></header><div class="slide-body">
+
+<div class="columns">
+<div class="block"><h3>Parte 1 – 50 min (Teórico)</h3>
+
+<ol>
+<li><p>Apresentação do multímetro e segurança <em>(15 min)</em></p></li>
+<li><p>Conexão dos cabos e seletor <em>(15 min)</em></p></li>
+<li><p>Tensões padrão ATX e conceitos <em>(20 min)</em></p></li>
+</ol>
+</div><div class="block"><h3>Parte 2 – 70 min (Prático)</h3>
+
+<ol start="4">
+<li><p>Testar fonte ATX isolada <em>(25 min)</em></p></li>
+<li><p>Medir batéria CMOS <em>(15 min)</em></p></li>
+<li><p>Teste de continuidade em cabos <em>(15 min)</em></p></li>
+<li><p>Relatório e discussão dos resultados <em>(15 min)</em></p></li>
+</ol>
+</div><p><strong>Material por bancada:</strong></p><ul>
+<li><p>1 multímetro digital MAS830L</p></li>
+<li><p>1 fonte ATX (funcionando e/ou com defeito)</p></li>
+<li><p>1 placa-mãe para referência</p></li>
+<li><p>1 bateria CMOS CR2032</p></li>
+<li><p>Cabos SATA e de alimentação</p></li>
+<li><p>Ficha de registro de medições</p></li>
+</ul><div class="exampleblock"><h3>Entrega</h3>
+<p> Preencher a ficha com os valores medidos e concluir se os componentes estão <strong>aprovados</strong> ou <strong>reprovados</strong> segundo as especificações ATX.</p>
+</div>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>14 / 17</small></div></section><section class="deck-slide" data-section="Atividade Prática" aria-label="Slide 15: Atividade Pr\&#x27;atica -- Ficha Digital de Medi\c{c}\~oes" id="s-15"><header class="slide-header"><span class="slide-kicker">Atividade Prática</span><h2>Atividade Pr\&#x27;atica -- Ficha Digital de Medi\c{c}\~oes</h2></header><div class="slide-body">
+
+<div class="columns">
+<p><span> Acesse pelo celular:</span><br/>
+<br/>
+<span> <code>zadoque.github.io/multimetro</code></span> <strong>A ficha digital permite:</strong></p><ul>
+<li><p>Inserir os <strong>nomes dos alunos</strong> (até 8)</p></li>
+<li><p>Data preenchida <strong>automaticamente</strong></p></li>
+<li><p>Informar o <strong>modelo da fonte</strong> testada</p></li>
+<li><p>Registrar cada medição <strong>passo a passo</strong></p></li>
+<li><p>Auto-verificar se o valor está <strong>dentro da faixa</strong></p></li>
+<li><p>Escrever a <strong>conclusão</strong> do grupo</p></li>
+<li><p>Dados salvos no navegador – <strong>não se perdem</strong></p></li>
+</ul><div class="exampleblock"><h3>Gerar Relatório PDF</h3>
+<p> Ao final, clique em <strong>“Gerar Código LaTeX”</strong> para obter um relatório formatado.<br/>
+Compile em <code>texpage.com</code> e envie o PDF ao professor.</p>
+</div>
+</div>
+<a class="form-link" href="../../index.html#/multimetro" target="_top">Abrir ficha digital e registrar respostas ↗</a><img class="qr-img" alt="QR code da ficha integrada" src="https://raw.githubusercontent.com/Zadoque/arquitetura-de-computadores/main/aulas/multimetro-slides/media/qr-atividade.png"></div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>15 / 17</small></div></section><section class="deck-slide" data-section="Atividade Prática" aria-label="Slide 16: Refer\^encias" id="s-16"><header class="slide-header"><span class="slide-kicker">Atividade Prática</span><h2>Refer\^encias</h2></header><div class="slide-body">
+
+<ul>
+<li><p>TANENBAUM, A. S. <em>Organização Estruturada de Computadores</em>. 5. ed. Pearson, 2007.</p></li>
+<li><p>STALLINGS, W. <em>Arquitetura e Organização de Computadores</em>. 6. ed. Prentice Hall, 2002.</p></li>
+<li><p>HWANG, K. <em>Advanced Computer Architecture: Parallelism, Scalability, Programmability</em>. McGraw-Hill, 1996.</p></li>
+<li><p>Intel Corporation. <em>Intel 80x86 Programmer’s Reference Manual</em>, 1990.</p></li>
+<li><p>ATX Specification v2.31 – <em>Desktop Platform Form Factor</em>. Intel, 2013.</p></li>
+<li><p>Manual do Usuário – Multímetro Digital <strong>MAS830L</strong>. Mastech, 2020.</p></li>
+</ul>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>16 / 17</small></div></section><section class="deck-slide" data-section="Atividade Prática" aria-label="Slide 17: Obrigado!" id="s-17"><header class="slide-header"><span class="slide-kicker">Atividade Prática</span><h2>Obrigado!</h2></header><div class="slide-body">
+<div class="columns">
+<p><strong>Alunos</strong><br/>
+Emanuel Peixoto Gomes<br/>
+Zadoque Carneiro <strong>Orientador</strong><br/>
+Prof. Dr. Luis Ramirez<br/>
+<code>luis.ramirez@uenf.br</code></p>
+</div>
+</div><div class="slide-footer"><small>UENF · INF01112 · Emanuel Peixoto Gomes · Zadoque Carneiro</small><small>17 / 17</small></div></section></main><footer class="deck-endnote">Navegue com as setas do teclado ou deslize no celular. A apresentação é HTML real, sem PDF embutido.</footer></div></body></html>

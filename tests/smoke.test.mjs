@@ -67,3 +67,16 @@ test("slides usam imagens HTTPS explícitas e fallback para ícones", () => {
  }
  assert.ok(slides.includes("if (window.lucide) lucide.createIcons()"));
 });
+
+
+test("apresentações das aulas 1–3 são HTML com slides e navegação", () => {
+ const app=read("assets/app.js");
+ for(const [slug,count] of [["multimetro-slides",17],["montagem-slides",25],["inicializacao-slides",24]]){
+  assert.ok(app.includes('id:"'+slug+'"'));
+  const html=read("aulas/"+slug+"/index.html");
+  assert.equal((html.match(/class="deck-slide"/g)||[]).length,count);
+  assert.match(html,/assets\/deck\.css/);
+  assert.match(html,/assets\/deck\.js/);
+ }
+ assert.doesNotThrow(()=>new Script(read("assets/deck.js")));
+});
