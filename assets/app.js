@@ -78,7 +78,7 @@ function route(){
    byId("lesson-description").textContent=lesson.description;
    byId("lesson-open").href=lesson.src;
    frame.title=lesson.title;
-   frame.style.height="680px";
+   frame.style.height=lesson.id==="inicializacao"?"min(78vh, 760px)":"680px";
    frame.src=lesson.src;
   }else{
    frame.removeAttribute("src");
@@ -136,7 +136,7 @@ async function importBackup(file){
 window.addEventListener("hashchange",route);
 window.addEventListener("message",event=>{
  if(event.origin!==location.origin||event.source!==frame.contentWindow||!event.data||typeof event.data!=="object")return;
- if(event.data.type==="adc:resize"&&currentId){
+ if(event.data.type==="adc:resize"&&currentId&&currentId!=="inicializacao"){
   const h=Number(event.data.height);
   if(Number.isFinite(h)&&h>0&&h<100000){
    const target=Math.max(440,Math.ceil(h)+3);
