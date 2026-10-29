@@ -7,6 +7,21 @@ Portal estático e responsivo da disciplina **Arquitetura de Computadores (INF01
 
 > O projeto funciona sem servidor, banco de dados, framework ou etapa de build. Os formulários são salvos pelo próprio navegador usando `localStorage`.
 
+## Aulas teóricas em HTML
+
+Além dos formulários, o portal contém apresentações HTML navegáveis, reconstruídas a partir dos arquivos LaTeX fornecidos pelos autores. Os textos, tabelas e equações são conteúdo HTML selecionável, não páginas de PDF inseridas como imagens.
+
+| Material | Rota | Quadros |
+| --- | --- | ---: |
+| Aula 1 — Multímetro | `#/multimetro-slides` | 17 |
+| Aula 2 — Montagem segura | `#/montagem-slides` | 25 |
+| Aula 3 — Cabos e boot | `#/inicializacao-slides` | 24 |
+| Aula 4 — Armazenamento e SO | `#/aula4-slides` | Slides originais em HTML |
+
+**Navegação:** use os botões Próximo/Anterior, as setas do teclado, o seletor de slides ou gestos de deslizar no celular. Cada aula teórica possui acesso à ficha digital correspondente, cujas respostas continuam gravadas em `localStorage`.
+
+> **Pendência de mídia:** as apresentações 1–3 usam imagens das apresentações LaTeX fornecidas em ZIP. Os arquivos HTML já estão integrados, mas as imagens dessas três aulas ainda precisam ser adicionadas ao caminho `aulas/<nome>-slides/media/` da branch principal. Os arquivos originais completos, incluindo imagens, foram preservados em um pacote ZIP exportado durante a migração. Nenhuma imagem de terceiros foi inventada ou substituída.
+
 ## Conteúdo reunido
 
 | Menu no portal | Origem | Conteúdo |
