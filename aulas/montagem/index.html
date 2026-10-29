@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-module="montagem">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 02 — Arquitetura de Computadores | UENF</title>
+<style>
+:root {
+  --primary: #003d82;
+  --primary-l: #0055b3;
+  --primary-d: #002655;
+  --accent: #e85d04;
+  --success: #2d6a4f;
+  --success-l: #52b788;
+  --warn: #f4a261;
+  --danger: #c1121f;
+  --bg: #f0f4f8;
+  --surf: #ffffff;
+  --surf2: #f8fafc;
+  --border: #dde3ea;
+  --txt: #1a202c;
+  --txt-m: #64748b;
+  --shadow: 0 2px 10px rgba(0,61,130,.10);
+  --shadow-lg: 0 8px 28px rgba(0,61,130,.16);
+  --r: 14px;
+  --r-sm: 8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;font-size:15px}
+a{color:var(--primary)}
+
+/* ── PROGRESS BAR ── */
+#prog-bar-wrap{position:sticky;top:0;z-index:100;background:var(--primary-d);padding:8px 16px;display:flex;align-items:center;gap:10px}
+#prog-label{color:#fff;font-size:12px;white-space:nowrap;font-weight:600;min-width:90px}
+#prog-track{flex:1;height:8px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden}
+#prog-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .4s ease;width:0%}
+#prog-pct{color:#fff;font-size:12px;font-weight:700;min-width:36px;text-align:right}
+
+/* ── HEADER ── */
+header{background:var(--primary);color:#fff;padding:20px 16px 24px}
+.header-inner{max-width:680px;margin:0 auto}
+.header-badge{display:inline-block;background:rgba(255,255,255,.15);border-radius:99px;padding:3px 12px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+header h1{font-size:1.45rem;font-weight:800;line-height:1.25;margin-bottom:4px}
+header p{font-size:.875rem;opacity:.8}
+
+/* ── MAIN ── */
+main{max-width:680px;margin:0 auto;padding:16px 14px 60px}
+
+/* ── SECTION CARD ── */
+.card{background:var(--surf);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+.card h2{font-size:1.05rem;font-weight:700;color:var(--primary-d);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card h2 .icon{width:30px;height:30px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+
+/* ── INTRO ── */
+.intro-grid{display:grid;gap:10px}
+.intro-item{background:var(--surf2);border-radius:var(--r-sm);padding:12px;border-left:3px solid var(--primary)}
+.intro-item strong{color:var(--primary-d);font-size:.825rem;display:block;margin-bottom:3px}
+.intro-item p{font-size:.85rem;color:var(--txt-m)}
+
+/* ── FORM FIELDS ── */
+label{display:block;font-size:.8rem;font-weight:600;color:var(--txt-m);margin-bottom:4px;margin-top:12px}
+label:first-child{margin-top:0}
+input[type=text],input[type=date],textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:.9rem;font-family:inherit;background:var(--surf2);color:var(--txt);transition:border .2s,box-shadow .2s;outline:none}
+input[type=text]:focus,input[type=date]:focus,textarea:focus{border-color:var(--primary-l);box-shadow:0 0 0 3px rgba(0,85,179,.12)}
+textarea{min-height:90px;resize:vertical}
+.students-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:420px){.students-grid{grid-template-columns:1fr}}
+
+/* ── STEP WIZARD ── */
+.step-wizard{background:var(--surf);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+.step-wizard-header{background:var(--primary-d);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.step-wizard-num{width:38px;height:38px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-wizard-info{flex:1}
+.step-wizard-title{font-weight:700;font-size:.95rem}
+.step-wizard-meta{font-size:.78rem;opacity:.75;margin-top:1px}
+.step-indicator{font-size:.78rem;opacity:.7;white-space:nowrap}
+
+.step-wizard-body{padding:16px}
+.step-desc{font-size:.875rem;color:var(--txt-m);background:var(--surf2);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:12px;line-height:1.55}
+.step-warn{font-size:.82rem;color:var(--danger);background:#fff0f0;border-radius:var(--r-sm);padding:8px 12px;margin-bottom:12px;display:flex;gap:6px;align-items:flex-start}
+
+/* ── PHOTO UPLOAD ── */
+.photo-zone{border:2px dashed var(--border);border-radius:var(--r-sm);padding:20px;text-align:center;cursor:pointer;transition:border .2s,background .2s;background:var(--surf2);position:relative}
+.photo-zone:hover,.photo-zone.drag{border-color:var(--primary-l);background:#f0f5ff}
+.photo-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-zone .ph-icon{font-size:2rem;margin-bottom:6px}
+.photo-zone p{font-size:.82rem;color:var(--txt-m)}
+.photo-zone p span{color:var(--primary-l);font-weight:600}
+.photo-preview{margin-top:10px;position:relative;display:none}
+.photo-preview img{width:100%;border-radius:var(--r-sm);max-height:220px;object-fit:cover}
+.photo-remove{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:99px;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+
+/* ── CHECKPOINT ── */
+.checkpoint-row{display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;background:var(--surf2);border-radius:var(--r-sm);cursor:pointer}
+.check-toggle{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.check-toggle.checked{background:var(--success);border-color:var(--success);color:#fff}
+.checkpoint-row p{font-size:.82rem;color:var(--txt-m);flex:1}
+.checkpoint-row p strong{color:var(--txt);font-size:.85rem}
+
+/* ── NAV BUTTONS ── */
+.step-nav{display:flex;gap:10px;margin-top:16px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:var(--r-sm);font-size:.95rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:inherit}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#c94e00;transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.btn-secondary{background:var(--surf2);color:var(--primary);border:2px solid var(--border)}
+.btn-secondary:hover{background:var(--border)}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{background:#1e4d38}
+.btn-dark{background:var(--primary-d);color:#fff}
+.btn-dark:hover{background:#001a3d}
+.btn-outline{background:var(--surf);color:var(--primary);border:2px solid var(--primary)}
+.btn-outline:hover{background:var(--primary);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-full{width:100%}
+.btn-flex{flex:1}
+
+/* ── GENERATE SECTION ── */
+.gen-card{background:var(--primary-d);color:#fff;border-radius:var(--r);padding:22px;margin-bottom:16px}
+.gen-card h2{color:#fff;font-size:1.1rem;margin-bottom:6px}
+.gen-card p{font-size:.875rem;opacity:.8;margin-bottom:18px}
+.gen-btn-group{display:flex;flex-direction:column;gap:10px}
+
+/* ── STATUS ── */
+#api-status{margin-top:12px;font-size:.85rem;display:none;padding:10px 14px;border-radius:var(--r-sm);font-weight:600}
+#api-status.info{background:rgba(255,255,255,.15);color:#fff}
+#api-status.success{background:var(--success-l);color:#fff}
+#api-status.error{background:var(--danger);color:#fff}
+
+/* ── STORAGE INDICATOR ── */
+.storage-bar{margin-top:14px;font-size:.78rem;color:var(--txt-m)}
+.storage-track{height:5px;background:var(--border);border-radius:99px;margin-top:4px;overflow:hidden}
+.storage-fill{height:100%;background:var(--primary);border-radius:99px;transition:width .4s}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:#1a202c;color:#fff;padding:12px 22px;border-radius:99px;font-size:.875rem;font-weight:600;z-index:9999;transition:transform .35s ease;white-space:nowrap;max-width:90vw;text-align:center}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.success{background:var(--success)}
+#toast.error{background:var(--danger)}
+#toast.warn{background:var(--accent)}
+
+/* ── MODAL ── */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;padding:16px}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--surf);border-radius:var(--r);max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.modal-head h3{font-size:1rem;font-weight:700}
+.modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--txt-m);line-height:1}
+.modal-body{padding:16px 20px;font-size:.85rem}
+.modal-body textarea{height:300px;font-family:'Courier New',monospace;font-size:.75rem}
+.modal-foot{padding:12px 20px;display:flex;gap:8px;border-top:1px solid var(--border)}
+.modal-foot .btn{flex:1}
+
+/* ── PHASE SECTIONS ── */
+.phase{display:none}
+.phase.active{display:block}
+
+/* ── CONCLUSION CARD ── */
+.conclusion-card{background:var(--surf);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+.conclusion-card h2{font-size:1.05rem;font-weight:700;color:var(--primary-d);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.conclusion-hint{font-size:.82rem;color:var(--txt-m);margin-bottom:12px}
+
+/* ── STEP DOTS ── */
+.step-dots{display:flex;gap:6px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+.step-dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:all .3s;flex-shrink:0}
+.step-dot.done{background:var(--success-l)}
+.step-dot.active{background:var(--accent);transform:scale(1.4)}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:20px;font-size:.8rem;color:var(--txt-m)}
+.reset-link{font-size:.78rem;color:var(--txt-m);text-align:center;margin-top:8px;cursor:pointer;text-decoration:underline}
+</style>
+  <link rel="stylesheet" href="../../assets/lesson-theme.css">
+</head>
+<body>
+
+<div id="prog-bar-wrap">
+  <span id="prog-label">Progresso</span>
+  <div id="prog-track"><div id="prog-fill"></div></div>
+  <span id="prog-pct">0%</span>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="header-badge">INF01112 — UENF</div>
+    <h1>Laboratório 02<br>Montagem Segura de Hardware</h1>
+    <p>Prof. Dr. Luis Ramirez &nbsp;·&nbsp; Centro de Ciências e Tecnologia</p>
+  </div>
+</header>
+
+<main>
+
+<!-- ══ FASE 0: IDENTIFICAÇÃO DO GRUPO ══ -->
+<div class="phase active" id="phase-0">
+  <div class="card">
+    <h2><span class="icon">📋</span>Sobre esta Atividade</h2>
+    <div class="intro-grid">
+      <div class="intro-item">
+        <strong>Objetivo</strong>
+        <p>Montar corretamente uma placa-mãe com CPU, cooler e RAM dentro de um gabinete, respeitando os procedimentos de segurança elétrica e mecânica.</p>
+      </div>
+      <div class="intro-item">
+        <strong>Como usar este formulário</strong>
+        <p>Preencha os dados do grupo, depois avance etapa por etapa. Em cada etapa: tire uma foto, escreva uma descrição da imagem e suas observações. No final, escreva a conclusão e copie o código LaTeX.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">👥</span>Informações do Grupo</h2>
+    <label for="group-name">Nome do Grupo</label>
+    <input type="text" id="group-name" placeholder="Ex: Grupo A" />
+    <label for="report-date">Data</label>
+    <input type="date" id="report-date" />
+    <label>Nomes dos Alunos (até 8)</label>
+    <div class="students-grid" id="students-grid"></div>
+  </div>
+
+  <button class="btn btn-primary btn-full" onclick="goToStep(0)">
+    Começar ▶
+  </button>
+</div>
+
+<!-- ══ FASE 1–6: ETAPAS ══ -->
+<div class="phase" id="phase-steps">
+  <div class="step-dots" id="step-dots"></div>
+  <div id="step-wizard-container"></div>
+</div>
+
+<!-- ══ FASE 2: CONCLUSÃO ══ -->
+<div class="phase" id="phase-conclusion">
+  <div class="conclusion-card">
+    <h2><span class="icon">🎓</span>Conclusão do Laboratório</h2>
+    <p class="conclusion-hint">Descreva o que o grupo aprendeu com esta prática. Reflita sobre os procedimentos realizados, dificuldades superadas e conceitos consolidados.</p>
+    <textarea id="conclusion-text" placeholder="Ex: Nesta prática aprendemos a importância de seguir a ordem correta de montagem dos componentes. Compreendemos os riscos da descarga eletrostática e como os standoffs protegem a placa-mãe. Tivemos dificuldade inicial em alinhar o cooler, mas ao aplicar o padrão X de aperto a fixação ficou uniforme..." style="min-height:160px"></textarea>
+  </div>
+
+  <div class="gen-card">
+    <h2>📄 Relatório Concluído!</h2>
+    <p>Todas as etapas foram preenchidas. Copie o código LaTeX para gerar o relatório no Overleaf ou Texpage com suas fotos incluídas.</p>
+    <div class="gen-btn-group">
+      <button class="btn btn-primary btn-full" onclick="showLatexModal()">
+        📋 Copiar Código LaTeX
+      </button>
+      <button class="btn btn-outline btn-full" style="background:transparent;color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.3)" onclick="confirmReset()">
+        🗑️ Limpar tudo e recomeçar
+      </button>
+    </div>
+    <div id="api-status"></div>
+  </div>
+
+  <div class="storage-bar">
+    <div style="display:flex;justify-content:space-between">
+      <span>💾 Armazenamento local usado</span>
+      <span id="storage-size">0 KB</span>
+    </div>
+    <div class="storage-track"><div class="storage-fill" id="storage-fill" style="width:0%"></div></div>
+  </div>
+  <p class="reset-link" onclick="confirmReset()">Limpar todos os dados salvos</p>
+</div>
+
+</main>
+
+<!-- LATEX MODAL -->
+<div class="modal-backdrop" id="latex-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Código LaTeX — com \includegraphics</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom:10px;color:var(--txt-m);font-size:.82rem">
+        📌 Este código inclui <code>\includegraphics{etapa_N.jpg}</code>. Para compilar com as fotos:<br>
+        1. Acesse <a href="https://texpage.com" target="_blank">texpage.com</a> ou overleaf.com<br>
+        2. Crie novo projeto e cole este código no <code>main.tex</code><br>
+        3. Faça upload das fotos com os nomes: <code>etapa_1.jpg</code>, <code>etapa_2.jpg</code>...<br>
+        4. Compile e baixe o PDF.
+      </p>
+      <textarea id="latex-output" readonly></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" onclick="copyLatex()">📋 Copiar código</button>
+      <button class="btn btn-outline" onclick="closeModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<footer>
+  Universidade Estadual do Norte Fluminense Darcy Ribeiro &nbsp;·&nbsp; CCT<br>
+  INF01112 — Arquitetura de Computadores &nbsp;·&nbsp; 2026
+</footer>
+
+<script>
+const STORAGE_KEY = 'adc_lab02_v3';
+
+const STEPS = [
+  {
+    num: 1, title: 'Standoffs + Backplate I/O', time: '10 min',
+    desc: 'Identifique os furos de fixação da placa-mãe e instale os standoffs (espaçadores de latão) nas posições corretas do gabinete. Em seguida, encaixe o backplate I/O pelo lado externo do painel traseiro.',
+    checkpoint: 'Nenhum standoff em posição sem furo correspondente na placa-mãe. Backplate encaixado antes de qualquer outro componente.',
+    warn: 'Standoff em posição errada cria curto-circuito ao apertar o parafuso!'
+  },
+  {
+    num: 2, title: 'CPU no Soquete', time: '15 min',
+    desc: 'Toque no chassi do gabinete para equalizar a carga eletrostática. Levante a alavanca de retenção do soquete, alinhe o triângulo/ponto dourado da CPU com o do soquete e pouse sem pressão. Feche a alavanca.',
+    checkpoint: 'Alavanca completamente travada. Triângulo de alinhamento conferido. Nenhum pino dobrado visível.',
+    warn: 'Nunca force a CPU. Se não entrar com toque leve, reconfira a orientação.'
+  },
+  {
+    num: 3, title: 'Cooler + Conexão CPU_FAN', time: '15 min',
+    desc: 'Simule a aplicação da pasta térmica (método grão de arroz: ponto central ~3mm no IHS). Instale o cooler e aperte os 4 fixadores em padrão X (diagonal). Conecte o fan no header CPU_FAN da placa-mãe.',
+    checkpoint: 'Puxão leve no cooler: não sai. Conector encaixado no CPU_FAN (não SYS_FAN).',
+    warn: 'Aperte sempre em X para pressão uniforme. Cooler solto = superaquecimento imediato.'
+  },
+  {
+    num: 4, title: 'RAM nos Slots Corretos', time: '10 min',
+    desc: 'Abra as travas nas extremidades do slot. Alinhe o entalhe do módulo com a projeção do slot. Aplique pressão firme e simultânea nos dois lados até ouvir o clique das travas. Para dual channel: use os slots A2 e B2.',
+    checkpoint: 'Travas fechadas dos dois lados. Módulos nos slots A2 e B2 (dual channel).',
+    warn: 'Nunca force sem conferir a orientação do entalhe. DDR4 e DDR5 são fisicamente incompatíveis.'
+  },
+  {
+    num: 5, title: 'Placa-mãe no Gabinete', time: '20 min',
+    desc: 'Com CPU, cooler e RAM instalados, alinhe os conectores traseiros com o backplate. Apoie nos standoffs e parafuse em padrão X para evitar torção da placa.',
+    checkpoint: 'Todos os parafusos apertados. O verso da placa não encosta na chapa metálica do gabinete.',
+    warn: 'Confirme que cada parafuso tem um standoff embaixo antes de apertar.'
+  },
+  {
+    num: 6, title: 'Fonte no Gabinete', time: '15 min',
+    desc: 'Encaixe a fonte na baia traseira do gabinete. Oriente o fan conforme a ventilação disponível. Aperte os 4 parafusos de fixação. ATENÇÃO: os cabos NÃO serão conectados nesta aula.',
+    checkpoint: '4 parafusos fixados. Orientação do fan correta.',
+    warn: 'Os cabos só serão conectados na Aula 3. Não conecte nada nesta etapa.'
+  },
+  {
+    num: 7, title: 'Teste do Gabinete com Multímetro', time: '10 min',
+    desc: 'Com o multímetro, verifique dois componentes do painel frontal do gabinete:\n\n' +
+      '1. <strong>HDD LED:</strong> Coloque a ponta preta (negativo) do multímetro no fio negativo do HDD LED e a ponta vermelha (positivo) no fio positivo. Observe se o LED acende, confirmando continuidade e polaridade corretas.\n\n' +
+      '2. <strong>Botão Power:</strong> Configure o multímetro no modo de continuidade (bip). Coloque as pontas nos dois terminais do conector do botão Power e pressione o botão — o multímetro deve apitar, indicando que o botão fecha o circuito corretamente.\n\n' +
+      'Este teste garante que eventuais problemas futuros de inicialização não sejam causados por defeito no painel frontal do gabinete.',
+    checkpoint: 'HDD LED acendeu com o multímetro. Botão Power gerou bip de continuidade. Gabinete aprovado.',
+    warn: 'Atenção à polaridade do HDD LED: invertendo as pontas o LED não acende, mas não há dano. No modo continuidade, o bip só ocorre ao pressionar o botão — sem pressão, o circuito está aberto.'
+  }
+];
+
+// ── STATE ──
+let currentStepIndex = 0; // which step is active (0-based)
+let currentPhase = 0;     // 0=group info, 1=steps, 2=conclusion
+
+let state = {
+  groupName: '', date: '', students: Array(8).fill(''),
+  steps: STEPS.map(() => ({ photo: null, photoDesc: '', observations: '', checkpoint: false })),
+  conclusion: ''
+};
+
+// ── LOCALSTORAGE ──
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ state, currentStepIndex, currentPhase }));
+    updateStorageBar();
+  } catch(e) {
+    if (e.name === 'QuotaExceededError') showToast('Armazenamento cheio! Use fotos menores.', 'warn');
+  }
+}
+
+function loadState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  try {
+    const saved = JSON.parse(raw);
+    if (saved.state) {
+      state.groupName = saved.state.groupName || '';
+      state.date = saved.state.date || '';
+      state.students = saved.state.students || Array(8).fill('');
+      state.conclusion = saved.state.conclusion || '';
+      if (saved.state.steps) {
+        saved.state.steps.forEach((s, i) => {
+          if (state.steps[i]) state.steps[i] = Object.assign(state.steps[i], s);
+        });
+      }
+    }
+    if (typeof saved.currentStepIndex === 'number') currentStepIndex = saved.currentStepIndex;
+    if (typeof saved.currentPhase === 'number') currentPhase = saved.currentPhase;
+  } catch(e) {}
+}
+
+function updateStorageBar() {
+  let total = 0;
+  try { total = new Blob([localStorage.getItem(STORAGE_KEY) || '']).size; } catch(e) {}
+  const kb = (total / 1024).toFixed(0);
+  const pct = Math.min((total / (5 * 1024 * 1024)) * 100, 100);
+  const el = document.getElementById('storage-size');
+  const fill = document.getElementById('storage-fill');
+  if (el) el.textContent = kb < 1024 ? kb + ' KB' : (kb/1024).toFixed(1) + ' MB';
+  if (fill) fill.style.width = pct + '%';
+}
+
+// ── COMPRESS IMAGE ──
+async function compressImage(file) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 1024;
+        const scale = Math.min(maxDim / img.width, maxDim / img.height, 1);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.75));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── PROGRESS ──
+// Máximo possível: 0.5 (nome) + 0.5 (aluno) + 7 etapas×1.0 + 1.0 (conclusão) = 9.0
+function updateProgress() {
+  let filled = 0;
+  if (state.groupName.trim()) filled += 0.5;
+  if (state.students.some(s => s.trim())) filled += 0.5;
+  state.steps.forEach(s => {
+    if (s.photo) filled += 0.4;
+    if (s.photoDesc && s.photoDesc.trim()) filled += 0.2;
+    if (s.observations && s.observations.trim()) filled += 0.2;
+    if (s.checkpoint) filled += 0.2;
+  });
+  if (state.conclusion && state.conclusion.trim()) filled += 1;
+  const total = 1 + STEPS.length + 1; // grupo(1) + etapas + conclusão(1)
+  const pct = Math.min(100, Math.round((filled / total) * 100));
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = pct + '%';
+  updateDots();
+}
+
+// ── PHASE MANAGEMENT ──
+function showPhase(phaseId) {
+  document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+  document.getElementById(phaseId).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToStep(stepIndex) {
+  currentPhase = 1;
+  currentStepIndex = stepIndex;
+  showPhase('phase-steps');
+  renderCurrentStep();
+  saveState();
+}
+
+function goToConclusion() {
+  currentPhase = 2;
+  showPhase('phase-conclusion');
+  const conclusionEl = document.getElementById('conclusion-text');
+  if (conclusionEl) {
+    conclusionEl.value = state.conclusion || '';
+    conclusionEl.oninput = e => { state.conclusion = e.target.value; saveState(); updateProgress(); };
+  }
+  updateProgress();
+  updateStorageBar();
+  saveState();
+}
+
+function goBack() {
+  if (currentPhase === 1) {
+    if (currentStepIndex === 0) {
+      currentPhase = 0;
+      showPhase('phase-0');
+    } else {
+      currentStepIndex--;
+      renderCurrentStep();
+    }
+  } else if (currentPhase === 2) {
+    currentPhase = 1;
+    currentStepIndex = STEPS.length - 1;
+    showPhase('phase-steps');
+    renderCurrentStep();
+  }
+  saveState();
+}
+
+function advanceStep() {
+  if (currentStepIndex < STEPS.length - 1) {
+    currentStepIndex++;
+    renderCurrentStep();
+    saveState();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    goToConclusion();
+  }
+}
+
+// ── BUILD STEP WIZARD ──
+function renderCurrentStep() {
+  const i = currentStepIndex;
+  const step = STEPS[i];
+  const s = state.steps[i];
+  const container = document.getElementById('step-wizard-container');
+
+  const isLast = i === STEPS.length - 1;
+
+  container.innerHTML = `
+    <div class="step-wizard">
+      <div class="step-wizard-header">
+        <div class="step-wizard-num">${step.num}</div>
+        <div class="step-wizard-info">
+          <div class="step-wizard-title">${step.title}</div>
+          <div class="step-wizard-meta">⏱ ${step.time}</div>
+        </div>
+        <div class="step-indicator">Etapa ${i+1} de ${STEPS.length}</div>
+      </div>
+      <div class="step-wizard-body">
+        <div class="step-desc">${step.desc}</div>
+        <div class="step-warn">⚠️ ${step.warn}</div>
+
+        <label style="margin-top:0">📷 Foto da Etapa</label>
+        <div class="photo-zone" id="zone-${i}" ondragover="handleDrag(event,${i})" ondragleave="endDrag(${i})" ondrop="handleDrop(event,${i})">
+          <input type="file" accept="image/*" capture="environment" onchange="handleFile(event,${i})">
+          <div class="ph-icon">📷</div>
+          <p><span>Toque para fotografar</span> ou arraste uma imagem</p>
+        </div>
+        <div class="photo-preview" id="preview-${i}" style="${s.photo ? 'display:block' : 'display:none'}">
+          <img id="preview-img-${i}" src="${s.photo || ''}" alt="Foto etapa ${step.num}">
+          <button class="photo-remove" onclick="removePhoto(${i})">✕</button>
+        </div>
+
+        <label>🖼️ Descrição da Foto</label>
+        <textarea id="photo-desc-${i}" placeholder="Descreva o que a imagem mostra. Ex: Foto mostrando os standoffs instalados nas posições corretas do gabinete ATX, com o backplate I/O encaixado no painel traseiro.">${s.photoDesc || ''}</textarea>
+
+        <label>📝 Observações da Etapa</label>
+        <textarea id="obs-${i}" placeholder="Descreva o que foi feito, dificuldades encontradas, como o checkpoint foi verificado...">${s.observations || ''}</textarea>
+
+        <div class="checkpoint-row" onclick="toggleCheck(${i})" id="chk-row-${i}">
+          <div class="check-toggle ${s.checkpoint ? 'checked' : ''}" id="chk-${i}">${s.checkpoint ? '✓' : ''}</div>
+          <p><strong>Checkpoint professor realizado</strong><br>${step.checkpoint}</p>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-secondary btn-flex" onclick="goBack()">← Voltar</button>
+          <button class="btn ${isLast ? 'btn-success' : 'btn-primary'} btn-flex" onclick="advanceStep()">
+            ${isLast ? 'Finalizar ✓' : 'Próxima Etapa →'}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Attach input listeners
+  document.getElementById('photo-desc-' + i).addEventListener('input', e => {
+    state.steps[i].photoDesc = e.target.value;
+    saveState(); updateProgress();
+  });
+  document.getElementById('obs-' + i).addEventListener('input', e => {
+    state.steps[i].observations = e.target.value;
+    saveState(); updateProgress();
+  });
+
+  updateDots();
+  updateProgress();
+}
+
+// ── STEP DOTS ──
+function updateDots() {
+  const container = document.getElementById('step-dots');
+  if (!container) return;
+  container.innerHTML = '';
+  STEPS.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'step-dot';
+    const s = state.steps[i];
+    const done = s.photo && s.photoDesc && s.photoDesc.trim() && s.observations && s.observations.trim() && s.checkpoint;
+    if (done) dot.classList.add('done');
+    if (i === currentStepIndex && currentPhase === 1) dot.classList.add('active');
+    dot.title = `Etapa ${i + 1}: ${STEPS[i].title}`;
+    dot.onclick = () => goToStep(i);
+    dot.style.cursor = 'pointer';
+    container.appendChild(dot);
+  });
+}
+
+// ── BUILD STUDENT FIELDS ──
+function buildStudentFields() {
+  const grid = document.getElementById('students-grid');
+  for (let i = 0; i < 8; i++) {
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = 'Aluno ' + (i + 1);
+    inp.value = state.students[i] || '';
+    inp.addEventListener('input', e => {
+      state.students[i] = e.target.value;
+      saveState(); updateProgress();
+    });
+    grid.appendChild(inp);
+  }
+}
+
+// ── PHOTO HANDLERS ──
+function handleDrag(e, i) { e.preventDefault(); document.getElementById('zone-'+i).classList.add('drag'); }
+function endDrag(i) { document.getElementById('zone-'+i).classList.remove('drag'); }
+async function handleDrop(e, i) {
+  e.preventDefault(); endDrag(i);
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) await processImage(file, i);
+}
+async function handleFile(e, i) {
+  const file = e.target.files[0];
+  if (file) await processImage(file, i);
+}
+async function processImage(file, i) {
+  showToast('Comprimindo imagem...', '');
+  const b64 = await compressImage(file);
+  state.steps[i].photo = b64;
+  const prevEl = document.getElementById('preview-' + i);
+  const imgEl = document.getElementById('preview-img-' + i);
+  if (prevEl) prevEl.style.display = 'block';
+  if (imgEl) imgEl.src = b64;
+  saveState(); updateProgress();
+  showToast('Foto salva!', 'success');
+}
+function removePhoto(i) {
+  state.steps[i].photo = null;
+  const prevEl = document.getElementById('preview-' + i);
+  if (prevEl) prevEl.style.display = 'none';
+  saveState(); updateProgress();
+}
+function toggleCheck(i) {
+  state.steps[i].checkpoint = !state.steps[i].checkpoint;
+  const el = document.getElementById('chk-' + i);
+  if (el) {
+    el.classList.toggle('checked', state.steps[i].checkpoint);
+    el.textContent = state.steps[i].checkpoint ? '✓' : '';
+  }
+  saveState(); updateProgress();
+}
+
+// ── LATEX GENERATION ──
+function esc(s) {
+  return (s || '').replace(/\\/g,'\\textbackslash{}').replace(/[#$%^&_{}<>~]/g, m => '\\'+m);
+}
+
+function generateLatex() {
+  const d = state;
+  const date = d.date ? new Date(d.date + 'T12:00:00').toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'}) : new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
+  const studentsFiltered = d.students.filter(s => s.trim());
+  const studentsFormatted = studentsFiltered.length
+    ? studentsFiltered.map(s => esc(s)).join(' \\\\\n        ')
+    : 'Não informado';
+
+  let stepsContent = '';
+  STEPS.forEach((step, i) => {
+    const s = d.steps[i];
+    const obs = esc(s.observations || 'Sem observações registradas pelo grupo.').replace(/\n/g, '\n\n');
+    const photoDesc = esc(s.photoDesc || `Fotografia da Etapa ${step.num}: ${step.title}`);
+    const chk = s.checkpoint ? '\\textcolor{green}{\\textbf{Aprovado \\checkmark}}' : '\\textcolor{red}{\\textbf{Pendente \\texttimes}}';
+    const imgBlock = `\\begin{figure}[h!]\n  \\centering\n  \\includegraphics[width=0.85\\linewidth]{etapa_${step.num}.jpg}\n  \\caption{${photoDesc}}\n\\end{figure}`;
+
+    stepsContent += `
+\\section{Etapa ${step.num}: ${esc(step.title)}}
+
+\\begin{tabular}{ll}
+  \\textbf{Duração estimada:} & ${esc(step.time)} \\\\
+  \\textbf{Checkpoint professor:} & ${chk} \\\\
+\\end{tabular}
+
+\\subsection*{Observações do Grupo}
+${obs}
+
+\\subsection*{Registro Fotográfico}
+${imgBlock}
+
+\\newpage`;
+  });
+
+  const conclusionText = esc(state.conclusion || 'Nesta prática de laboratório, o grupo realizou a montagem dos componentes principais de um computador dentro do gabinete, seguindo a ordem técnica recomendada: standoffs, CPU, cooler, RAM, placa-mãe e fonte. Ao final, foi realizado o teste do painel frontal do gabinete com multímetro, verificando a continuidade do botão Power e a polaridade do HDD LED, garantindo que o gabinete não será uma fonte de problemas em aulas futuras. Os procedimentos de proteção contra descarga eletrostática foram observados, e os checkpoints de cada etapa foram verificados.').replace(/\n/g, '\n\n');
+
+  return `\\documentclass[12pt,a4paper]{article}
+\\usepackage[brazil]{babel}
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage{geometry}
+\\usepackage{setspace}
+\\usepackage{indentfirst}
+\\usepackage{graphicx}
+\\usepackage{fancyhdr}
+\\usepackage{titlesec}
+\\usepackage{xcolor}
+\\usepackage{amssymb}
+\\usepackage{hyperref}
+\\geometry{a4paper,top=3cm,bottom=2cm,left=3cm,right=2cm}
+\\onehalfspacing
+\\setlength{\\parindent}{1.25cm}
+\\pagestyle{fancy}
+\\fancyhf{}
+\\rhead{\\small INF01112 -- Arquitetura de Computadores}
+\\lhead{\\small UENF -- CCT}
+\\cfoot{\\thepage}
+\\renewcommand{\\headrulewidth}{0.4pt}
+
+\\begin{document}
+
+\\begin{titlepage}
+  \\centering
+  {\\large\\bfseries UNIVERSIDADE ESTADUAL DO NORTE FLUMINENSE DARCY RIBEIRO}\\\\[4pt]
+  {\\large Centro de Ciências e Tecnologia}\\\\
+  {\\large Laboratório de Ciências Matemáticas}\\\\[2cm]
+  {\\Large\\bfseries INF01112 --- Arquitetura de Computadores}\\\\[1cm]
+  {\\LARGE\\bfseries Relatório de Laboratório 02}\\\\[0.5cm]
+  {\\large Montagem Segura de Hardware: Do Gabinete à RAM}\\\\[3cm]
+  \\begin{tabular}{rl}
+    \\textbf{Grupo:} & ${esc(d.groupName) || 'Não informado'} \\\\[4pt]
+    \\textbf{Alunos:} & ${studentsFormatted} \\\\[4pt]
+    \\textbf{Orientador:} & Prof. Dr. Luis Ramirez \\\\[4pt]
+    \\textbf{Instituição:} & UENF -- Campos dos Goytacazes/RJ \\\\[4pt]
+    \\textbf{Data:} & ${date} \\\\
+  \\end{tabular}
+  \\vfill
+  {\\large Campos dos Goytacazes, ${date}}
+\\end{titlepage}
+
+\\tableofcontents
+\\newpage
+
+\\section*{Objetivo}
+\\addcontentsline{toc}{section}{Objetivo}
+Capacitar o aluno a montar corretamente os componentes principais de um computador --- placa-mãe, processador, cooler e memória RAM --- dentro de um gabinete, aplicando os procedimentos de segurança eletrostática e mecânica estudados na disciplina INF01112 -- Arquitetura de Computadores.
+
+\\section*{Materiais Utilizados}
+\\addcontentsline{toc}{section}{Materiais Utilizados}
+\\begin{itemize}
+  \\item Gabinete ATX com standoffs (espaçadores)
+  \\item Placa-mãe ATX
+  \\item Processador (Intel LGA ou AMD AM4)
+  \\item Cooler de CPU com fixadores
+  \\item Módulos de memória RAM DDR4
+  \\item Fonte de alimentação ATX
+  \\item Chave de fenda Phillips n.\\textsuperscript{o} 2
+\\end{itemize}
+
+\\newpage
+${stepsContent}
+
+\\section*{Conclusão}
+\\addcontentsline{toc}{section}{Conclusão}
+${conclusionText}
+
+\\end{document}`;
+}
+
+// ── LATEX MODAL ──
+function showLatexModal() {
+  document.getElementById('latex-output').value = generateLatex();
+  document.getElementById('latex-modal').classList.add('open');
+}
+function closeModal() { document.getElementById('latex-modal').classList.remove('open'); }
+function copyLatex() {
+  const ta = document.getElementById('latex-output');
+  ta.select(); document.execCommand('copy');
+  showToast('Código LaTeX copiado!', 'success');
+}
+
+// ── RESET ──
+function confirmReset() {
+  if (confirm('Tem certeza? Todos os dados e fotos serão apagados.')) {
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = type + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── INIT ──
+loadState();
+
+document.getElementById('report-date').value = state.date || new Date().toISOString().split('T')[0];
+document.getElementById('group-name').value = state.groupName || '';
+
+document.getElementById('group-name').addEventListener('input', e => { state.groupName = e.target.value; saveState(); updateProgress(); });
+document.getElementById('report-date').addEventListener('change', e => { state.date = e.target.value; saveState(); });
+
+buildStudentFields();
+
+// Restore to saved phase
+if (currentPhase === 1) {
+  showPhase('phase-steps');
+  renderCurrentStep();
+} else if (currentPhase === 2) {
+  goToConclusion();
+} else {
+  showPhase('phase-0');
+}
+
+updateProgress();
+updateStorageBar();
+</script>
+
+<script>
+/* Integração não invasiva: comunica altura e mudanças ao portal.
+   Todas as respostas continuam a ser salvas pelas funções originais. */
+(() => {
+  if (window.parent === window) return;
+  let task;
+  const tell = () => {
+    const height = Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight || 0);
+    window.parent.postMessage({type:"adc:resize",height},window.location.origin);
+  };
+  const notify = () => {
+    window.parent.postMessage({type:"adc:progress"},window.location.origin);
+    clearTimeout(task);
+    task = setTimeout(tell,100);
+  };
+  const queue = () => requestAnimationFrame(tell);
+  window.addEventListener("load",queue);
+  window.addEventListener("resize",queue);
+  document.addEventListener("input",notify,true);
+  document.addEventListener("change",notify,true);
+  document.addEventListener("click",() => setTimeout(notify,120),true);
+  if ("ResizeObserver" in window) new ResizeObserver(queue).observe(document.body);
+  queue();
+})();
+</script>
+</body>
+</html>

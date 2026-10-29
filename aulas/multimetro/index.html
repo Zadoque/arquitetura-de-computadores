@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-module="multimetro">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ficha de Medições — Multímetro | Arq. de Computadores</title>
+  <style>
+    :root{
+      --azul:#0A1E46;--azul-medio:#143D80;--azul-claro:#2B6DD4;
+      --dourado:#FFB800;--branco:#F0F5FF;--cinza:#B0BEC5;
+      --verde:#43A047;--vermelho:#E53935;--radius:12px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      background:var(--azul);color:var(--branco);
+      font-family:'Segoe UI',system-ui,sans-serif;
+      min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    }
+    header{
+      width:100%;background:var(--azul-medio);
+      padding:16px 24px;display:flex;align-items:center;gap:16px;
+      border-bottom:3px solid var(--dourado);
+    }
+    header .logo{font-size:2rem;}
+    header h1{font-size:1.1rem;font-weight:700;color:var(--dourado);}
+    header p{font-size:.78rem;color:var(--cinza);}
+    .save-indicator{
+      margin-left:auto;font-size:.72rem;color:var(--verde);
+      display:flex;align-items:center;gap:5px;white-space:nowrap;
+      opacity:0;transition:opacity .4s;
+    }
+    .save-indicator.show{opacity:1;}
+
+    /* STEPPER */
+    .stepper{
+      display:flex;align-items:center;
+      margin:24px auto 0;max-width:780px;width:92%;
+      overflow-x:auto;padding-bottom:4px;
+    }
+    .step-item{display:flex;flex-direction:column;align-items:center;flex:1;min-width:46px;}
+    .step-circle{
+      width:32px;height:32px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:700;font-size:.8rem;
+      background:var(--azul-medio);border:2px solid var(--cinza);
+      color:var(--cinza);transition:.3s;
+    }
+    .step-item.active .step-circle{background:var(--dourado);border-color:var(--dourado);color:var(--azul);}
+    .step-item.done .step-circle{background:var(--verde);border-color:var(--verde);color:#fff;}
+    .step-label{font-size:.6rem;margin-top:4px;color:var(--cinza);text-align:center;white-space:nowrap;}
+    .step-item.active .step-label{color:var(--dourado);}
+    .step-line{flex:1;height:2px;background:var(--cinza);margin-bottom:18px;transition:.3s;}
+    .step-line.done{background:var(--verde);}
+
+    /* CARD */
+    .card{
+      background:var(--azul-medio);border-radius:var(--radius);
+      padding:28px 32px;max-width:780px;width:92%;
+      margin:20px auto 40px;
+      box-shadow:0 8px 32px rgba(0,0,0,.4);
+      animation:fadeIn .3s ease;
+    }
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .card h2{color:var(--dourado);font-size:1.25rem;margin-bottom:4px;}
+    .card .sub{color:var(--cinza);font-size:.82rem;margin-bottom:22px;}
+    label{display:block;margin-bottom:5px;font-size:.82rem;color:var(--cinza);font-weight:600;}
+    input[type=text],input[type=date],input[type=number],textarea,select{
+      width:100%;padding:10px 13px;border-radius:8px;border:1.5px solid #2B4A80;
+      background:#0D2454;color:var(--branco);font-size:.93rem;
+      outline:none;transition:.2s;margin-bottom:14px;
+    }
+    input:focus,textarea:focus{border-color:var(--dourado);}
+    textarea{resize:vertical;}
+    .field-wrap{position:relative;margin-bottom:14px;}
+    .field-wrap input,.field-wrap textarea{margin-bottom:0;}
+    .char-counter{
+      text-align:right;font-size:.72rem;margin-top:3px;
+      color:var(--cinza);transition:.2s;
+    }
+    .char-counter.warn{color:var(--dourado);}
+    .char-counter.over{color:var(--vermelho);}
+
+    /* ALUNOS DINÂMICOS */
+    .aluno-row{
+      display:flex;align-items:center;gap:8px;margin-bottom:10px;
+    }
+    .aluno-row input{margin-bottom:0;flex:1;}
+    .btn-remove-aluno{
+      background:transparent;border:1.5px solid var(--vermelho);
+      color:var(--vermelho);border-radius:6px;width:32px;height:38px;
+      cursor:pointer;font-size:1.1rem;line-height:1;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      transition:.2s;
+    }
+    .btn-remove-aluno:hover{background:rgba(229,57,53,.15);}
+    .btn-add-aluno{
+      display:flex;align-items:center;gap:7px;
+      background:transparent;border:1.5px dashed var(--azul-claro);
+      color:var(--azul-claro);border-radius:8px;
+      padding:9px 16px;font-size:.88rem;font-weight:600;
+      cursor:pointer;width:100%;justify-content:center;
+      margin-top:4px;transition:.2s;
+    }
+    .btn-add-aluno:hover{background:rgba(43,109,212,.12);}
+    .btn-add-aluno:disabled{opacity:.4;cursor:not-allowed;}
+    .aluno-count{
+      font-size:.75rem;color:var(--cinza);text-align:right;
+      margin-top:6px;margin-bottom:14px;
+    }
+
+    /* MEASURE CARD */
+    .measure-info{
+      background:#0D2454;border-radius:8px;padding:12px 16px;
+      margin-bottom:18px;border-left:4px solid var(--dourado);
+    }
+    .measure-info .linha{font-size:1.15rem;font-weight:700;color:var(--dourado);}
+    .measure-info .esperado{font-size:.82rem;color:var(--cinza);margin-top:3px;}
+    .status-badge{
+      display:inline-block;padding:4px 13px;border-radius:20px;
+      font-size:.78rem;font-weight:700;
+    }
+    .status-badge.ok{background:rgba(67,160,71,.18);color:var(--verde);border:1px solid var(--verde);}
+    .status-badge.fail{background:rgba(229,57,53,.18);color:var(--vermelho);border:1px solid var(--vermelho);}
+    .status-badge.wait{background:rgba(176,190,197,.1);color:var(--cinza);border:1px solid #2B4A80;}
+    #auto-status{margin-bottom:12px;min-height:26px;}
+
+    /* PROGRESS */
+    .progress-bar{width:100%;height:4px;background:#0D2454;border-radius:4px;margin-bottom:20px;overflow:hidden;}
+    .progress-fill{height:100%;background:var(--dourado);transition:width .4s ease;border-radius:4px;}
+
+    /* BUTTONS */
+    .btn-row{display:flex;gap:10px;justify-content:flex-end;margin-top:6px;}
+    button{padding:10px 26px;border-radius:8px;border:none;cursor:pointer;font-size:.92rem;font-weight:700;transition:.2s;}
+    .btn-primary{background:var(--dourado);color:var(--azul);}
+    .btn-primary:hover{background:#ffc933;}
+    .btn-secondary{background:transparent;color:var(--cinza);border:1.5px solid var(--cinza);}
+    .btn-secondary:hover{border-color:var(--branco);color:var(--branco);}
+    .btn-danger{background:transparent;color:var(--vermelho);border:1.5px solid var(--vermelho);font-size:.82rem;padding:7px 14px;}
+    .btn-danger:hover{background:rgba(229,57,53,.12);}
+    .btn-latex{
+      background:linear-gradient(135deg,#2B6DD4,#143D80);
+      color:#fff;padding:14px 32px;font-size:1rem;
+      border-radius:10px;width:100%;margin-top:10px;
+      box-shadow:0 4px 16px rgba(43,109,212,.4);
+    }
+    .btn-latex:hover{transform:translateY(-1px);}
+
+    /* SUMMARY */
+    .summary-table{width:100%;border-collapse:collapse;margin:12px 0;}
+    .summary-table th{background:var(--azul);padding:9px 11px;font-size:.78rem;color:var(--dourado);text-align:left;}
+    .summary-table td{padding:8px 11px;font-size:.83rem;border-bottom:1px solid #1A3A6B;}
+    .summary-table tr:hover td{background:rgba(255,255,255,.04);}
+
+    /* RESET BANNER */
+    .reset-row{display:flex;justify-content:flex-end;margin-bottom:10px;}
+
+    /* MODAL */
+    .modal-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.78);
+      display:flex;align-items:center;justify-content:center;
+      z-index:999;animation:fadeIn .2s;
+    }
+    .modal{
+      background:var(--azul-medio);border-radius:var(--radius);
+      padding:28px 30px;max-width:580px;width:92%;
+      border-top:4px solid var(--dourado);max-height:90vh;overflow-y:auto;
+    }
+    .modal h3{color:var(--dourado);font-size:1.15rem;margin-bottom:14px;}
+    .modal ol{padding-left:18px;line-height:2.1;}
+    .modal ol li{margin-bottom:4px;font-size:.9rem;}
+    .modal .highlight{
+      background:#0D2454;border-radius:8px;padding:11px 14px;
+      font-size:.82rem;color:var(--cinza);margin:12px 0;
+      border-left:3px solid var(--dourado);
+    }
+    .modal .btn-row{margin-top:16px;}
+    kbd{
+      background:#0D2454;border:1px solid #2B4A80;
+      border-radius:4px;padding:1px 6px;font-family:monospace;font-size:.85em;
+    }
+    footer{text-align:center;padding:16px;color:var(--cinza);font-size:.72rem;border-top:1px solid #1A3A6B;width:100%;}
+  </style>
+  <link rel="stylesheet" href="../../assets/lesson-theme.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">⚡</div>
+  <div>
+    <h1>Ficha de Medições — Multímetro Digital</h1>
+    <p>INF01112 · Arquitetura de Computadores · UENF — CCT · Prof. Dr. Luis Ramirez</p>
+  </div>
+  <div class="save-indicator" id="save-indicator">💾 Salvo</div>
+</header>
+
+<div class="stepper" id="stepper"></div>
+<div class="card" id="card-container"></div>
+
+<footer>Desenvolvido para a disciplina INF01112 — UENF · zadoque.github.io/multimetro</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" style="display:none">
+  <div class="modal">
+    <h3>✅ Código LaTeX gerado e copiado!</h3>
+    <p style="color:var(--cinza);margin-bottom:14px;font-size:.9rem;">Siga os passos para gerar o PDF e enviar ao professor:</p>
+    <ol>
+      <li>Acesse <strong style="color:var(--dourado)">texpage.com</strong> no seu navegador</li>
+      <li>Crie ou logue na sua conta</li>
+      <li>Clique em <strong>"New Project"</strong> → <strong>"Blank Project"</strong></li>
+      <li>Apague todo o conteúdo do arquivo <strong>main.tex</strong></li>
+      <li>Cole o código copiado (<kbd>Ctrl+V</kbd> ou <kbd>⌘+V</kbd>)</li>
+      <li>Clique em <strong>"Compile"</strong> e aguarde o PDF</li>
+      <li>Clique em <strong>"Download PDF"</strong></li>
+      <li>Envie o PDF ao professor <strong style="color:var(--dourado)">luis.ramirez@uenf.br</strong></li>
+    </ol>
+    <div class="highlight">
+      💡 O código LaTeX está na sua área de transferência. Use o botão abaixo se precisar copiar novamente.
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="copyAgain(this)">📋 Copiar novamente</button>
+      <button class="btn-primary" onclick="closeModal()">Entendi!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONSTANTES ───────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'multimetro_ficha_v2';
+const MAX_ALUNOS   = 8;
+const MAX_OBS      = 50;
+const MAX_CONCLUSAO = 2000;
+
+const MEASUREMENTS = [
+  {id:'v12',  label:'+12V',      unit:'V', min:11.4, max:12.6,  minOnly:false, desc:'Linha +12V — fio amarelo'},
+  {id:'v5',   label:'+5V',       unit:'V', min:4.75, max:5.25,  minOnly:false, desc:'Linha +5V — fio vermelho'},
+  {id:'v33',  label:'+3,3V',     unit:'V', min:3.14, max:3.47,  minOnly:false, desc:'Linha +3,3V — fio laranja'},
+  {id:'v5sb', label:'+5VSB',     unit:'V', min:4.75, max:5.25,  minOnly:false, desc:'Linha standby — fio roxo'},
+  {id:'cmos', label:'Bat. CMOS', unit:'V', min:2.5,  max:null,  minOnly:true,  desc:'Bateria CR2032 da placa-mãe'},
+  {id:'sata', label:'Cabo SATA', unit:'Ω', min:0,    max:2,     minOnly:false, desc:'Continuidade do cabo SATA'},
+];
+const TOTAL_STEPS = 2 + MEASUREMENTS.length + 1;
+const STEP_LABELS = ['Grupo','Fonte',...MEASUREMENTS.map(m=>m.label),'Conclusão'];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let currentStep = 0;
+let formData = {
+  alunos:[''],
+  data:'',
+  modelo:'',
+  measures:{},
+  conclusao:''
+};
+let latexCode = '';
+let saveTimer = null;
+
+// ─── STORAGE ──────────────────────────────────────────────────────────────────
+function loadFromStorage(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const saved = JSON.parse(raw);
+    if(saved.alunos && Array.isArray(saved.alunos)) formData.alunos = saved.alunos;
+    if(saved.data)      formData.data     = saved.data;
+    if(saved.modelo)    formData.modelo   = saved.modelo;
+    if(saved.measures)  formData.measures = saved.measures;
+    if(saved.conclusao) formData.conclusao = saved.conclusao;
+    if(saved.step !== undefined) currentStep = saved.step;
+  } catch(e){ /* ignore */ }
+}
+
+function saveToStorage(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({...formData, step:currentStep}));
+      const ind = document.getElementById('save-indicator');
+      if(ind){ind.classList.add('show'); setTimeout(()=>ind.classList.remove('show'),1800);}
+    } catch(e){}
+  }, 600);
+}
+
+function resetAll(){
+  if(!confirm('Tem certeza que deseja apagar todos os dados e reiniciar?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  formData = {alunos:[''],data:'',modelo:'',measures:{},conclusao:''};
+  currentStep = 0;
+  render();
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function getTodayISO(){ return new Date().toISOString().split('T')[0]; }
+function getTodayFormatted(){
+  return new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+}
+function formatDate(iso){
+  if(!iso) return getTodayFormatted();
+  const [y,m,d]=iso.split('-');
+  const months=['janeiro','fevereiro','março','abril','maio','junho',
+                'julho','agosto','setembro','outubro','novembro','dezembro'];
+  return `${parseInt(d)} de ${months[parseInt(m)-1]} de ${y}`;
+}
+
+// ─── CHAR COUNTER ─────────────────────────────────────────────────────────────
+function makeCounter(inputId, counterId, max){
+  const inp = document.getElementById(inputId);
+  const cnt = document.getElementById(counterId);
+  if(!inp||!cnt) return;
+  function update(){
+    const len = inp.value.length;
+    cnt.textContent = `${len}/${max}`;
+    cnt.className = 'char-counter' + (len>=max?' over':len>=max*0.85?' warn':'');
+  }
+  inp.addEventListener('input', update);
+  update();
+}
+
+// ─── STEPPER ──────────────────────────────────────────────────────────────────
+function buildStepper(){
+  const el = document.getElementById('stepper');
+  el.innerHTML='';
+  STEP_LABELS.forEach((lbl,i)=>{
+    const item = document.createElement('div');
+    item.className='step-item'+(i===currentStep?' active':i<currentStep?' done':'');
+    item.innerHTML=`<div class="step-circle">${i<currentStep?'✓':(i+1)}</div><div class="step-label">${lbl}</div>`;
+    el.appendChild(item);
+    if(i<STEP_LABELS.length-1){
+      const line=document.createElement('div');
+      line.className='step-line'+(i<currentStep?' done':'');
+      el.appendChild(line);
+    }
+  });
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render(){
+  buildStepper();
+  const card = document.getElementById('card-container');
+  const pct  = Math.round((currentStep/(TOTAL_STEPS-1))*100);
+  let html = `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
+  html += `<div class="reset-row"><button class="btn-danger" onclick="resetAll()">🗑 Reiniciar tudo</button></div>`;
+
+  if     (currentStep===0)              html += renderGroupStep();
+  else if(currentStep===1)              html += renderSourceStep();
+  else if(currentStep>=2&&currentStep<=7) html += renderMeasureStep(currentStep-2);
+  else                                  html += renderConclusionStep();
+
+  card.innerHTML = html;
+  card.scrollIntoView({behavior:'smooth',block:'nearest'});
+  bindStepEvents();
+}
+
+// ─── STEP 0: GRUPO ───────────────────────────────────────────────────────────
+function renderGroupStep(){
+  const alunos = formData.alunos.length>0 ? formData.alunos : [''];
+  let rows = alunos.map((a,i)=>`
+    <div class="aluno-row" id="aluno-row-${i}">
+      <input type="text" id="aluno-${i}" value="${escHtml(a)}"
+             placeholder="Nome completo do aluno ${i+1}" maxlength="80"/>
+      ${i>0?`<button class="btn-remove-aluno" onclick="removeAluno(${i})" title="Remover">×</button>`:'<span style="width:32px"></span>'}
+    </div>`).join('');
+
+  const canAdd = alunos.length < MAX_ALUNOS;
+  return `
+    <h2>👥 Identificação do Grupo</h2>
+    <p class="sub">Informe os nomes dos alunos participantes e a data da aula.</p>
+    <label>Alunos do grupo *</label>
+    <div id="alunos-container">${rows}</div>
+    <p class="aluno-count" id="aluno-count">${alunos.length}/${MAX_ALUNOS} aluno(s)</p>
+    <button class="btn-add-aluno" id="btn-add" onclick="addAluno()" ${canAdd?'':'disabled'}>
+      ＋ Adicionar aluno
+    </button>
+    <label style="margin-top:16px">Data</label>
+    <input type="date" id="data-input" value="${formData.data||getTodayISO()}"/>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="nextStep()">Próximo →</button>
+    </div>`;
+}
+
+function addAluno(){
+  saveCurrentStep(true);
+  if(formData.alunos.length>=MAX_ALUNOS) return;
+  formData.alunos.push('');
+  saveToStorage();
+  render();
+  // focus last input
+  setTimeout(()=>{
+    const last = document.getElementById(`aluno-${formData.alunos.length-1}`);
+    if(last) last.focus();
+  },100);
+}
+
+function removeAluno(i){
+  saveCurrentStep(true);
+  formData.alunos.splice(i,1);
+  if(formData.alunos.length===0) formData.alunos=[''];
+  saveToStorage();
+  render();
+}
+
+// ─── STEP 1: FONTE ────────────────────────────────────────────────────────────
+function renderSourceStep(){
+  return `
+    <h2>🔌 Modelo da Fonte ATX</h2>
+    <p class="sub">Identifique a fonte que será testada na bancada.</p>
+    <label>Modelo / fabricante da fonte *</label>
+    <input type="text" id="modelo-input" value="${escHtml(formData.modelo)}"
+           placeholder="Ex: Corsair CX550, EVGA 600W, genérica..."/>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="prevStep()">← Voltar</button>
+      <button class="btn-primary"   onclick="nextStep()">Próximo →</button>
+    </div>`;
+}
+
+// ─── STEP 2–7: MEDIÇÕES ───────────────────────────────────────────────────────
+function renderMeasureStep(idx){
+  const m   = MEASUREMENTS[idx];
+  const saved = formData.measures[m.id]||{};
+  const rangeText = m.minOnly ? `≥ ${m.min} ${m.unit}` : `${m.min} – ${m.max} ${m.unit}`;
+  return `
+    <h2>🔬 Medição ${idx+1}/6 — ${m.label}</h2>
+    <p class="sub">${m.desc}</p>
+    <div class="measure-info">
+      <div class="linha">${m.label}</div>
+      <div class="esperado">Valor esperado: <strong>${rangeText}</strong></div>
+    </div>
+    <label>Valor medido (${m.unit}) *</label>
+    <input type="number" id="measure-input" step="0.01"
+           value="${saved.value!==undefined?saved.value:''}"
+           placeholder="Digite o valor lido no display"/>
+    <div id="auto-status"><span class="status-badge wait">Aguardando medição...</span></div>
+    <label>Observações <span style="color:var(--cinza);font-weight:400">(máx. ${MAX_OBS} caracteres)</span></label>
+    <div class="field-wrap">
+      <input type="text" id="obs-input" maxlength="${MAX_OBS}"
+             value="${escHtml(saved.obs||'')}"
+             placeholder="Ex: oscilação, fio suspeito..."/>
+      <div class="char-counter" id="obs-counter">0/${MAX_OBS}</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="prevStep()">← Voltar</button>
+      <button class="btn-primary"   onclick="nextStep()">Próximo →</button>
+    </div>`;
+}
+
+// ─── STEP 8: CONCLUSÃO ───────────────────────────────────────────────────────
+function renderConclusionStep(){
+  return `
+    <h2>📋 Resumo e Conclusão</h2>
+    <p class="sub">Confira os valores registrados e escreva a conclusão do grupo.</p>
+    <div id="summary-area"></div>
+    <label style="margin-top:4px">Conclusão do Grupo *
+      <span style="color:var(--cinza);font-weight:400">(máx. ${MAX_CONCLUSAO} caracteres)</span>
+    </label>
+    <div class="field-wrap">
+      <textarea id="conclusao-input" rows="6" maxlength="${MAX_CONCLUSAO}"
+                placeholder="Descreva se a fonte está aprovada ou reprovada e justifique com base nos valores medidos...">${escHtml(formData.conclusao)}</textarea>
+      <div class="char-counter" id="conclusao-counter">0/${MAX_CONCLUSAO}</div>
+    </div>
+    <div class="btn-row" style="margin-bottom:8px">
+      <button class="btn-secondary" onclick="prevStep()">← Voltar</button>
+    </div>
+    <button class="btn-latex" onclick="generateLatex()">📄 Gerar Código LaTeX (Relatório PDF)</button>`;
+}
+
+function renderSummaryTable(){
+  const area = document.getElementById('summary-area');
+  if(!area) return;
+  let rows = MEASUREMENTS.map(m=>{
+    const d=formData.measures[m.id]||{};
+    const v=d.value!==undefined&&d.value!==''?`${d.value} ${m.unit}`:'—';
+    const badge=d.status==='ok'
+      ?'<span class="status-badge ok">✓ Aprovado</span>'
+      :d.status==='fail'
+        ?'<span class="status-badge fail">✗ Reprovado</span>'
+        :'<span class="status-badge wait">Não medido</span>';
+    return `<tr><td><strong>${m.label}</strong></td><td>${v}</td><td>${badge}</td></tr>`;
+  }).join('');
+  area.innerHTML=`
+    <table class="summary-table">
+      <thead><tr><th>Linha</th><th>Valor Medido</th><th>Status</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ─── BIND EVENTS ─────────────────────────────────────────────────────────────
+function bindStepEvents(){
+  if(currentStep>=2&&currentStep<=7){
+    const m  = MEASUREMENTS[currentStep-2];
+    const inp= document.getElementById('measure-input');
+    if(inp){
+      updateAutoStatus(m, inp.value);
+      inp.addEventListener('input',()=>updateAutoStatus(m,inp.value));
+    }
+    makeCounter('obs-input','obs-counter',MAX_OBS);
+    const obsInp = document.getElementById('obs-input');
+    if(obsInp) obsInp.addEventListener('input', ()=>autoSaveMeasure(m));
+    if(inp)    inp.addEventListener('input',    ()=>autoSaveMeasure(m));
+  }
+  if(currentStep===TOTAL_STEPS-1){
+    renderSummaryTable();
+    makeCounter('conclusao-input','conclusao-counter',MAX_CONCLUSAO);
+    const cin = document.getElementById('conclusao-input');
+    if(cin) cin.addEventListener('input',()=>{
+      formData.conclusao = cin.value;
+      saveToStorage();
+    });
+  }
+  // auto-save group fields
+  if(currentStep===0){
+    document.querySelectorAll('input[id^="aluno-"]').forEach(inp=>{
+      inp.addEventListener('input',()=>{
+        const i=parseInt(inp.id.split('-')[1]);
+        formData.alunos[i]=inp.value;
+        saveToStorage();
+      });
+    });
+    const di=document.getElementById('data-input');
+    if(di) di.addEventListener('change',()=>{formData.data=di.value;saveToStorage();});
+  }
+  if(currentStep===1){
+    const mi=document.getElementById('modelo-input');
+    if(mi) mi.addEventListener('input',()=>{formData.modelo=mi.value;saveToStorage();});
+  }
+}
+
+function autoSaveMeasure(m){
+  const v  = (document.getElementById('measure-input')||{}).value;
+  const obs= (document.getElementById('obs-input')||{}).value||'';
+  let status='wait';
+  if(v!==''){
+    const num=parseFloat(v);
+    status=(!isNaN(num)&&(m.minOnly?num>=m.min:num>=m.min&&num<=m.max))?'ok':'fail';
+  }
+  formData.measures[m.id]={value:v,status,obs};
+  saveToStorage();
+}
+
+function updateAutoStatus(m, rawVal){
+  const el=document.getElementById('auto-status');
+  if(!el) return;
+  if(rawVal===''||rawVal===null||rawVal===undefined){
+    el.innerHTML='<span class="status-badge wait">Aguardando medição...</span>';return;
+  }
+  const v=parseFloat(rawVal);
+  if(isNaN(v)){el.innerHTML='<span class="status-badge wait">Valor inválido</span>';return;}
+  const ok=m.minOnly?v>=m.min:v>=m.min&&v<=m.max;
+  el.innerHTML=ok
+    ?'<span class="status-badge ok">✓ Dentro da faixa — Aprovado</span>'
+    :'<span class="status-badge fail">✗ Fora da faixa — Reprovado</span>';
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+function nextStep(){
+  if(!saveCurrentStep()) return;
+  if(currentStep<TOTAL_STEPS-1){currentStep++;saveToStorage();render();}
+}
+function prevStep(){
+  saveCurrentStep(true);
+  if(currentStep>0){currentStep--;saveToStorage();render();}
+}
+
+function saveCurrentStep(silent=false){
+  if(currentStep===0){
+    const a0=(document.getElementById('aluno-0')||{}).value||'';
+    if(!a0.trim()&&!silent){alert('Informe ao menos o nome do Aluno 1.');return false;}
+    formData.alunos=[];
+    document.querySelectorAll('input[id^="aluno-"]').forEach(inp=>{
+      formData.alunos.push(inp.value.trim());
+    });
+    formData.alunos=formData.alunos.filter(a=>a!==''||(formData.alunos.indexOf(a)===0));
+    if(formData.alunos.length===0) formData.alunos=[''];
+    formData.data=(document.getElementById('data-input')||{}).value||getTodayISO();
+  } else if(currentStep===1){
+    const mod=(document.getElementById('modelo-input')||{}).value||'';
+    if(!mod.trim()&&!silent){alert('Informe o modelo da fonte.');return false;}
+    formData.modelo=mod;
+  } else if(currentStep>=2&&currentStep<=7){
+    const m=MEASUREMENTS[currentStep-2];
+    const v=(document.getElementById('measure-input')||{}).value;
+    const obs=(document.getElementById('obs-input')||{}).value||'';
+    if(v===''&&!silent){alert('Insira o valor medido antes de continuar.');return false;}
+    let status='wait';
+    if(v!==''){
+      const num=parseFloat(v);
+      status=(!isNaN(num)&&(m.minOnly?num>=m.min:num>=m.min&&num<=m.max))?'ok':'fail';
+    }
+    formData.measures[m.id]={value:v,status,obs};
+  } else {
+    const c=(document.getElementById('conclusao-input')||{}).value||'';
+    if(!c.trim()&&!silent){alert('Escreva a conclusão do grupo.');return false;}
+    formData.conclusao=c;
+  }
+  saveToStorage();
+  return true;
+}
+
+// ─── ESCAPE HELPERS ───────────────────────────────────────────────────────────
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escLtx(s){
+  return String(s||'')
+    .replace(/\\/g,'\\textbackslash{}')
+    .replace(/&/g,'\\&').replace(/%/g,'\\%').replace(/\$/g,'\\$')
+    .replace(/#/g,'\\#').replace(/_/g,'\\_').replace(/\{/g,'\\{').replace(/\}/g,'\\}')
+    .replace(/~/g,'\\textasciitilde{}').replace(/\^/g,'\\textasciicircum{}')
+    .replace(/</g,'\\textless{}').replace(/>/g,'\\textgreater{}');
+}
+
+// ─── LATEX ────────────────────────────────────────────────────────────────────
+function generateLatex(){
+  saveCurrentStep(true);
+  formData.conclusao=(document.getElementById('conclusao-input')||{}).value||formData.conclusao||'';
+  if(!formData.conclusao.trim()){alert('Escreva a conclusão antes de gerar o relatório.');return;}
+
+  const alunos=formData.alunos.filter(a=>a.trim()!=='');
+  const dateStr=formatDate(formData.data);
+
+  let tableRows='';
+  MEASUREMENTS.forEach(m=>{
+    const d=formData.measures[m.id]||{};
+    const v=d.value!==undefined&&d.value!==''?`${d.value} ${m.unit==='Ω'?'$\\Omega$':m.unit}`:'---';
+    const rangeText=m.minOnly
+      ?`$\\geq$ ${m.min}\\,${m.unit==='Ω'?'$\\Omega$':m.unit}`
+      :`${m.min}\\,--\\,${m.max}\\,${m.unit==='Ω'?'$\\Omega$':m.unit}`;
+    const statusTex=d.status==='ok'
+      ?'\\textcolor{verde}{\\textbf{Aprovado}}'
+      :d.status==='fail'
+        ?'\\textcolor{vermelho}{\\textbf{Reprovado}}'
+        :'\\textcolor{gray}{N/A}';
+    const obs=escLtx(d.obs||'---');
+    tableRows+=`    ${escLtx(m.label)} & ${rangeText} & ${v} & ${statusTex} & ${obs} \\\\\n    \\hline\n`;
+  });
+
+  const alunosTabela=alunos.map(a=>escLtx(a)).join(' \\\\\n    & ');
+  const conclusaoEsc=escLtx(formData.conclusao).replace(/\n/g,'\n\n');
+  const numAlunos=alunos.length;
+  const colSpec='p{'+(numAlunos>1?Math.min(13,Math.floor(13/numAlunos))+'cm':'8cm')+'}';
+  const assinaturas=alunos.map(a=>`  \\centering \\rule{5.2cm}{0.4pt} \\\\ \\small ${escLtx(a)}`).join('\n  &\n');
+
+  latexCode=`\\documentclass[12pt,a4paper]{article}
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage[brazil]{babel}
+\\usepackage[top=2.5cm,bottom=2.5cm,left=3cm,right=2.5cm]{geometry}
+\\usepackage{booktabs}
+\\usepackage{array}
+\\usepackage{xcolor}
+\\usepackage{colortbl}
+\\usepackage{fancyhdr}
+\\usepackage{hyperref}
+\\usepackage{setspace}
+\\usepackage{parskip}
+
+\\definecolor{azul}{RGB}{10,30,70}
+\\definecolor{azulclaro}{RGB}{43,109,212}
+\\definecolor{dourado}{RGB}{255,184,0}
+\\definecolor{verde}{RGB}{43,160,71}
+\\definecolor{vermelho}{RGB}{229,57,53}
+\\definecolor{cinza}{RGB}{100,110,130}
+
+\\pagestyle{fancy}
+\\fancyhf{}
+\\fancyhead[L]{\\small\\textcolor{cinza}{INF01112 -- Arquitetura de Computadores -- UENF}}
+\\fancyhead[R]{\\small\\textcolor{cinza}{${escLtx(dateStr)}}}
+\\fancyfoot[C]{\\small\\thepage}
+\\renewcommand{\\headrulewidth}{0.4pt}
+\\hypersetup{colorlinks=true,linkcolor=azulclaro,urlcolor=azulclaro}
+
+\\begin{document}
+
+% ── CAPA ──────────────────────────────────────────────────────────────────────
+\\begin{titlepage}
+  \\centering
+  {\\large\\textbf{Universidade Estadual do Norte Fluminense Darcy Ribeiro}}\\\\[4pt]
+  {\\large Centro de Ci\\^encias e Tecnologia}\\\\[4pt]
+  {\\large Laborat\\'orio de Ci\\^encias Matem\\'aticas}\\\\[48pt]
+  {\\large Disciplina: INF01112 -- Arquitetura de Computadores}\\\\[64pt]
+  {\\Huge\\bfseries\\color{azul} Relat\\'orio de Medi\\c{c}\\~oes}\\\\[12pt]
+  {\\LARGE\\color{azulclaro} Diagn\\'ostico com Mult\\'imetro Digital}\\\\[52pt]
+  \\begin{tabular}{rl}
+    \\textbf{Orientador:} & Prof. Dr. Luis Ramirez \\\\[8pt]
+    \\textbf{Aluno(s):}   & ${alunosTabela} \\\\[8pt]
+    \\textbf{Modelo da Fonte:} & ${escLtx(formData.modelo)} \\\\[8pt]
+    \\textbf{Data:}        & ${escLtx(dateStr)} \\\\
+  \\end{tabular}\\\\[64pt]
+  {\\small\\color{cinza} Campos dos Goytacazes, RJ}
+\\end{titlepage}
+
+% ── OBJETIVO ──────────────────────────────────────────────────────────────────
+\\section{Objetivo}
+\\onehalfspacing
+Este relat\\'orio apresenta os resultados das medi\\c{c}\\~oes realizadas com
+mult\\'imetro digital durante a aula pr\\'atica da disciplina de Arquitetura de
+Computadores. O objetivo \\'{e} verificar a integridade el\\'etrica dos principais
+componentes de um computador pessoal, com foco na fonte de alimenta\\c{c}\\~ao
+ATX modelo \\textbf{${escLtx(formData.modelo)}}, bateria CMOS e cabos SATA,
+correlacionando os resultados com os conceitos te\\'oricos de organiza\\c{c}\\~ao
+de hardware estudados na disciplina.
+
+% ── MATERIAIS ─────────────────────────────────────────────────────────────────
+\\section{Materiais Utilizados}
+\\begin{itemize}
+  \\item Mult\\'imetro digital MAS830L (CAT~II 500\\,V)
+  \\item Fonte de alimenta\\c{c}\\~ao ATX -- ${escLtx(formData.modelo)}
+  \\item Bateria CMOS CR2032
+  \\item Cabo SATA (dados/alimenta\\c{c}\\~ao)
+  \\item Ficha digital de registro de medi\\c{c}\\~oes (\\url{zadoque.github.io/multimetro})
+\\end{itemize}
+
+% ── RESULTADOS ────────────────────────────────────────────────────────────────
+\\section{Resultados das Medi\\c{c}\\~oes}
+
+\\begin{table}[htbp]
+  \\centering
+  \\caption{Valores medidos e status de aprova\\c{c}\\~ao -- ${escLtx(dateStr)}}
+  \\vspace{6pt}
+  \\renewcommand{\\arraystretch}{1.35}
+  \\begin{tabular}{|l|c|c|c|p{3cm}|}
+    \\hline
+    \\rowcolor{azul}
+    \\textcolor{white}{\\textbf{Linha}} &
+    \\textcolor{white}{\\textbf{Faixa Esperada}} &
+    \\textcolor{white}{\\textbf{Valor Medido}} &
+    \\textcolor{white}{\\textbf{Status}} &
+    \\textcolor{white}{\\textbf{Observa\\c{c}\\~oes}} \\\\
+    \\hline
+${tableRows}  \\end{tabular}
+  \\label{tab:medicoes}
+\\end{table}
+
+% ── CONCLUSÃO ─────────────────────────────────────────────────────────────────
+\\section{Conclus\\~ao}
+${conclusaoEsc}
+
+% ── ASSINATURAS ───────────────────────────────────────────────────────────────
+\\vspace{2.5cm}
+\\begin{center}
+  \\begin{tabular}{${Array(numAlunos).fill(colSpec).join('  ')}}
+${assinaturas} \\\\
+  \\end{tabular}
+\\end{center}
+
+\\end{document}`;
+
+  navigator.clipboard.writeText(latexCode)
+    .finally(()=>{
+      document.getElementById('modal').style.display='flex';
+    });
+}
+
+function copyAgain(btn){
+  navigator.clipboard.writeText(latexCode);
+  const orig=btn.textContent;
+  btn.textContent='✓ Copiado!';
+  setTimeout(()=>btn.textContent=orig,2000);
+}
+function closeModal(){
+  document.getElementById('modal').style.display='none';
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+loadFromStorage();
+render();
+</script>
+
+<script>
+/* Integração não invasiva: comunica altura e mudanças ao portal.
+   Todas as respostas continuam a ser salvas pelas funções originais. */
+(() => {
+  if (window.parent === window) return;
+  let task;
+  const tell = () => {
+    const height = Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight || 0);
+    window.parent.postMessage({type:"adc:resize",height},window.location.origin);
+  };
+  const notify = () => {
+    window.parent.postMessage({type:"adc:progress"},window.location.origin);
+    clearTimeout(task);
+    task = setTimeout(tell,100);
+  };
+  const queue = () => requestAnimationFrame(tell);
+  window.addEventListener("load",queue);
+  window.addEventListener("resize",queue);
+  document.addEventListener("input",notify,true);
+  document.addEventListener("change",notify,true);
+  document.addEventListener("click",() => setTimeout(notify,120),true);
+  if ("ResizeObserver" in window) new ResizeObserver(queue).observe(document.body);
+  queue();
+})();
+</script>
+</body>
+</html>
