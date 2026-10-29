@@ -97,7 +97,7 @@ Os dados são isolados por **origem** (`protocolo + domínio + porta`), não pel
 
 ### Privacidade
 
-O site não implementa API, login, analytics, cookies de rastreamento ou upload de respostas. O navegador guarda os formulários no próprio dispositivo. A apresentação teórica pode carregar **recursos públicos de terceiros** (biblioteca de ícones Lucide) e três imagens originais referenciadas no repositório público `aula4`; esses recursos requerem conexão de rede e suas requisições seguem as políticas dos respectivos provedores.
+O site não implementa API, login, analytics, cookies de rastreamento ou upload de respostas. O navegador guarda os formulários no próprio dispositivo. A apresentação teórica pode carregar **recursos públicos de terceiros** (biblioteca de ícones Lucide) e três imagens originais copiadas para a pasta local `aulas/aula4-slides/`; esses recursos requerem conexão de rede e suas requisições seguem as políticas dos respectivos provedores.
 
 ## Layout e acessibilidade
 
