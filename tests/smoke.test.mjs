@@ -62,7 +62,8 @@ test("catálogo de rotas e lista de chaves cobrem as cinco entradas", () => {
 test("slides usam imagens HTTPS explícitas e fallback para ícones", () => {
  const slides = read("aulas/aula4-slides/index.html");
  for(const image of ["img_hd_interno.webp","img_nand.jpg","frame.png"]){
-  assert.ok(slides.includes("https://raw.githubusercontent.com/Zadoque/aula4/main/"+image));
+  assert.ok(slides.includes('src="./'+image+'"'));
+  assert.ok(existsSync(new URL("../aulas/aula4-slides/"+image, import.meta.url)));
  }
  assert.ok(slides.includes("if (window.lucide) lucide.createIcons()"));
 });
