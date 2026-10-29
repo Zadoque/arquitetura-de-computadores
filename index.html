@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#123567">
+  <meta name="description" content="Portal mobile-first das aulas e laboratórios de Arquitetura de Computadores — UENF, com relatórios salvos localmente.">
+  <title>Arquitetura de Computadores | UENF</title>
+  <link rel="stylesheet" href="./assets/site.css">
+  <script src="./assets/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Pular para o conteúdo</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#/" aria-label="Arquitetura de Computadores — página inicial">
+        <span class="brand-symbol" aria-hidden="true">AC</span>
+        <span class="brand-text"><strong>Arquitetura de Computadores</strong><small>UENF · INF01112</small></span>
+      </a>
+      <span class="topbar-detail">Portal de aulas <span aria-hidden="true">·</span> 2026</span>
+    </div>
+  </header>
+
+  <div class="app-grid">
+    <aside class="sidebar" aria-label="Menu de aulas">
+      <div class="sidebar-title">Navegação <span>5 materiais</span></div>
+      <nav id="lesson-nav" class="lesson-nav" aria-label="Escolha uma aula">
+        <a class="nav-link" href="#/">Início</a>
+      </nav>
+      <p class="sidebar-hint">As respostas ficam apenas neste navegador.</p>
+    </aside>
+
+    <main id="main" class="workspace" tabindex="-1">
+      <section id="home-view" class="home-view">
+        <div class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Laboratórios e conteúdo teórico</p>
+            <h1>Uma disciplina.<br><span>Todas as aulas.</span></h1>
+            <p>Consulte o material, execute as atividades práticas e continue seus relatórios do ponto em que parou, no celular ou no computador.</p>
+          </div>
+          <div class="hero-visual" aria-hidden="true"><span class="chip-main">CPU</span><span class="chip-label chip-a">RAM</span><span class="chip-label chip-b">BIOS</span><span class="chip-label chip-c">SSD</span><span class="chip-label chip-d">ATX</span></div>
+        </div>
+
+        <div class="section-heading"><div><p class="eyebrow">Sua jornada</p><h2>Escolha uma aula</h2></div><span class="section-meta">4 formulários + 1 apresentação</span></div>
+        <div id="lesson-cards" class="lesson-cards"></div>
+
+        <section class="data-panel" aria-labelledby="data-title">
+          <div class="data-panel-copy">
+            <div class="data-panel-icon" aria-hidden="true">↧</div>
+            <div><h2 id="data-title">Seus relatórios, seus dados</h2>
+              <p>O preenchimento é salvo automaticamente no <code>localStorage</code> deste navegador. Exporte um backup antes de limpar dados ou trocar de aparelho.</p></div>
+          </div>
+          <div class="data-actions">
+            <button class="button button-primary" id="backup-export" type="button">Exportar backup (.json)</button>
+            <button class="button button-outline" id="backup-import" type="button">Importar backup</button>
+            <input id="backup-file" type="file" accept=".json,application/json" hidden aria-label="Selecionar arquivo JSON de backup">
+          </div>
+          <p class="data-footnote">Privacidade: nenhuma resposta é enviada ao GitHub. Fotos e respostas podem aumentar o tamanho do backup. O salvamento não sincroniza entre dispositivos.</p>
+        </section>
+      </section>
+
+      <section id="lesson-view" class="lesson-view" hidden aria-labelledby="lesson-title">
+        <div class="lesson-heading">
+          <div class="lesson-heading-copy">
+            <a class="back-home" href="#/">← Todas as aulas</a>
+            <p class="eyebrow" id="lesson-category">Laboratório</p>
+            <h1 id="lesson-title">Aula</h1>
+            <p id="lesson-description"></p>
+          </div>
+          <div class="lesson-actions">
+            <span id="lesson-state" class="state-pill">Sem dados salvos</span>
+            <a class="button button-outline button-small" id="lesson-open" href="#" target="_blank" rel="noopener">Abrir separadamente ↗</a>
+          </div>
+        </div>
+        <div class="lesson-frame-shell">
+          <iframe id="lesson-frame" title="Material da aula" loading="eager" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        <p class="lesson-note">O conteúdo acima preserva as etapas, os formulários e os geradores de relatório das aulas originais. Volte ao menu a qualquer momento: suas respostas serão mantidas pelo navegador quando houver espaço disponível.</p>
+      </section>
+    </main>
+  </div>
+  <footer class="site-footer">Universidade Estadual do Norte Fluminense Darcy Ribeiro · CCT · Arquitetura de Computadores</footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">Habilite JavaScript para navegar entre os exercícios. Os arquivos HTML também estão disponíveis na pasta <code>aulas/</code>.</p></noscript>
+</body>
+</html>

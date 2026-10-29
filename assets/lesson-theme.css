@@ -1,0 +1,97 @@
+/* Design system do portal - importado APÓS o CSS de cada aula.
+   Regras conservadoras: preservam formulários, validações, modais e slides. */
+:root{--adc-blue:#1e55ad;--adc-ink:#17304f;--adc-background:#f3f6fb;--adc-border:#dbe4f0;--adc-muted:#62748a}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+img,svg,video,canvas{max-width:100%}
+img{height:auto}
+button,input,textarea,select{font:inherit;max-width:100%}
+button{touch-action:manipulation}
+button:not(:disabled),a,[role="button"]{cursor:pointer}
+input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),textarea,select{min-width:0;font-size:max(16px,1em)}
+a{overflow-wrap:anywhere}
+pre,code,textarea{overflow-wrap:anywhere}
+table{display:block;max-width:100%;overflow-x:auto}
+:focus-visible{outline:3px solid #3c83f6!important;outline-offset:3px!important}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+/* Tokens do tema harmonizam os laboratórios, sem alterar os cálculos e estados JS. */
+html[data-module="multimetro"]{
+ --azul:#f3f6fb;--azul-medio:#ffffff;--dourado:#1e55ad;--branco:#17304f;--cinza:#526a84;--verde:#23815f;--vermelho:#c63844
+}
+html[data-module="multimetro"] body{background:var(--adc-background)}
+html[data-module="multimetro"] header{border-bottom:1px solid var(--adc-border);box-shadow:0 2px 12px #10243a0d}
+html[data-module="multimetro"] .card{box-shadow:0 14px 32px #18325016;border:1px solid var(--adc-border)}
+html[data-module="multimetro"] .modal .highlight,html[data-module="multimetro"] kbd{background:#eaf1ff;color:var(--adc-ink);border-color:var(--adc-border)}
+html[data-module="multimetro"] .summary-table td{border-bottom-color:var(--adc-border)}
+html[data-module="multimetro"] .summary-table tr:hover td{background:#f4f8ff}
+html[data-module="multimetro"] .step-line{background:#dce7f4}
+html[data-module="multimetro"] .btn-primary{background:#1e55ad;color:white}
+html[data-module="multimetro"] .btn-primary:hover{background:#16458d}
+html[data-module="multimetro"] .btn-latex{background:linear-gradient(130deg,#1e55ad,#397ddb);color:white}
+html[data-module="multimetro"] .modal-overlay{background:#16284099}
+html[data-module="montagem"]{
+ --primary:#184d9c;--primary-l:#2f6cbe;--primary-d:#123766;--accent:#1e55ad;--bg:#f3f6fb;--sur:#fff;--surf:#fff;--surf2:#f8faff;--border:#dbe4f0
+}
+html[data-module="montagem"] header{padding-block:16px 20px}
+html[data-module="montagem"] .card,html[data-module="montagem"] .conclusion-card{border:1px solid var(--adc-border)}
+html[data-module="montagem"] main{max-width:850px}
+html[data-module="inicializacao"]{--p:#1e55ad;--pd:#16458d;--pl:#eaf1ff;--plb:#cadaf6;--bg:#f3f6fb;--sur:#fff;--bdr:#dbe4f0}
+html[data-module="inicializacao"] #app{max-width:850px}
+html[data-module="inicializacao"] .nav-inner{max-width:850px}
+html[data-module="inicializacao"] .card{border:1px solid var(--adc-border);box-shadow:0 6px 20px #142e4b0e}
+html[data-module="aula4-relatorio"] body{padding:12px;background:#f3f6fb;display:block}
+html[data-module="aula4-relatorio"] .app-shell{max-width:900px;margin:0 auto;box-shadow:0 14px 32px #132a451c}
+html[data-module="aula4-relatorio"] input:not([type="file"]),html[data-module="aula4-relatorio"] textarea{font-size:16px}
+html[data-module="aula4-relatorio"] .badge{color:#aaccff}
+html[data-module="aula4-slides"] body{
+ background:#0a192f;color:#e2e8f0;height:auto;min-height:0;overflow-x:hidden;overflow-y:auto;width:auto;display:block;padding:0
+}
+html[data-module="aula4-slides"] #mesh-bg,html[data-module="aula4-slides"] #particles-canvas{display:none!important}
+html[data-module="aula4-slides"] #presentation{height:auto;min-height:0;overflow:visible;position:relative;padding:0 0 20px}
+html[data-module="aula4-slides"] .slide{
+ position:relative;inset:auto;width:100%;height:auto;min-height:420px;padding:25px 16px;
+ display:none!important;opacity:1!important;transform:none!important;pointer-events:auto!important;justify-content:flex-start;overflow:visible
+}
+html[data-module="aula4-slides"] .slide.active{display:flex!important}
+html[data-module="aula4-slides"] .slide-title{font-size:clamp(1.6rem,6vw,3.2rem)!important;line-height:1.12}
+html[data-module="aula4-slides"] .slide-subtitle{font-size:clamp(1.15rem,4vw,1.9rem)!important}
+html[data-module="aula4-slides"] .grid-2{grid-template-columns:minmax(0,1fr);gap:16px}
+html[data-module="aula4-slides"] .glass-card{padding:16px}
+html[data-module="aula4-slides"] .styled-list li{font-size:1rem}
+html[data-module="aula4-slides"] #controls{position:sticky;top:0;z-index:150;display:flex;justify-content:flex-end;gap:10px;padding:12px 16px;background:#0a192feF}
+html[data-module="aula4-slides"] .nav-btn,html[data-module="aula4-slides"] #prev-btn,html[data-module="aula4-slides"] #next-btn{position:static;inset:auto;width:44px;height:44px;min-width:44px;flex-shrink:0;border:1px solid #6b87a4}
+html[data-module="aula4-slides"] #slide-counter{position:static;text-align:right;margin:0 16px 5px;font-size:.9rem}
+html[data-module="aula4-slides"] .slide table{display:block;width:100%;overflow-x:auto}
+html[data-module="aula4-slides"] .slide img{object-fit:contain}
+html[data-module="aula4-slides"] #frame-png{width:100%;max-width:680px}
+html[data-module="aula4-slides"] h1,html[data-module="aula4-slides"] h2{overflow-wrap:break-word}
+@media(min-width:720px){
+ html[data-module="aula4-slides"] .slide{padding:36px 42px;min-height:520px}
+ html[data-module="aula4-slides"] .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+ html[data-module="aula4-slides"] .slide{gap:16px}
+ html[data-module="aula4-slides"] .slide [style*="font-size: 4.5rem"],
+ html[data-module="aula4-slides"] .slide [style*="font-size: 2.2rem"]{font-size:clamp(1.3rem,6vw,2rem)!important}
+ html[data-module="aula4-slides"] .slide [style*="padding: 1rem 3rem"]{padding:14px!important}
+ html[data-module="aula4-slides"] .slide [style*="gap: 2rem"]{gap:12px!important}
+ html[data-module="aula4-slides"] .slide .grid-2{grid-template-columns:1fr}
+}
+/* Breakpoints dos módulos: otimização para celulares pequenos. */
+@media(max-width:480px){
+ html[data-module="multimetro"] .card{padding:18px 14px;width:calc(100% - 20px)}
+ html[data-module="multimetro"] header{padding:14px 12px}
+ html[data-module="multimetro"] .stepper{width:calc(100% - 20px)}
+ html[data-module="multimetro"] .aluno-row{flex-wrap:wrap}
+ html[data-module="montagem"] main{padding:12px 10px 40px}
+ html[data-module="montagem"] .students-grid{grid-template-columns:1fr}
+ html[data-module="montagem"] .card{padding:16px 13px}
+ html[data-module="inicializacao"] #app{padding:12px 10px 0}
+ html[data-module="inicializacao"] .card{padding:16px 12px}
+ html[data-module="aula4-relatorio"] body{padding:0}
+ html[data-module="aula4-relatorio"] .app-shell{border-radius:0;padding:14px 10px}
+ html[data-module="aula4-relatorio"] .card{padding:14px 11px}
+}

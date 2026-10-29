@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-module="aula4-slides">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Aula 4 - Arquitetura de Computadores</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* =========================================
+           VARIÁVEIS DE ESTILO
+        ========================================= */
+        :root {
+            --color-bg: #0a192f;
+            --color-primary: #0F3460;
+            --color-secondary: #0078B4;
+            --color-accent: #E67300;
+            --color-success: #27AE60;
+            --color-danger: #B41E1E;
+            --color-warning: #F39C12;
+            --color-text-main: #E2E8F0;
+            --color-text-muted: #94A3B8;
+
+            --font-display: 'Rajdhani', sans-serif;
+            --font-body: 'Inter', sans-serif;
+
+            --glass-bg: rgba(15, 52, 96, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.1);
+
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* =========================================
+           RESET E BASE
+        ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg);
+            color: var(--color-text-main);
+            overflow: hidden;
+            /* Sem scroll interno */
+            width: 100vw;
+            height: 100vh;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: var(--font-display);
+            font-weight: 700;
+        }
+
+        /* =========================================
+           BACKGROUND E PARTÍCULAS
+        ========================================= */
+        #mesh-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background:
+                radial-gradient(circle at 15% 50%, rgba(15, 52, 96, 0.8), transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(0, 120, 180, 0.4), transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(230, 115, 0, 0.15), transparent 50%);
+            animation: breathe 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes breathe {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(1.1);
+            }
+        }
+
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        /* =========================================
+           ESTRUTURA DE SLIDES
+        ========================================= */
+        #presentation {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 4rem 6rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+            z-index: 1;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: all;
+            z-index: 10;
+        }
+
+        /* =========================================
+           ELEMENTOS DE UI (Navegação/Progresso)
+        ========================================= */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: var(--color-accent);
+            width: 0%;
+            z-index: 100;
+            transition: width 0.3s ease;
+        }
+
+        #slide-counter {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 2rem;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        #frame-png {
+            width: 70%;
+        }
+
+        #prev-btn {
+            right: 6rem;
+        }
+
+        #next-btn {
+            right: 2rem;
+        }
+
+        /* Counter occupies right edge, move buttons */
+        #prev-btn {
+            right: 8rem;
+        }
+
+        #next-btn {
+            right: 5rem;
+        }
+
+        /* =========================================
+           SISTEMA DE ANIMAÇÃO STAGGERED
+        ========================================= */
+        .anim-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+        }
+
+        .slide.active .anim-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* =========================================
+           COMPONENTES VISUAIS (Cards, Grids, Tabelas)
+        ========================================= */
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .slide-title {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+            line-height: 1.1;
+        }
+
+        .slide-subtitle {
+            font-size: 1.8rem;
+            color: var(--color-secondary);
+            margin-bottom: 2.5rem;
+            font-family: var(--font-display);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        ul.styled-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        ul.styled-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            font-size: 1.2rem;
+            line-height: 1.4;
+        }
+
+        ul.styled-list i {
+            color: var(--color-secondary);
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        .highlight-card {
+            border-left: 6px solid var(--color-accent);
+            font-size: 1.1rem;
+        }
+
+        .highlight-card.green {
+            border-color: var(--color-success);
+        }
+
+        .highlight-card.red {
+            border-color: var(--color-danger);
+        }
+
+        .highlight-card.blue {
+            border-color: var(--color-secondary);
+        }
+
+        .highlight-card.yellow {
+            border-color: var(--color-warning);
+        }
+
+        .image-placeholder {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-muted);
+            width: 100%;
+            height: 100%;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+        }
+
+        .image-itself {
+            width: 80%;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-radius: 8px;
+        }
+
+        /* Tabelas */
+        .table-container {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+        }
+
+        th {
+            background: rgba(0, 120, 180, 0.3);
+            padding: 1rem;
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 1.1rem;
+        }
+
+        tr:nth-child(even) td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-green {
+            color: var(--color-success);
+            font-weight: 600;
+        }
+
+        .text-red {
+            color: var(--color-danger);
+            font-weight: 600;
+        }
+
+        .text-yellow {
+            color: var(--color-warning);
+            font-weight: 600;
+        }
+
+        /* Divisores */
+        .slide-divider {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide-divider .icon-container {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .slide-divider i {
+            width: 60px;
+            height: 60px;
+            color: #fff;
+        }
+
+        .slide-divider h1 {
+            font-size: 5rem;
+            margin-bottom: 0;
+        }
+
+        .slide-divider h2 {
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--color-text-muted);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Helpers Utilitários */
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gap-1 {
+            gap: 1rem;
+        }
+
+        .gap-2 {
+            gap: 2rem;
+        }
+
+        .gap-3 {
+            gap: 3rem;
+        }
+
+        .mt-2 {
+            margin-top: 2rem;
+        }
+
+        .mt-auto {
+            margin-top: auto;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        /* Camadas (Slide 11) */
+        .layer-stack {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 8px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .layer {
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Fluxograma (Slide 17) */
+        .timeline {
+            border-left: 3px solid rgba(255, 255, 255, 0.2);
+            padding-left: 2rem;
+            margin-left: 1rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.2rem;
+            font-size: 1.1rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.65rem;
+            top: 0.4rem;
+            width: 14px;
+            height: 14px;
+            background: var(--color-secondary);
+            border-radius: 50%;
+            border: 3px solid var(--color-bg);
+        }
+
+        .timeline-item:last-child::before {
+            background: var(--color-success);
+        }
+
+        /* =========================================
+           RESPONSIVIDADE
+        ========================================= */
+        @media (max-width: 1024px) {
+            .slide {
+                padding: 3rem 2rem;
+            }
+
+            .slide-title {
+                font-size: 2.5rem;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .image-placeholder {
+                min-height: 200px;
+                margin-top: 1rem;
+            }
+
+            ul.styled-list li {
+                font-size: 1rem;
+            }
+
+            td,
+            th {
+                font-size: 0.9rem;
+                padding: 0.5rem;
+            }
+        }
+    </style>
+  <link rel="stylesheet" href="../../assets/lesson-theme.css">
+</head>
+
+<body>
+
+    <div id="mesh-bg"></div>
+    <canvas id="particles-canvas"></canvas>
+    <div id="progress-bar"></div>
+
+    <div id="controls">
+        <button class="nav-btn" id="prev-btn" title="Anterior"><i data-lucide="chevron-left"></i></button>
+        <button class="nav-btn" id="next-btn" title="Próximo"><i data-lucide="chevron-right"></i></button>
+    </div>
+    <div id="slide-counter"></div>
+
+    <div id="presentation">
+
+        <!-- SLIDE 1: CAPA -->
+        <div class="slide text-center" style="align-items: center;">
+            <div class="icon-container flex-col anim-item"
+                style="flex-direction: row; gap: 2rem; margin-bottom: 2rem; animation: float 6s ease-in-out infinite;">
+                <i data-lucide="hard-drive" style="width: 80px; height: 80px; color: var(--color-secondary);"></i>
+                <i data-lucide="database" style="width: 80px; height: 80px; color: var(--color-accent);"></i>
+            </div>
+            <h1 class="slide-title anim-item" style="font-size: 4.5rem; max-width: 800px;">Armazenamento & Sistemas
+                Operacionais</h1>
+            <h2 class="slide-subtitle anim-item" style="font-size: 2.2rem;">Aula 4 — HD, SSD e Escolha do SO</h2>
+            <div class="mt-auto anim-item glass-card" style="padding: 1rem 3rem; display: inline-block;">
+                <p style="font-family: var(--font-display); font-size: 1.2rem;">Prof. Dr. Luis Ramirez <br> Alunos:
+                    Zadoque Carneiro & Emanuel Peixoto Gomes <br> <strong>·</strong> UENF, CC / LCMAT</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: SUMÁRIO -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">O que veremos hoje</h1>
+            <div class="grid-2 mt-2 gap-2">
+                <div class="glass-card anim-item flex-col gap-1">
+                    <h3
+                        style="display:flex; align-items:center; gap:0.5rem; color:var(--color-secondary); font-size: 1.5rem;">
+                        <i data-lucide="hard-drive"></i> Bloco 1: Armazenamento
+                    </h3>
+                    <ul class="styled-list">
+                        <li><i data-lucide="chevron-right"></i> Como o HD funciona</li>
+                        <li><i data-lucide="chevron-right"></i> Como o SSD funciona</li>
+                        <li><i data-lucide="chevron-right"></i> Vida útil e desgaste</li>
+                        <li><i data-lucide="chevron-right"></i> Velocidade × ocupação</li>
+                    </ul>
+                </div>
+                <div class="glass-card anim-item flex-col gap-1">
+                    <h3
+                        style="display:flex; align-items:center; gap:0.5rem; color:var(--color-accent); font-size: 1.5rem;">
+                        <i data-lucide="monitor"></i> Bloco 2: Sistema Operacional
+                    </h3>
+                    <ul class="styled-list">
+                        <li><i data-lucide="chevron-right"></i> O que é e para que serve</li>
+                        <li><i data-lucide="chevron-right"></i> Tipos de SO</li>
+                        <li><i data-lucide="chevron-right"></i> 32 bits × 64 bits (palavra)</li>
+                        <li><i data-lucide="chevron-right"></i> Como escolher, partições, instalação</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="glass-card anim-item mt-2 text-center" style="padding: 1.5rem;">
+                <h3
+                    style="color:var(--color-success); font-size: 1.5rem; display:flex; justify-content:center; align-items:center; gap:0.5rem;">
+                    <i data-lucide="wrench"></i> Bloco 3: Atividade Prática
+                </h3>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: DIVISOR BLOCO 1 -->
+        <div class="slide slide-divider" style="background: linear-gradient(135deg, #0F3460, #0078B4);">
+            <div class="icon-container anim-item">
+                <i data-lucide="hard-drive"></i>
+            </div>
+            <h1 class="anim-item">Bloco 1</h1>
+            <h2 class="anim-item">Armazenamento: HD e SSD</h2>
+        </div>
+
+        <!-- SLIDE 4: COMO O HD FUNCIONA -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Como o HD funciona</h1>
+            <div class="grid-2 mt-2">
+                <div class="flex-col gap-2">
+                    <ul class="styled-list anim-item">
+                        <li><i>💿</i> <span>Disco magnético giratório (5400–7200 RPM)</span></li>
+                        <li><i>🔍</i> <span>Cabeça de leitura flutua a 10 nanômetros do disco</span></li>
+                        <li><i>🧲</i> <span>Dados gravados alterando polaridade magnética de setores</span></li>
+                        <li><i>🌡️</i> <span>Sensível a: impacto, calor e campos magnéticos</span></li>
+                        <li><i>🔊</i> <span>Barulho durante operação = normal</span></li>
+                    </ul>
+                    <div class="glass-card highlight-card anim-item">
+                        <p><strong>Como um toca-discos microscópico:</strong> a agulha nunca toca o disco. Um fio de
+                            cabelo tem ~80.000 nm — qualquer vibração abrupta pode causar perda de dados (Head Crash).
+                        </p>
+                    </div>
+                </div>
+                <div class="image-placeholder anim-item">
+                    <img class="image-itself" src="https://raw.githubusercontent.com/Zadoque/aula4/main/img_hd_interno.webp" alt="" srcset="">
+                    <small class="mt-2">Diagrama interno de um HD</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: COMO O SSD FUNCIONA -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Como o SSD funciona</h1>
+            <div class="grid-2 mt-2">
+                <div class="flex-col gap-2">
+                    <ul class="styled-list anim-item">
+                        <li><i>⚡</i> <span>Memória flash NAND (sem partes mecânicas móveis)</span></li>
+                        <li><i>📦</i> <span>Células: SLC(1 bit), MLC(2 bits), TLC(3 bits), QLC(4 bits)</span></li>
+                        <li><i>✏️</i> <span>Dados gravados retendo elétrons em transistores</span></li>
+                        <li><i>🔄</i> <span><strong>Wear leveling:</strong> firmware distribui o desgaste entre as
+                                células</span></li>
+                        <li><i>🔇</i> <span>Completamente silencioso e altamente resistente a impactos</span></li>
+                    </ul>
+                    <div class="glass-card highlight-card green anim-item">
+                        <p style="font-family: monospace; font-size:1.1rem; line-height: 1.6;">
+                            HD comum: 80–160 MB/s<br>
+                            SSD SATA: ~550 MB/s<br>
+                            SSD NVMe: 3.000–7.000+ MB/s
+                        </p>
+                    </div>
+                </div>
+                <div class="image-placeholder anim-item">
+                    <img class="image-itself" src="https://raw.githubusercontent.com/Zadoque/aula4/main/img_nand.jpg" alt="" srcset="">
+                    <small class="mt-2">Chips de memória NAND em um SSD aberto</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: HD × SSD COMPARAÇÃO -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">HD × SSD — Comparação Direta</h1>
+            <div class="table-container anim-item mt-2">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Característica</th>
+                            <th>Hard Disk (HD)</th>
+                            <th>Solid State Drive (SSD)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Velocidade leitura</td>
+                            <td>80–160 MB/s</td>
+                            <td class="text-green">500–7.000 MB/s</td>
+                        </tr>
+                        <tr>
+                            <td>Latência acesso</td>
+                            <td class="text-red">5–10 ms</td>
+                            <td class="text-green">0,1 ms</td>
+                        </tr>
+                        <tr>
+                            <td>Ruído operação</td>
+                            <td>Sim ❌</td>
+                            <td>Não ✅</td>
+                        </tr>
+                        <tr>
+                            <td>Impacto físico</td>
+                            <td class="text-red">Vulnerável ❌</td>
+                            <td class="text-green">Resistente ✅</td>
+                        </tr>
+                        <tr>
+                            <td>Custo por GB</td>
+                            <td class="text-green">Baixo ✅</td>
+                            <td class="text-yellow">Médio–Alto ⚠️</td>
+                        </tr>
+                        <tr>
+                            <td>Vida útil média</td>
+                            <td>3–5 anos</td>
+                            <td class="text-green">5–10 anos</td>
+                        </tr>
+                        <tr>
+                            <td>Partes móveis</td>
+                            <td>Sim ❌</td>
+                            <td>Não ✅</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="glass-card highlight-card red mt-2 anim-item">
+                <p><strong>⚠️ Atenção:</strong> Independente do tipo, <strong>sempre faça backup</strong>. Um SSD
+                    geralmente não avisa antes de queimar a controladora — o HD mecânico costuma dar sinais (barulhos,
+                    lentidão) antes de morrer definitivamente.</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: VIDA ÚTIL E DESGASTE -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Vida Útil e Desgaste</h1>
+            <div class="grid-2 mt-2 gap-2">
+                <div class="glass-card highlight-card blue anim-item">
+                    <h3 style="margin-bottom: 1rem; color: var(--color-secondary);">Disco Rígido (HD)</h3>
+                    <ul class="styled-list">
+                        <li>Vida média real: 3 a 5 anos</li>
+                        <li>MTBF (Teórico): ~500.000 horas</li>
+                        <li>Causas de falha: choque mecânico, calor excessivo, desgaste do motor</li>
+                        <li><strong>Dica:</strong> Após 3 anos de uso contínuo, aumente a frequência dos backups!</li>
+                    </ul>
+                </div>
+                <div class="glass-card highlight-card green anim-item">
+                    <h3 style="margin-bottom: 1rem; color: var(--color-success);">SSD (NAND)</h3>
+                    <ul class="styled-list">
+                        <li>Medido em <strong>TBW</strong> (Terabytes Written)</li>
+                        <li>SLC: ~100.000 ciclos por célula</li>
+                        <li>TLC/QLC: ~1.000 a 500 ciclos</li>
+                        <li>O <em>Wear Leveling</em> salva a vida útil espalhando as gravações.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="glass-card highlight-card mt-2 anim-item">
+                <p><strong>Cálculo prático:</strong> Um SSD básico de 240 GB com 80 TBW de garantia. Se você escrever
+                    pesados 20 GB todo dia, ele durará matematicamente <strong>~10 anos</strong>. Para edição de vídeo
+                    intensa (escrevendo 100GB/dia), duraria ~2 anos.</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: VELOCIDADE X OCUPAÇÃO -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">O Mito do Disco Cheio</h1>
+            <h2 class="slide-subtitle anim-item">Como a ocupação afeta a velocidade</h2>
+
+            <div class="grid-2 gap-2 mt-2">
+                <div class="table-container anim-item">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ocupação</th>
+                                <th>Desempenho HD</th>
+                                <th>Desempenho SSD</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>10%</td>
+                                <td>100% (referência)</td>
+                                <td>100%</td>
+                            </tr>
+                            <tr>
+                                <td>50%</td>
+                                <td class="text-yellow">85%</td>
+                                <td>99%</td>
+                            </tr>
+                            <tr>
+                                <td>70%</td>
+                                <td class="text-yellow">70%</td>
+                                <td>97%</td>
+                            </tr>
+                            <tr>
+                                <td>85%</td>
+                                <td style="color: var(--color-accent); font-weight:600;">50%</td>
+                                <td>90%</td>
+                            </tr>
+                            <tr>
+                                <td>95%</td>
+                                <td class="text-red">25%</td>
+                                <td class="text-yellow">75%</td>
+                            </tr>
+                            <tr>
+                                <td>100%</td>
+                                <td class="text-red">💀 Trava o sistema</td>
+                                <td class="text-red">💀 Trava o sistema</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex-col gap-2">
+                    <div class="glass-card anim-item">
+                        <h4 style="color: var(--color-secondary); margin-bottom:0.5rem;"><i data-lucide="hard-drive"
+                                style="width:18px; margin-bottom:-3px;"></i> No HD Mecânico</h4>
+                        <p style="font-size:0.95rem;">Disco cheio gera alta <strong>fragmentação</strong>. O arquivo é
+                            quebrado em dezenas de pedaços espalhados pelo disco. A agulha perde milissegundos pulando
+                            de um lado pro outro.</p>
+                    </div>
+                    <div class="glass-card anim-item">
+                        <h4 style="color: var(--color-success); margin-bottom:0.5rem;"><i data-lucide="cpu"
+                                style="width:18px; margin-bottom:-3px;"></i> No SSD</h4>
+                        <p style="font-size:0.95rem;">A memória NAND precisa apagar um bloco inteiro antes de reescrever
+                            dados. Sem espaço livre, rotinas como o <em>Garbage Collector</em> e <em>TRIM</em> não
+                            funcionam direito. <strong>Mantenha sempre 15% a 20% do SSD livre!</strong> E <em>nunca</em>
+                            desfragmente um SSD (gasta ciclos à toa).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: DIVISOR BLOCO 2 -->
+        <div class="slide slide-divider" style="background: linear-gradient(135deg, #0F3460, #4A148C);">
+            <div class="icon-container anim-item">
+                <i data-lucide="monitor"></i>
+            </div>
+            <h1 class="anim-item">Bloco 2</h1>
+            <h2 class="anim-item">Sistemas Operacionais</h2>
+        </div>
+
+        <!-- SLIDE 10: O QUE É SO -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">O que é um Sistema Operacional?</h1>
+            <div class="flex-col gap-2 mt-2" style="max-width: 900px;">
+                <ul class="styled-list anim-item" style="gap: 1.5rem;">
+                    <li><i data-lucide="plug-2" style="width:32px; height:32px;"></i> <span>A ponte essencial entre o
+                            hardware físico e os programas/usuário.</span></li>
+                    <li><i data-lucide="settings" style="width:32px; height:32px;"></i> <span>Gerencia ativamente: CPU,
+                            Memória RAM, Armazenamento, Dispositivos I/O e Rede.</span></li>
+                    <li><i data-lucide="cpu" style="width:32px; height:32px;"></i> <span>Sem o SO, um computador de R$
+                            15.000 é apenas um peso de papel de silício e ferro.</span></li>
+                    <li><i data-lucide="scale" style="width:32px; height:32px;"></i> <span>O SO age como o "Governo" da
+                            máquina: define regras, aloca recursos escassos e resolve conflitos de acesso.</span></li>
+                </ul>
+
+                <div class="glass-card highlight-card yellow mt-2 anim-item">
+                    <p style="margin-bottom: 0.5rem; font-weight: 600; color: var(--color-warning);">❓ Por que
+                        precisamos do SO gerenciando tudo?</p>
+                    <p>💡 Porque os recursos (RAM, tempo de CPU) são limitados e os processos vão brigar por eles. O SO
+                        escalona processos e decide quem usa o quê e por quantos milissegundos, criando a ilusão de
+                        multitarefa simultânea.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: CAMADAS DO SISTEMA -->
+        <div class="slide">
+            <h1 class="slide-title anim-item" style="text-align: center;">Arquitetura em Camadas</h1>
+            <p class="anim-item text-center" style="margin-bottom: 2rem; color: var(--color-text-muted);">Cada camada se
+                comunica estritamente com a camada imediatamente inferior.</p>
+
+            <div class="layer-stack anim-item mt-auto" style="margin-bottom: 2rem;">
+                <div class="layer" style="width: 80%; background: #0a192f; border: 1px solid #1e3a8a;">🖥️ Hardware
+                    Físico (CPU, RAM, Disco, GPU)</div>
+                <i data-lucide="arrow-up" style="color: rgba(255,255,255,0.3);"></i>
+
+                <div class="layer" style="width: 70%; background: #0F3460;">🔧 Kernel do SO (Núcleo)</div>
+                <i data-lucide="arrow-up" style="color: rgba(255,255,255,0.3);"></i>
+
+                <div class="layer" style="width: 60%; background: #0078B4;">🧩 Drivers de Dispositivo</div>
+                <i data-lucide="arrow-up" style="color: rgba(255,255,255,0.3);"></i>
+
+                <div class="layer" style="width: 50%; background: #b35900;">📚 Bibliotecas do Sistema (APIs)</div>
+                <i data-lucide="arrow-up" style="color: rgba(255,255,255,0.3);"></i>
+
+                <div class="layer" style="width: 40%; background: #E67300;">💻 Shell / Interface (GUI / CLI)</div>
+                <i data-lucide="arrow-up" style="color: rgba(255,255,255,0.3);"></i>
+
+                <div class="layer" style="width: 30%; background: #1e824c;">📱 Aplicativos do Usuário (Word, Chrome)
+                </div>
+                <i data-lucide="arrow-up" style="color: rgba(255,255,255,0.3);"></i>
+
+                <div class="layer" style="width: 20%; background: #27AE60;">👤 Você (Usuário)</div>
+            </div>
+        </div>
+
+        <!-- SLIDE 12: TIPOS DE SO -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Ecossistema de Sistemas Operacionais</h1>
+            <div class="table-container anim-item mt-2">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sistema</th>
+                            <th>Família / Kernel</th>
+                            <th>Uso Principal</th>
+                            <th>Licença</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Windows 11</td>
+                            <td>Windows NT</td>
+                            <td>Desktop / Gamers / Empresas</td>
+                            <td>Proprietária ($)</td>
+                        </tr>
+                        <tr>
+                            <td>macOS Sequoia</td>
+                            <td>Unix / Darwin</td>
+                            <td>Desktops Apple (Mac)</td>
+                            <td>Proprietária</td>
+                        </tr>
+                        <tr>
+                            <td>Ubuntu / Debian</td>
+                            <td>Linux / GNU</td>
+                            <td>Desktop / Servidores web</td>
+                            <td>Livre / Open Source</td>
+                        </tr>
+                        <tr>
+                            <td>Fedora</td>
+                            <td>Linux / GNU</td>
+                            <td>Desktop / Desenvolvedores</td>
+                            <td>Livre</td>
+                        </tr>
+                        <tr>
+                            <td>Arch Linux</td>
+                            <td>Linux / GNU</td>
+                            <td>Usuários Avançados (DIY)</td>
+                            <td>Livre</td>
+                        </tr>
+                        <tr>
+                            <td>Android</td>
+                            <td>Linux modificado</td>
+                            <td>Smartphones / Tablets</td>
+                            <td>Misto</td>
+                        </tr>
+                        <tr>
+                            <td>iOS / iPadOS</td>
+                            <td>Unix / Darwin</td>
+                            <td>Dispositivos Apple Mobile</td>
+                            <td>Proprietária</td>
+                        </tr>
+                        <tr>
+                            <td>FreeBSD</td>
+                            <td>Unix</td>
+                            <td>Servidores robustos / Redes</td>
+                            <td>Livre</td>
+                        </tr>
+                        <tr>
+                            <td>ChromeOS</td>
+                            <td>Linux</td>
+                            <td>Laptops educacionais leves</td>
+                            <td>Misto</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="glass-card highlight-card green mt-2 anim-item">
+                <p><strong>Curiosidade:</strong> Todos os smartphones Android, smart TVs, roteadores e sistemas de
+                    entretenimento de carros modernos rodam o <strong>kernel Linux</strong> por baixo da interface,
+                    trabalhando em silêncio de forma invisível para o usuário.</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 13: 32 BITS X 64 BITS -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Arquitetura: 32 bits × 64 bits</h1>
+
+            <div class="glass-card highlight-card blue anim-item mt-2" style="margin-bottom: 2rem;">
+                <p><strong>Conceito de PALAVRA (Word):</strong> É a unidade natural de dados que o processador manipula
+                    de uma só vez em seus registradores. Um processador de 64 bits processa conjuntos de 64 zeros e uns
+                    simultaneamente a cada ciclo de clock.</p>
+            </div>
+
+            <div class="table-container anim-item">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspecto Técnico</th>
+                            <th>Arquitetura 32 bits (x86)</th>
+                            <th>Arquitetura 64 bits (x64)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>RAM Máxima Endereçável</td>
+                            <td class="text-red">4 GB (2³² bytes) ❌</td>
+                            <td class="text-green">16 Exabytes (2⁶⁴) ✅</td>
+                        </tr>
+                        <tr>
+                            <td>Compatibilidade de Softwares</td>
+                            <td>Roda apenas 32 bits</td>
+                            <td>Roda 64 bits nativo + 32 bits (via emulação)</td>
+                        </tr>
+                        <tr>
+                            <td>Desempenho Geral</td>
+                            <td>Limitado / Obsoleto</td>
+                            <td>Maior capacidade de processamento pesado</td>
+                        </tr>
+                        <tr>
+                            <td>Disponibilidade Atual de SO</td>
+                            <td>Praticamente abandonado</td>
+                            <td class="text-green">Padrão da indústria ✅</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="glass-card highlight-card red mt-2 anim-item">
+                <p><strong>O erro clássico:</strong> Instalar um SO de 32 bits em um hardware moderno de 64 bits. Você
+                    desperdiça metade da capacidade da CPU e o sistema <strong>só vai reconhecer no máximo 4 GB de
+                        RAM</strong>, mesmo que você tenha 16 GB instalados fisicamente na placa-mãe.</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 14: COMO ESCOLHER -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Critérios de Escolha do SO</h1>
+            <div class="grid-2 mt-2 gap-3">
+                <div class="flex-col gap-1 anim-item">
+                    <h3
+                        style="color: var(--color-secondary); font-family: var(--font-display); font-size:1.5rem; margin-bottom:1rem;">
+                        Fatores de Decisão</h3>
+                    <ul class="styled-list">
+                        <li><i>🔧</i> Hardware disponível (RAM, CPU age)</li>
+                        <li><i>🎯</i> Finalidade (Gaming? Programação? Servidor?)</li>
+                        <li><i>👤</i> Conhecimento técnico do usuário final</li>
+                        <li><i>💰</i> Orçamento (Licença de R$ 1.000 vs Gratuito)</li>
+                        <li><i>🎮</i> Suporte a softwares específicos (Adobe, CAD)</li>
+                        <li><i>🔒</i> Necessidade de privacidade e segurança extra</li>
+                    </ul>
+                </div>
+
+                <div class="flex-col anim-item">
+                    <h3
+                        style="color: var(--color-accent); font-family: var(--font-display); font-size:1.5rem; margin-bottom:1rem;">
+                        Consumo de RAM em Idle (Ocioso)</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Sistema (GUI)</th>
+                                    <th>RAM Idle</th>
+                                    <th>Processos base</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Windows 11</td>
+                                    <td class="text-red">2 a 4 GB 🔴</td>
+                                    <td>~150</td>
+                                </tr>
+                                <tr>
+                                    <td>Ubuntu (GNOME)</td>
+                                    <td class="text-yellow">0.8 a 1.2 GB 🟡</td>
+                                    <td>~60</td>
+                                </tr>
+                                <tr>
+                                    <td>Ubuntu (XFCE)</td>
+                                    <td class="text-green">400 a 600 MB 🟢</td>
+                                    <td>~45</td>
+                                </tr>
+                                <tr>
+                                    <td>Arch (i3wm / CLI)</td>
+                                    <td class="text-green">150 a 300 MB 🟢</td>
+                                    <td>~30</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card highlight-card green mt-auto anim-item">
+                <p><strong>Regra de Ouro:</strong> Pegou um notebook antigo com HD e ≤4 GB de RAM? <strong>Fuja do
+                        Windows 10/11</strong>. Instale Linux Mint XFCE ou Lubuntu para ressuscitar a máquina. Windows
+                    moderno exige SSD e no mínimo 8GB para não frustrar o usuário.</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 15: O QUE É A BIOS -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">O que é a BIOS então?</h1>
+            <h2 class="slide-subtitle anim-item">Basic Input/Output System</h2>
+
+            <div class="grid-2 mt-2 gap-3">
+                <div class="flex-col gap-2">
+                    <ul class="styled-list anim-item" style="font-size: 1.1rem;">
+                        <li><i data-lucide="cpu" style="width:28px; height:28px;"></i> <span>É o software de nível mais
+                                baixo do PC. Sem BIOS, a placa-mãe é apenas plástico e metal morto.</span></li>
+                        <li><i data-lucide="power" style="width:28px; height:28px;"></i> <span><strong>POST (Power-On
+                                    Self Test):</strong> Ao ligar, a BIOS "acorda" a placa, checa a CPU, RAM e GPU para
+                                garantir que o hardware básico está operante.</span></li>
+                        <li><i data-lucide="search" style="width:28px; height:28px;"></i> <span>Se tudo estiver ok
+                                (geralmente um "bip" curto), ela procura em qual disco está o Sistema
+                                Operacional.</span></li>
+                        <li><i data-lucide="handshake" style="width:28px; height:28px;"></i> <span>Após achar o disco, a
+                                BIOS entrega o controle da máquina para o SO e "sai de cena".</span></li>
+                    </ul>
+                </div>
+
+                <div class="glass-card anim-item flex-col justify-center text-center" style="align-items: center;">
+                    <i data-lucide="microchip"
+                        style="width:80px; height:80px; color:var(--color-secondary); margin-bottom: 1.5rem;"></i>
+                    <p style="font-size: 1.2rem; line-height: 1.5;">O código da BIOS vem gravado de fábrica em um
+                        <strong>chip de memória Flash EPROM</strong> soldado diretamente na placa-mãe. Por isso a
+                        máquina sabe o que fazer mesmo sem HD conectado.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 16: ONDE SALVA A BIOS -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Onde a BIOS salva as configurações?</h1>
+
+            <div class="glass-card highlight-card yellow anim-item mt-2" style="margin-bottom: 2rem;">
+                <p style="font-size: 1.2rem;"><strong>Um Paradoxo:</strong> Vocês aprenderam que a memória RAM apaga
+                    quando perde a energia (volátil). O HD ainda não está rodando no instante que apertamos o botão.
+                    Então, onde a placa-mãe guarda a hora certa, a senha e a ordem de boot se o PC foi tirado da tomada?
+                </p>
+            </div>
+
+            <div class="grid-2 gap-3">
+                <div class="flex-col anim-item">
+                    <h3 style="color: var(--color-secondary); margin-bottom: 1rem;">O Chip CMOS / NVRAM</h3>
+                    <p style="font-size: 1.15rem; line-height: 1.5; margin-bottom: 1rem;">As configurações que você
+                        altera não ficam salvas no disco, mas sim em uma pequena memória não-volátil na própria
+                        placa-mãe (NVRAM).</p>
+                    <p style="font-size: 1.15rem; line-height: 1.5;">Antigamente essa memória (CMOS) exigia energia
+                        contínua. Para isso, usa-se a famosa <strong>Bateria CR2032 (3 Volts)</strong> em formato de
+                        moeda.</p>
+                </div>
+
+                <div class="glass-card highlight-card red anim-item">
+                    <h4 style="color: var(--color-danger); margin-bottom: 0.5rem; font-size: 1.3rem;"><i
+                            data-lucide="alert-circle" style="width:20px; margin-bottom:-4px;"></i> O Sintoma Clássico
+                    </h4>
+                    <p style="font-size: 1.1rem; line-height: 1.5;">"A hora do PC está errada toda vez que eu ligo" ou
+                        "Ele pede para apertar F1 para configurar a BIOS de novo".</p>
+                    <p style="font-size: 1.1rem; margin-top: 1rem; font-weight: 600;">Diagnóstico: A bateria CR2032 da
+                        placa-mãe descarregou. Basta trocar (custa R$ 5) que o PC volta ao normal.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 17: UEFI VS LEGACY -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Evolução: Legacy BIOS vs UEFI</h1>
+            <h2 class="slide-subtitle anim-item">A aposentadoria do padrão dos anos 80</h2>
+
+            <div class="table-container anim-item mt-2">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspecto Técnico</th>
+                            <th>Legacy BIOS (Antigo)</th>
+                            <th>UEFI (Moderno)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Interface de Usuário</td>
+                            <td>Apenas texto, tela azul/preta, apenas teclado.</td>
+                            <td class="text-green">Gráfica, suporta mouse, rede e animações.</td>
+                        </tr>
+                        <tr>
+                            <td>Esquema de Partição</td>
+                            <td>MBR (Master Boot Record)</td>
+                            <td class="text-green">GPT (GUID Partition Table)</td>
+                        </tr>
+                        <tr>
+                            <td>Limites do Disco</td>
+                            <td class="text-red">Máximo de 2 TB. Apenas 4 partições primárias.</td>
+                            <td class="text-green">Até 9.4 Zettabytes. 128 partições primárias.</td>
+                        </tr>
+                        <tr>
+                            <td>Segurança Nativa</td>
+                            <td class="text-red">Nenhuma validação.</td>
+                            <td class="text-green">Secure Boot (Impede malwares de boot).</td>
+                        </tr>
+                        <tr>
+                            <td>Velocidade de Boot</td>
+                            <td>Lento (inicializa hardwares sequencialmente).</td>
+                            <td class="text-green">Muito rápido (Fast Boot paralelo).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="glass-card highlight-card blue mt-2 anim-item">
+                <p><strong>Atenção na Prática:</strong> Placas-mãe modernas não suportam mais a BIOS antiga. Para
+                    instalar um SO hoje, seu pendrive precisa estar gravado como UEFI/GPT. Instalações baseadas em MBR
+                    vão gerar tela preta de erro.</p>
+            </div>
+        </div>
+        <!-- SLIDE 17.1: O QUE É TABELA DE PARTIÇÃO -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">O que é uma Tabela de Partição?</h1>
+            <h2 class="slide-subtitle anim-item">O "Mapa" do seu Disco Rígido</h2>
+            
+            <div class="grid-2 mt-2 gap-3">
+                <div class="flex-col gap-2">
+                    <ul class="styled-list anim-item" style="font-size: 1.15rem;">
+                        <li><i data-lucide="map" style="width:28px; height:28px;"></i> <span>É um registro vital gravado no primeiríssimo setor físico do disco (Setor 0).</span></li>
+                        <li><i data-lucide="ruler" style="width:28px; height:28px;"></i> <span>Sua função é informar ao SO exatamente <strong>onde começa e onde termina</strong> cada pedaço (partição) do disco.</span></li>
+                        <li><i data-lucide="file-question" style="width:28px; height:28px;"></i> <span>Sem ela, o disco é apenas um oceano de bilhões de bytes sem organização, e o Sistema Operacional não consegue ler nem gravar nada.</span></li>
+                    </ul>
+                </div>
+                
+                <div class="glass-card highlight-card yellow anim-item flex-col justify-center gap-2">
+                    <h4 style="color: var(--color-warning); margin-bottom: 0.5rem; font-size: 1.3rem;"><i data-lucide="book-open" style="width:24px; margin-bottom:-4px;"></i> A Analogia do Livro</h4>
+                    <p style="font-size: 1.1rem; line-height: 1.5;">Imagine que o seu HD é um livro em branco gigante. A Tabela de Partição atua como o <strong>Índice (Sumário)</strong>.</p>
+                    <p style="font-size: 1.1rem; line-height: 1.5;">Ela diz ao leitor da máquina: <em>"A Partição 1 (Windows) vai da página 1 à 500. A Partição 2 (Arquivos Pessoais) vai da página 501 à 2000."</em></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 17.2: TIPOS DE TABELA MBR VS GPT -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Tipos de Tabelas de Partição</h1>
+            <h2 class="slide-subtitle anim-item">MBR vs GPT: Qual escolher e quando usar?</h2>
+            
+            <div class="grid-2 gap-2 mt-2">
+                <div class="glass-card anim-item flex-col gap-1">
+                    <h3 style="color:var(--color-secondary); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+                        <i data-lucide="disc"></i> MBR (Master Boot Record)
+                    </h3>
+                    <ul class="styled-list" style="font-size:1rem;">
+                        <li><strong>Idade:</strong> Padrão antigo (criado em 1983).</li>
+                        <li><strong>Limite de Tamanho:</strong> Reconhece no máximo discos de <strong>2 Terabytes</strong>. Discos maiores ficam com espaço inútil.</li>
+                        <li><strong>Limite de Partições:</strong> Permite criar apenas 4 partições primárias nativas.</li>
+                        <li><strong>Quando usar?</strong> Somente ao lidar com hardware muito antigo (Legacy BIOS) ou SO de 32 bits.</li>
+                    </ul>
+                </div>
+                
+                <div class="glass-card anim-item flex-col gap-1">
+                    <h3 style="color:var(--color-success); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+                        <i data-lucide="layers"></i> GPT (GUID Partition Table)
+                    </h3>
+                    <ul class="styled-list" style="font-size:1rem;">
+                        <li><strong>Idade:</strong> Padrão moderno (parte da especificação UEFI).</li>
+                        <li><strong>Limite de Tamanho:</strong> Praticamente infinito (Zettabytes). Lê HDs gigantes com facilidade.</li>
+                        <li><strong>Limite de Partições:</strong> Até 128 partições primárias no Windows.</li>
+                        <li><strong>Quando usar?</strong> <strong>Sempre.</strong> É obrigatório para Windows 11, discos NVMe rápidos e placas-mãe modernas.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-card highlight-card red mt-2 anim-item" style="padding:1rem;">
+                <p style="font-size: 1rem;"><strong>Cuidado na Instalação:</strong> Se você criar o pendrive bootável configurado com tabela MBR e tentar instalar em uma placa-mãe moderna em modo UEFI, a instalação não fará boot. <strong>A regra é:</strong> MBR trabalha com Legacy BIOS, e GPT trabalha com UEFI.</p>
+            </div>
+        </div>
+        <!-- SLIDE 15: PARTIÇÕES LINUX -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Estrutura de Partições (Linux)</h1>
+            <div class="grid-2 mt-2 gap-3">
+                <div class="table-container anim-item">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ponto de Montagem</th>
+                                <th>Sistema de Arquivos</th>
+                                <th>Tamanho Ideal</th>
+                                <th>Função Principal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/boot/efi</code></td>
+                                <td>FAT32</td>
+                                <td>~512 MB</td>
+                                <td>Bootloader UEFI (GRUB)</td>
+                            </tr>
+                            <tr>
+                                <td><code>/</code> (root)</td>
+                                <td>ext4 / btrfs</td>
+                                <td>30–50 GB</td>
+                                <td>Sistema e programas instalados</td>
+                            </tr>
+                            <tr>
+                                <td><code>/home</code></td>
+                                <td>ext4</td>
+                                <td>O restante livre</td>
+                                <td>Arquivos e configs do usuário</td>
+                            </tr>
+                            <tr>
+                                <td><code>swap</code></td>
+                                <td>swap</td>
+                                <td>~1x a RAM</td>
+                                <td>Memória virtual (paginação)</td>
+                            </tr>
+                            <tr>
+                                <td><code>/var</code></td>
+                                <td>ext4</td>
+                                <td>10–20 GB</td>
+                                <td>Logs de sistema, DBs, cache apt</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex-col gap-2">
+                    <div class="glass-card highlight-card blue anim-item">
+                        <p><strong>A magia do /home separado:</strong> Diferente do Windows (onde tudo fica no C:),
+                            colocar o <code>/home</code> em uma partição isolada permite formatar e reinstalar todo o SO
+                            (o <code>/</code>) <strong>sem perder um único arquivo pessoal</strong> ou configuração de
+                            aplicativo.</p>
+                    </div>
+                    <div class="glass-card highlight-card green anim-item">
+                        <p><strong>Sistemas de Arquivos com Journaling (ext4):</strong> Registram a intenção de gravação
+                            em um log (diário) antes de modificar o disco. Faltou luz no meio da cópia? O sistema lê o
+                            diário no boot e reverte o arquivo corrompido, evitando a quebra do sistema.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 16: WINDOWS X LINUX DISK -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Organização do Disco: Windows × Linux</h1>
+
+            <div class="grid-2 mt-2 gap-2">
+                <div class="glass-card anim-item">
+                    <h3 style="color:var(--color-secondary); margin-bottom:1rem;"><i data-lucide="layout-dashboard"></i>
+                        Filosofia Windows</h3>
+                    <ul class="styled-list" style="font-size:1rem;">
+                        <li>Partição EFI oculta (~100 MB) — Boot</li>
+                        <li>MSR oculta (~16 MB) — Reserva Microsoft</li>
+                        <li><strong>C:\ (NTFS) — Sistema, programas e Usuário TUDO JUNTO</strong></li>
+                        <li>Recuperação (~500 MB) — Oculta</li>
+                    </ul>
+                    <p class="mt-2 text-muted" style="font-size:0.9rem;"><em>Simples para o usuário leigo, mas frágil em
+                            caso de corrupção do SO.</em></p>
+                </div>
+
+                <div class="glass-card anim-item">
+                    <h3 style="color:var(--color-accent); margin-bottom:1rem;"><i data-lucide="folder-tree"></i>
+                        Filosofia Linux</h3>
+                    <ul class="styled-list" style="font-size:1rem;">
+                        <li>Montagem baseada em diretórios, não letras (C:). Tudo deriva do root <code>/</code></li>
+                        <li>Cada partição assume um galho da árvore (ex: disco secundário montado em
+                            <code>/mnt/dados</code>)
+                        </li>
+                        <li>Falha em <code>/var</code> não impede o boot do <code>/</code></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="grid-2 mt-2 gap-2">
+                <div class="table-container anim-item" style="font-size:0.9rem;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Recurso FS</th>
+                                <th>NTFS (Win)</th>
+                                <th>ext4 (Linux)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Journaling</td>
+                                <td>Sim</td>
+                                <td>Sim</td>
+                            </tr>
+                            <tr>
+                                <td>Visibilidade cruzada</td>
+                                <td>Linux lê e escreve NTFS perfeitamente</td>
+                                <td class="text-red">Windows nativo NÃO enxerga discos ext4</td>
+                            </tr>
+                            <tr>
+                                <td>Permissões</td>
+                                <td>ACL Complexas</td>
+                                <td>rwx simples (Unix)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex-col gap-1 anim-item justify-center">
+                    <div class="highlight-card red glass-card" style="padding:1rem;">
+                        <strong>Windows:</strong> Cada `.exe` instala suas próprias DLLs na pasta. Gera duplicação e
+                        conflitos (DLL Hell).
+                    </div>
+                    <div class="highlight-card green glass-card" style="padding:1rem;">
+                        <strong>Linux:</strong> Gerenciador de pacotes central (apt/dnf) gerencia dependências.
+                        Bibliotecas são compartilhadas = SO muito menor e atualização em 1 clique para tudo.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         <!-- SLIDE 20: O QUE É O BOOTLOADER? -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">O que é o BootLoader?</h1>
+            <h2 class="slide-subtitle anim-item">Passando o bastão da Placa-Mãe para o Sistema</h2>
+            
+            <div class="grid-2 mt-2 gap-3">
+                <div class="flex-col gap-2">
+                    <ul class="styled-list anim-item" style="font-size: 1.15rem;">
+                        <li><i data-lucide="arrow-right-circle" style="width:28px;"></i> <span>A BIOS é muito simples para entender o que é um Kernel Linux ou arquivos do Windows. Ela só entende bytes brutos no disco.</span></li>
+                        <li><i data-lucide="file-code" style="width:28px;"></i> <span><strong>O Bootloader</strong> (Gerenciador de Boot) é um pequeno programa instalado no início do disco (ou na partição EFI).</span></li>
+                        <li><i data-lucide="play" style="width:28px;"></i> <span>A função dele é ler o sistema de arquivos complexo do SO, pegar o Kernel (núcleo) do disco, carregá-lo na RAM e executá-lo.</span></li>
+                    </ul>
+                </div>
+                
+                <div class="glass-card anim-item flex-col justify-center gap-2">
+                    <div style="padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 4px solid var(--color-secondary);">
+                        <h4 style="color: #fff; margin-bottom: 0.5rem;">Exemplos Famosos:</h4>
+                        <p style="color: var(--color-text-muted); line-height: 1.6;">
+                            • <strong>Windows Boot Manager:</strong> Padrão da Microsoft.<br>
+                            • <strong>GRUB (Grand Unified Bootloader):</strong> Padrão na maioria das distribuições Linux.<br>
+                            • <strong>systemd-boot:</strong> Alternativa moderna e minimalista ao GRUB para sistemas UEFI.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 21: BOOTLOADER WINDOWS VS LINUX -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">BootLoader: Windows × Linux</h1>
+            <p class="anim-item text-center" style="margin-bottom: 2rem; font-size: 1.2rem; color: var(--color-text-muted);">Como eles lidam com sistemas vizinhos (Dual-Boot)</p>
+            
+            <div class="grid-2 gap-3 mt-2">
+                <div class="glass-card highlight-card red anim-item flex-col gap-1">
+                    <h3 style="color: var(--color-danger); display:flex; align-items:center; gap:0.5rem;"><i data-lucide="x-octagon"></i> Windows Boot Manager</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.5;">O Bootloader do Windows é essencialmente <strong>"egoísta"</strong>.</p>
+                    <p style="font-size: 1.1rem; line-height: 1.5;">Ele é feito para inicializar o Windows e ponto final. Se você instalar o Windows depois do Linux, ele irá sobrescrever a partição de boot sem perguntar, ignorando totalmente a existência do sistema do pinguim (tornando o Linux inacessível até correção).</p>
+                </div>
+                
+                <div class="glass-card highlight-card green anim-item flex-col gap-1">
+                    <h3 style="color: var(--color-success); display:flex; align-items:center; gap:0.5rem;"><i data-lucide="check-circle"></i> O GRUB (Linux)</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.5;">O GRUB é extremamente <strong>"cooperativo" e flexível</strong>.</p>
+                    <p style="font-size: 1.1rem; line-height: 1.5;">Durante a instalação, o Linux executa o <code>os-prober</code>, varre todo o HD procurando outros sistemas (Windows, macOS, outros Linux) e constrói um menu de seleção. Ao ligar o PC, você escolhe qual sistema quer iniciar tranquilamente.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 22: LINUX COMO GERENCIADOR MELHOR -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Por que o Linux é um Gerenciador Melhor?</h1>
+            <h2 class="slide-subtitle anim-item">A superioridade técnica na alocação de recursos</h2>
+            
+            <div class="grid-2 mt-2 gap-2">
+                <div class="flex-col gap-1 anim-item">
+                    <ul class="styled-list">
+                        <li><i data-lucide="layers" style="width:24px;"></i> <strong>Altamente Modular:</strong> A Interface Gráfica (GUI) no Linux é apenas mais um aplicativo rodando no kernel. Num servidor, você simplesmente não a instala, economizando Gigabytes de RAM. No Windows, a GUI é intrínseca ao núcleo.</li>
+                        <li><i data-lucide="activity" style="width:24px;"></i> <strong>Zero Bloatware:</strong> Não há telemetria forçada, antivírus de fundo devorando ciclos de disco ou propagandas no menu. O SO usa 100% da CPU para o que VOCÊ mandou.</li>
+                        <li><i data-lucide="cpu" style="width:24px;"></i> <strong>Escalonador CFS:</strong> O <em>Completely Fair Scheduler</em> distribui o tempo de CPU com precisão nanométrica, evitando travamentos por gargalo de processos.</li>
+                    </ul>
+                </div>
+                
+                <div class="flex-col gap-2 justify-center">
+                    <div class="glass-card highlight-card blue anim-item">
+                        <h4 style="color: var(--color-secondary); margin-bottom: 0.5rem;">Arquitetura "Tudo é um Arquivo"</h4>
+                        <p style="font-size: 1.05rem;">No Linux/Unix, um disco rígido (<code>/dev/sda</code>), uma porta USB, ou um processo na memória são tratados internamente como simples "arquivos". Isso torna o controle de permissões e segurança infinitamente mais simples, rastreável e unificado do que o confuso Registro do Windows.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 17: INSTALAÇÃO -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">O Processo de Instalação (Anatomia)</h1>
+            <div class="grid-2 mt-2">
+                <div class="timeline flex-col anim-item">
+                    <div class="timeline-item">1. Placa-mãe (BIOS/UEFI) faz o POST (Check hardware)</div>
+                    <div class="timeline-item">2. Intervenção: Boot direcionado para Pendrive (F12/Del)</div>
+                    <div class="timeline-item">3. Instalador em modo Live carrega mini-sistema na RAM</div>
+                    <div class="timeline-item" style="color:var(--color-accent); font-weight:bold;">4. Particionamento
+                        do disco alvo e formatação (Crítico)</div>
+                    <div class="timeline-item">5. Extração e cópia dos arquivos do sistema pro disco</div>
+                    <div class="timeline-item">6. Instalação do Bootloader (GRUB / Windows Boot Manager)</div>
+                    <div class="timeline-item">7. Configuração (Criação de usuário root/admin, fuso horário)</div>
+                    <div class="timeline-item">8. Reinício: Primeiro boot a partir do disco interno</div>
+                    <div class="timeline-item">9. SO identifica hardware e carrega drivers pendentes</div>
+                    <div class="timeline-item text-green">10. ✅ Sistema pronto para uso na interface gráfica</div>
+                </div>
+
+                <div class="flex-col gap-2">
+                    <div class="glass-card anim-item">
+                        <h3 style="margin-bottom: 1rem;"><i data-lucide="usb"></i> Criando Pendrives Bootáveis</h3>
+                        <ul class="styled-list">
+                            <li><strong class="text-green">Balena Etcher:</strong> O mais simples. Multiplataforma
+                                (Win/Mac/Lin).</li>
+                            <li><strong class="text-secondary">Rufus:</strong> Exclusivo Windows, muito leve, permite
+                                ajustes avançados (MBR/GPT).</li>
+                            <li><strong class="text-warning">Comando dd:</strong> Direto no terminal Linux. Poderoso,
+                                mas perigoso se errar a letra do disco (Disk Destroyer).</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card highlight-card blue anim-item">
+                        <p><strong>Atenção na placa-mãe:</strong><br>
+                            <strong>BIOS Legacy (Antigo):</strong> Usa tabela MBR. Limite de discos de 2 TB. Permite max
+                            4 partições primárias.<br>
+                            <strong>UEFI (Moderno):</strong> Usa tabela GPT. Sem limite prático de tamanho ou partições.
+                            Suporta <em>Secure Boot</em> (impede malwares de boot).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 18: DIVISOR BLOCO 3 -->
+        <div class="slide slide-divider" style="background: linear-gradient(135deg, #B35900, #E67300);">
+            <div class="icon-container anim-item">
+                <i data-lucide="wrench"></i>
+            </div>
+            <h1 class="anim-item">Bloco 3</h1>
+            <h2 class="anim-item" style="color: white;">Atividade Prática em Grupo</h2>
+        </div>
+
+        <!-- SLIDE 19: ATIVIDADE PRÁTICA - MISSÃO HARDWARE -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Missão de Hoje: Hardware e BIOS</h1>
+            <div class="grid-2 mt-2 gap-3">
+                <div class="flex-col gap-1 anim-item">
+                    <h3 style="color: var(--color-secondary); margin-bottom:1rem;">Roteiro da Bancada</h3>
+                    <ul class="styled-list">
+                        <li><strong>1.</strong> Testar HDs e cabos SATA até encontrar um conjunto funcional.</li>
+                        <li><strong>2.</strong> Conectar o HD à placa-mãe e instalar no gabinete.</li>
+                        <li><strong>3.</strong> Ligar a máquina e descobrir a tecla de acesso à BIOS.</li>
+                        <li><strong>4.</strong> Na BIOS, identificar: Modelo da Placa-mãe e Versão da BIOS.</li>
+                        <li><strong>5.</strong> Identificar o Processador e monitorar se a temperatura está estável.
+                        </li>
+                        <li><strong>6.</strong> Confirmar se o HD e sua capacidade foram reconhecidos.</li>
+                        <li><strong>7.</strong> Debater em grupo qual SO ideal e sua longevidade neste PC.</li>
+                    </ul>
+                </div>
+
+                <div class="flex-col gap-2">
+                    <div class="glass-card highlight-card red anim-item"
+                        style="border-width: 4px; background: rgba(180, 30, 30, 0.1);">
+                        <h3 style="color: white; margin-bottom: 1rem; display:flex; align-items:center; gap:0.5rem;"><i
+                                data-lucide="alert-triangle"></i> Atenção aos Detalhes</h3>
+                        <p style="margin-bottom: 1rem; font-size: 1.1rem;">Vocês precisarão anotar dados técnicos
+                            críticos para o relatório:</p>
+                        <ul class="styled-list" style="font-size: 1rem;">
+                            <li><i data-lucide="check-circle"></i> Marca, Capacidade e RPM do HD</li>
+                            <li><i data-lucide="check-circle"></i> Quantos HDs/Cabos falharam antes do sucesso</li>
+                            <li><i data-lucide="check-circle"></i> Score de Benchmark do Processador encontrado</li>
+                            <li><i data-lucide="check-circle"></i> Temperatura da CPU em graus Celsius</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 20: ROTEIRO FOTOGRÁFICO -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Roteiro de Evidências (Fotos)</h1>
+            <h2 class="slide-subtitle anim-item">Tirem fotos nítidas destas etapas com o celular</h2>
+
+            <div class="grid-2 mt-2 gap-2">
+                <div class="glass-card anim-item flex-col gap-1">
+                    <h3 style="color:var(--color-secondary);"><i data-lucide="camera"
+                            style="width:20px; margin-bottom:-4px;"></i> Etapas Físicas</h3>
+                    <ul class="styled-list" style="font-size: 1rem;">
+                        <li><strong>1.</strong> O HDD que funcionou solto na bancada<br><span
+                                style="color:var(--color-text-muted); font-family:monospace;">(foto_hd.png)</span></li>
+                        <li><strong>2.</strong> O HDD montado no gabinete e conectado à placa<br><span
+                                style="color:var(--color-text-muted); font-family:monospace;">(foto_hd_conectado.png)</span>
+                        </li>
+                        <li><strong>3.</strong> Visão geral evidenciando o modelo da Placa-mãe<br><span
+                                style="color:var(--color-text-muted); font-family:monospace;">(foto_mobo.png)</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="glass-card anim-item flex-col gap-1">
+                    <h3 style="color:var(--color-accent);"><i data-lucide="monitor-play"
+                            style="width:20px; margin-bottom:-4px;"></i> Telas da BIOS</h3>
+                    <ul class="styled-list" style="font-size: 1rem;">
+                        <li><strong>4.</strong> Tela inicial evidenciando a versão da BIOS<br><span
+                                style="color:var(--color-text-muted); font-family:monospace;">(foto_bios.png)</span>
+                        </li>
+                        <li><strong>5.</strong> Tela exibindo o modelo exato do Processador<br><span
+                                style="color:var(--color-text-muted); font-family:monospace;">(foto_cpu_bios.png)</span>
+                        </li>
+                        <li><strong>6.</strong> Tela confirmando o HD reconhecido e capacidade<br><span
+                                style="color:var(--color-text-muted); font-family:monospace;">(foto_hd_bios.png)</span>
+                        </li>
+                        <li><strong>7.</strong> Tela do monitoramento de hardware (Temperatura)<br><span
+                                style="color:var(--color-text-muted); font-family:monospace;">(foto_temp_bios.png)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 21: QR CODE / RELATÓRIO WEB -->
+        <div class="slide">
+            <h1 class="slide-title anim-item">Gerador de Relatório LaTeX</h1>
+            <div class="grid-2 mt-2 gap-3" style="align-items: center;">
+                <div class="anim-item flex-col"
+                    style="align-items: center; justify-content: center; background: white; padding: 2rem; border-radius: 16px; width: fit-content; margin: 0 auto;">
+                    <!-- O Canvas será preenchido pelo JS -->
+                    <img id="frame-png" src="https://raw.githubusercontent.com/Zadoque/aula4/main/frame.png" alt="" srcset="">
+                    <p
+                        style="color: #333; font-weight: bold; margin-top: 1rem; font-family: monospace; text-align:center;">
+                        zadoque.github.io/arquitetura4</p>
+                </div>
+
+                <div class="flex-col gap-1 anim-item">
+                    <h3 style="color: var(--color-secondary); margin-bottom:1rem;">Passo a Passo da Documentação:</h3>
+                    <ul class="styled-list">
+                        <li><i>📱</i> <span>Acesse o site pelo QR Code. Ele funciona offline e salva seu progresso ao
+                                digitar!</span></li>
+                        <li><i>👥</i> <span>Adicione o <strong>Nome (Iniciais maiúsculas)</strong> e a
+                                <strong>Matrícula</strong> de todos os alunos do grupo.</span></li>
+                        <li><i>📝</i> <span>Preencha os dados técnicos e as perguntas dissertativas de cada
+                                etapa.</span></li>
+                        <li><i>📋</i> <span>Ao final, copie o código LaTeX gerado. Ele já está configurado para puxar os
+                                nomes exatos das fotos que vocês tiraram.</span></li>
+                        <li><i>☁️</i> <span>Cole o código no <strong>texpage.com</strong>, faça o upload das 7 fotos com
+                                os nomes corretos e compile o PDF!</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 21: ENCERRAMENTO -->
+        <div class="slide text-center" style="align-items: center; justify-content: center;">
+            <div class="icon-container flex-col anim-item"
+                style="margin-bottom: 2rem; background: var(--color-success); border-radius: 50%; padding: 2rem; animation: float 4s ease infinite;">
+                <i data-lucide="check" style="width: 100px; height: 100px; color: white;"></i>
+            </div>
+            <h1 class="slide-title anim-item" style="font-size: 5rem;">Aula Concluída!</h1>
+            <h2 class="slide-subtitle anim-item" style="font-size: 2.5rem; color: #fff;">Dúvidas?</h2>
+
+            <div class="glass-card anim-item mt-2"
+                style="display:flex; flex-direction:column; gap:1rem; align-items:center;">
+                <p style="font-family: var(--font-display); font-size: 1.5rem; color: var(--color-secondary);">Prof. Dr.
+                    Luis Ramirez <br> Alunos: Zadoque Carneiro & Emanuel Peixoto Gomes</p>
+                <div style="display:flex; gap: 2rem; color: var(--color-text-muted);">
+                    <span style="display:flex; align-items:center; gap:0.5rem;"><i data-lucide="mail"
+                            style="width:18px;"></i> github.com/Zadoque</span>
+                    <span style="display:flex; align-items:center; gap:0.5rem;"><i data-lucide="globe"
+                            style="width:18px;"></i>github.com/EmanuelPeixoto</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Inicializa ícones Lucide
+        if (window.lucide) lucide.createIcons();
+
+        // ==========================================
+        // LÓGICA DE NAVEGAÇÃO DE SLIDES
+        // ==========================================
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progress-bar');
+        const counter = document.getElementById('slide-counter');
+        const totalSlides = slides.length;
+        let currentSlide = 0;
+
+        function updateSlide(index) {
+            // Limites
+            if (index < 0) index = 0;
+            if (index >= totalSlides) index = totalSlides - 1;
+
+            // Remove classes do slide anterior
+            slides[currentSlide].classList.remove('active');
+            const oldItems = slides[currentSlide].querySelectorAll('.anim-item');
+            oldItems.forEach(item => item.classList.remove('visible'));
+
+            currentSlide = index;
+
+            // Ativa novo slide
+            slides[currentSlide].classList.add('active');
+
+            // Atualiza UI
+            progressBar.style.width = `${((currentSlide) / (totalSlides - 1)) * 100}%`;
+            counter.innerText = `${currentSlide + 1} / ${totalSlides}`;
+
+            // Aciona animação staggered dos elementos internos com delay
+            const newItems = slides[currentSlide].querySelectorAll('.anim-item');
+            newItems.forEach((item, i) => {
+                item.style.transitionDelay = `${i * 80}ms`;
+                // Pequeno timeout para garantir que a transição CSS reconheça a mudança
+                setTimeout(() => {
+                    item.classList.add('visible');
+                }, 50);
+            });
+
+            // Controle de partículas
+            const canvas = document.getElementById('particles-canvas');
+            if (currentSlide === 0 || currentSlide === totalSlides - 1) {
+                canvas.style.opacity = '1';
+                particlesActive = true;
+            } else {
+                canvas.style.opacity = '0';
+                particlesActive = false;
+            }
+        }
+
+        // Event Listeners Botoes
+        document.getElementById('next-btn').addEventListener('click', () => updateSlide(currentSlide + 1));
+        document.getElementById('prev-btn').addEventListener('click', () => updateSlide(currentSlide - 1));
+
+        // Event Listeners Teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') updateSlide(currentSlide + 1);
+            if (e.key === 'ArrowLeft') updateSlide(currentSlide - 1);
+        });
+
+        // Event Listeners Swipe (Mobile)
+        let touchStartX = 0;
+        let touchEndX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, { passive: true });
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) updateSlide(currentSlide + 1); // swipe left
+            if (touchEndX > touchStartX + swipeThreshold) updateSlide(currentSlide - 1); // swipe right
+        }
+
+        // Inicializa apresentação no slide 1
+        updateSlide(0);
+
+        // ==========================================
+        // SISTEMA DE PARTÍCULAS (Canvas)
+        // ==========================================
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+        let particlesActive = true;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            let numParticles = (canvas.width * canvas.height) / 15000;
+            for (let i = 0; i < numParticles; i++) particlesArray.push(new Particle());
+        }
+
+        function animateParticles() {
+            if (particlesActive) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                    particlesArray[i].draw();
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        initParticles();
+        animateParticles();
+
+
+        // ==========================================
+        // GERAÇÃO VISUAL DO QR CODE EM CANVAS
+        // Cria um padrão determinístico que se parece com um QR code real
+        // sem usar bibliotecas externas (cumprindo requisito).
+        // ==========================================
+        function drawVisualQR() {
+            const qrCanvas = document.getElementById('qr-canvas');
+            if (!qrCanvas) return;
+            const qCtx = qrCanvas.getContext('2d');
+            const size = qrCanvas.width;
+
+            // Fundo branco e margem
+            qCtx.fillStyle = '#FFFFFF';
+            qCtx.fillRect(0, 0, size, size);
+
+            const gridCells = 25; // Densidade do padrão
+            const padding = size * 0.08;
+            const contentSize = size - (padding * 2);
+            const cs = contentSize / gridCells; // Tamanho da célula
+
+            qCtx.translate(padding, padding);
+            qCtx.fillStyle = '#0F3460'; // Cor primária (azul escuro)
+
+            // Desenha os 3 marcadores de posição (quadrados concêntricos)
+            function drawMarker(gx, gy) {
+                const x = gx * cs; const y = gy * cs;
+                // Quadrado externo
+                qCtx.fillRect(x, y, cs * 7, cs * 7);
+                qCtx.fillStyle = '#FFFFFF';
+                // Vazado interno 1
+                qCtx.fillRect(x + cs, y + cs, cs * 5, cs * 5);
+                qCtx.fillStyle = '#0F3460';
+                // Quadrado central
+                qCtx.fillRect(x + cs * 2, y + cs * 2, cs * 3, cs * 3);
+            }
+
+            drawMarker(0, 0); // Top left
+            drawMarker(gridCells - 7, 0); // Top right
+            drawMarker(0, gridCells - 7); // Bottom left
+
+            // Preenche o resto com um padrão pseudo-aleatório baseado no index
+            // para parecer dados densos
+            for (let i = 0; i < gridCells; i++) {
+                for (let j = 0; j < gridCells; j++) {
+                    // Evita desenhar sobre as áreas brancas dos marcadores (safety zone)
+                    if ((i < 8 && j < 8) || (i > gridCells - 9 && j < 8) || (i < 8 && j > gridCells - 9)) {
+                        continue;
+                    }
+
+                    // Fórmula determinística para criar padrão "ruído" fixo
+                    let val = Math.sin(i * 12.9898 + j * 78.233) * 43758.5453;
+                    if (val - Math.floor(val) > 0.45) {
+                        qCtx.fillRect(i * cs, j * cs, cs + 0.5, cs + 0.5); // +0.5 para remover gaps de aliasing no canvas
+                    }
+                }
+            }
+        }
+
+        // Desenha o QR code logo após o DOM carregar
+        drawVisualQR();
+
+    </script>
+
+<script>
+/* Integração não invasiva: comunica altura e mudanças ao portal.
+   Todas as respostas continuam a ser salvas pelas funções originais. */
+(() => {
+  if (window.parent === window) return;
+  let task;
+  const tell = () => {
+    const height = Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight || 0);
+    window.parent.postMessage({type:"adc:resize",height},window.location.origin);
+  };
+  const notify = () => {
+    window.parent.postMessage({type:"adc:progress"},window.location.origin);
+    clearTimeout(task);
+    task = setTimeout(tell,100);
+  };
+  const queue = () => requestAnimationFrame(tell);
+  window.addEventListener("load",queue);
+  window.addEventListener("resize",queue);
+  document.addEventListener("input",notify,true);
+  document.addEventListener("change",notify,true);
+  document.addEventListener("click",() => setTimeout(notify,120),true);
+  if ("ResizeObserver" in window) new ResizeObserver(queue).observe(document.body);
+  queue();
+})();
+</script>
+</body>
+
+</html>

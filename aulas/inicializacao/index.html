@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-module="inicializacao">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="Ficha de Atividade Prática — Lab 03 — Arquitetura de Computadores — UENF">
+<title>AdC Lab 03 — Ficha Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --p:#004A7F; --pd:#003056; --pl:#E8F2FC; --plb:#C8DCF0;
+  --acc:#DC3233; --al:#FDEAEA;
+  --ok:#27AE60; --okl:#E4F7EC;
+  --warn:#E07B00;
+  --txt:#1C2B3A; --muted:#5A6A7A; --faint:#9AAABB;
+  --bg:#EFF2F6; --sur:#FFFFFF; --sur2:#F6F8FA;
+  --bdr:rgba(0,60,120,.11);
+  --sh0:0 1px 3px rgba(0,0,0,.07);
+  --sh1:0 4px 14px rgba(0,0,0,.09);
+  --sh2:0 12px 36px rgba(0,0,0,.13);
+  --r4:4px; --r8:8px; --r12:12px; --r16:16px; --rfull:9999px;
+  --navh:68px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:none;text-size-adjust:none;scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;font-size:16px;background:var(--bg);color:var(--txt);min-height:100dvh;padding-bottom:calc(var(--navh) + 80px)}
+img,picture,video,canvas,svg{display:block;max-width:100%;height:auto}
+input,button,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none}
+textarea{resize:vertical}
+:focus-visible{outline:2px solid var(--p);outline-offset:3px;border-radius:var(--r4)}
+a,button,[role="button"]{transition:color .18s,background .18s,border-color .18s,box-shadow .18s,opacity .18s}
+
+/* ── Progress Bar ── */
+#progress-wrap{position:sticky;top:0;z-index:100;background:var(--sur);border-bottom:1px solid var(--bdr);box-shadow:var(--sh0);padding:10px 16px 8px}
+#prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+#prog-title{font-size:.75rem;font-weight:600;color:var(--p);letter-spacing:.03em;text-transform:uppercase}
+#prog-count{font-size:.75rem;color:var(--muted)}
+#prog-bar-track{height:6px;background:var(--plb);border-radius:var(--rfull);overflow:hidden}
+#prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--p),#0072C6);border-radius:var(--rfull);transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+/* ── App Shell ── */
+#app{max-width:520px;margin:0 auto;padding:16px 16px 0}
+
+/* ── Card ── */
+.card{background:var(--sur);border-radius:var(--r16);box-shadow:var(--sh1);padding:20px;margin-bottom:16px}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.step-badge{background:var(--p);color:#fff;font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:var(--rfull);letter-spacing:.04em;white-space:nowrap}
+.card-title{font-size:1.05rem;font-weight:700;color:var(--p);line-height:1.25}
+.card-sub{font-size:.825rem;color:var(--muted);margin-top:3px;line-height:1.45}
+
+/* ── Task Box ── */
+.task-box{background:var(--pl);border-left:3px solid var(--p);border-radius:0 var(--r8) var(--r8) 0;padding:10px 12px;margin:12px 0;font-size:.85rem;font-weight:500;color:var(--pd);display:flex;gap:8px;align-items:flex-start}
+.task-icon{flex-shrink:0;margin-top:1px}
+
+/* ── Labels & Fields ── */
+.field-label{font-size:.8rem;font-weight:600;color:var(--txt);margin-bottom:5px;display:block}
+.field-hint{font-size:.75rem;color:var(--muted);margin-top:3px}
+textarea.field{width:100%;border:1.5px solid var(--bdr);border-radius:var(--r8);padding:10px 12px;font-size:.9rem;line-height:1.5;background:var(--sur2);color:var(--txt);min-height:90px;transition:border-color .18s,box-shadow .18s}
+textarea.field:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(0,74,127,.12);outline:none}
+input.field-text{width:100%;border:1.5px solid var(--bdr);border-radius:var(--r8);padding:10px 12px;font-size:.9rem;background:var(--sur2);color:var(--txt);transition:border-color .18s}
+input.field-text:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(0,74,127,.12);outline:none}
+input.field-text:read-only{background:#F0F3F6;color:var(--muted)}
+.char-count{text-align:right;font-size:.75rem;color:var(--faint);margin-top:3px}
+.char-count.warn{color:var(--warn)}
+.char-count.ok{color:var(--ok)}
+.field-group{margin-bottom:14px}
+
+/* ── Names List ── */
+.names-list{display:flex;flex-direction:column;gap:8px}
+.name-row{display:flex;align-items:center;gap:8px}
+.name-num{font-size:.75rem;font-weight:700;color:var(--p);min-width:22px}
+.name-row input{flex:1}
+.btn-remove-name{color:var(--acc);padding:4px;border-radius:var(--r4);line-height:1;font-size:1.1rem;min-width:28px;min-height:28px;display:flex;align-items:center;justify-content:center}
+.btn-remove-name:hover{background:var(--al)}
+.btn-add-name{display:flex;align-items:center;gap:6px;color:var(--p);font-size:.85rem;font-weight:600;padding:8px 0;margin-top:4px}
+.btn-add-name:hover{color:var(--pd)}
+
+/* ── Hard Radio ── */
+.hard-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.hard-btn{flex:1;min-width:80px;padding:8px 4px;border-radius:var(--r8);border:1.5px solid var(--bdr);background:var(--sur2);font-size:.82rem;font-weight:600;color:var(--muted);text-align:center;cursor:pointer;transition:all .18s;min-height:44px}
+.hard-btn:hover{border-color:var(--p);color:var(--p)}
+.hard-btn.sel-yes{background:var(--al);border-color:var(--acc);color:var(--acc)}
+.hard-btn.sel-no{background:var(--okl);border-color:var(--ok);color:var(--ok)}
+.hard-btn.sel-parcial{background:var(--pl);border-color:var(--p);color:var(--p)}
+
+/* ── Photo Upload ── */
+.photo-zone{border:2px dashed var(--plb);border-radius:var(--r12);padding:20px;text-align:center;cursor:pointer;background:var(--sur2);transition:border-color .18s,background .18s;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;position:relative}
+.photo-zone:hover,.photo-zone.dragover{border-color:var(--p);background:var(--pl)}
+.photo-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-icon{font-size:2rem;color:var(--plb)}
+.photo-label{font-size:.85rem;color:var(--muted);font-weight:500}
+.photo-label span{color:var(--p);font-weight:600}
+.photo-preview{width:100%;border-radius:var(--r8);max-height:200px;object-fit:contain;display:none}
+.photo-preview.visible{display:block}
+.photo-actions{display:none;gap:8px;justify-content:center;flex-wrap:wrap}
+.photo-actions.visible{display:flex}
+.btn-sm{font-size:.78rem;font-weight:600;padding:5px 12px;border-radius:var(--rfull);border:1.5px solid var(--bdr);background:var(--sur);color:var(--muted);min-height:32px}
+.btn-sm:hover{border-color:var(--acc);color:var(--acc)}
+.btn-sm.danger{border-color:var(--acc);color:var(--acc)}
+.btn-sm.danger:hover{background:var(--al)}
+
+/* ── Essay ── */
+.essay-area{min-height:160px}
+.essay-bar{height:3px;border-radius:var(--rfull);background:var(--bdr);margin-top:6px;overflow:hidden}
+.essay-bar-fill{height:100%;border-radius:var(--rfull);background:var(--acc);transition:width .3s,background .3s}
+
+/* ── Observations ── */
+.obs-problem-row{display:flex;gap:10px;margin:8px 0}
+.obs-btn{flex:1;padding:10px;border-radius:var(--r8);border:1.5px solid var(--bdr);font-size:.85rem;font-weight:600;color:var(--muted);text-align:center;min-height:44px;background:var(--sur2);cursor:pointer;transition:all .18s}
+.obs-btn.active-yes{background:var(--al);border-color:var(--acc);color:var(--acc)}
+.obs-btn.active-no{background:var(--okl);border-color:var(--ok);color:var(--ok)}
+.obs-extra{display:none}
+.obs-extra.visible{display:block}
+
+/* ── Result Page ── */
+.result-hero{text-align:center;padding:8px 0 16px}
+.result-hero .check{font-size:2.8rem;margin-bottom:6px}
+.result-hero h2{font-size:1.2rem;font-weight:700;color:var(--p)}
+.result-hero p{font-size:.875rem;color:var(--muted);margin-top:4px}
+.steps-summary{background:var(--sur2);border-radius:var(--r8);padding:12px 14px;margin:12px 0;font-size:.82rem;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+.sum-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sum-label{font-weight:500}
+.sum-val{color:var(--p);font-weight:600;text-align:right;max-width:60%}
+.btn-copy{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--r12);background:var(--ok);color:#fff;font-size:.95rem;font-weight:700;border:none;cursor:pointer;box-shadow:var(--sh1);transition:background .18s,transform .12s;min-height:52px}
+.btn-copy:hover{background:#229954}
+.btn-copy:active{transform:scale(.98)}
+.btn-copy.copied{background:var(--pd)}
+.instructions-box{background:var(--pl);border-radius:var(--r12);padding:14px;margin-top:14px}
+.instructions-box h4{font-size:.85rem;font-weight:700;color:var(--p);margin-bottom:8px}
+.instructions-box ol{padding-left:18px;font-size:.82rem;color:var(--txt);line-height:1.7}
+.instructions-box li{margin-bottom:2px}
+.instructions-box code{background:var(--plb);padding:1px 5px;border-radius:3px;font-size:.78rem;font-family:monospace}
+
+/* ── Navigation Buttons ── */
+#nav-wrap{position:fixed;bottom:0;left:0;right:0;z-index:99;background:var(--sur);border-top:1px solid var(--bdr);padding:10px 16px 12px;box-shadow:0 -4px 14px rgba(0,0,0,.08)}
+.nav-inner{max-width:520px;margin:0 auto;display:flex;gap:10px}
+.btn-nav{flex:1;padding:13px;border-radius:var(--r12);font-size:.9rem;font-weight:700;min-height:var(--navh);cursor:pointer;transition:all .18s;min-height:50px}
+.btn-back{background:var(--sur2);color:var(--muted);border:1.5px solid var(--bdr)}
+.btn-back:hover{border-color:var(--p);color:var(--p)}
+.btn-next{background:var(--p);color:#fff;border:1.5px solid var(--p);flex:2}
+.btn-next:hover{background:var(--pd)}
+.btn-next:active{transform:scale(.98)}
+.btn-next:disabled{background:var(--plb);border-color:var(--plb);color:#fff;cursor:not-allowed;transform:none}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);background:#1C2B3A;color:#fff;padding:10px 18px;border-radius:var(--rfull);font-size:.82rem;font-weight:500;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:200;white-space:nowrap;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.warn-toast{background:var(--warn)}
+#toast.ok-toast{background:var(--ok)}
+
+/* ── Footer ── */
+footer{text-align:center;padding:14px 16px 24px;font-size:.75rem;color:var(--faint);line-height:1.6;max-width:520px;margin:0 auto}
+footer strong{color:var(--muted)}
+
+/* ── Step fade ── */
+.step-panel{animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Responsive ── */
+@media(min-width:600px){
+  #app{padding:20px 20px 0}
+  .card{padding:24px}
+  .photo-zone{min-height:160px}
+}
+@media(min-width:768px){
+  body{padding-bottom:120px}
+  #nav-wrap{padding:12px 20px 16px}
+}
+</style>
+  <link rel="stylesheet" href="../../assets/lesson-theme.css">
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-wrap">
+  <div id="prog-header">
+    <span id="prog-title">Laboratório 03 — UENF</span>
+    <span id="prog-count">0 / 10</span>
+  </div>
+  <div id="prog-bar-track">
+    <div id="prog-bar-fill" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- App Content -->
+<div id="app"></div>
+
+<!-- Navigation -->
+<div id="nav-wrap">
+  <div class="nav-inner">
+    <button class="btn-nav btn-back" id="btn-back" onclick="navigate(-1)">← Voltar</button>
+    <button class="btn-nav btn-next" id="btn-next" onclick="navigate(1)">Avançar →</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Footer -->
+<footer>
+  <strong>Emanuel Peixoto Gomes · Zadoque Carneiro</strong><br>
+  Prof. Dr. Luis Ramirez — INF01112 Arquitetura de Computadores<br>
+  UENF — CCT · 2026
+</footer>
+
+<script>
+// ═══════════════════════════════ CONFIG ════════════════════════════════
+const SK = 'adc_lab03_v2';
+const PRACTICAL = [
+  { id:'hdr_gabinete', title:'Etapa 1 — Header do Gabinete',
+    sub:'Localize o bloco F_PANEL no canto inferior direito da placa-mãe.',
+    task:'Identifique e fotografe o header do painel frontal (F_PANEL) da placa-mãe.', hasPhoto:true,
+    descQ:'Descreva o que você observou no header F_PANEL:',
+    hardQ:'Foi difícil localizar o header F_PANEL?' },
+  { id:'cabos_painel', title:'Etapa 2 — Cabos do Painel Frontal',
+    sub:'Conecte PWR SW, RESET SW, LEDs e Speaker seguindo o silkscreen.',
+    task:'Coloque todos os cabos corretamente e fotografe o resultado.', hasPhoto:true,
+    descQ:'Descreva como foi o processo. Teve dificuldade em algum cabo?',
+    hardQ:'Algum cabo foi difícil de conectar?' },
+  { id:'hdr_audio', title:'Etapa 3 — Header de Áudio (AAFP)',
+    sub:'Localize o header AAFP (HD Audio) na placa-mãe.',
+    task:'Identifique e fotografe o header de áudio frontal.', hasPhoto:true,
+    descQ:'Descreva onde o header AAFP foi encontrado na placa-mãe:',
+    hardQ:'Foi difícil localizar o header de áudio?' },
+  { id:'cabo_audio', title:'Etapa 4 — Cabo de Áudio',
+    sub:'Encaixe o cabo HD AUDIO no header AAFP.',
+    task:'Encaixe o cabo HD AUDIO e verifique o pino bloqueado como guia de alinhamento.', hasPhoto:false,
+    descQ:'Descreva como foi o encaixe. O cabo entrou na primeira tentativa?',
+    hardQ:'Teve dificuldade para encaixar o cabo de áudio?' },
+  { id:'hdr_usb', title:'Etapa 5 — Headers USB',
+    sub:'Localize os headers USB 2.0 (9 pinos) e USB 3.0 (19 pinos) na placa-mãe.',
+    task:'Identifique e fotografe os headers USB 2.0 e USB 3.0.', hasPhoto:true,
+    descQ:'Descreva o que você observou. Quais diferenças notou entre os dois tipos?',
+    hardQ:'Foi difícil diferenciar USB 2.0 do USB 3.0?' },
+  { id:'cabo_usb', title:'Etapa 6 — Cabo USB Conectado',
+    sub:'Encaixe o cabo USB frontal no header correspondente.',
+    task:'Encaixe o cabo USB e fotografe o resultado final.', hasPhoto:true,
+    descQ:'Descreva como foi o processo. Houve alguma dificuldade?',
+    hardQ:'Houve dificuldade para encaixar o cabo USB?' },
+  { id:'speaker', title:'Etapa 7 — Speaker Interno',
+    sub:'Localize o conector do speaker interno (4 pinos, próximo ao F_PANEL).',
+    task:'Identifique o speaker e fotografe o conector.', hasPhoto:true,
+    descQ:'Descreva onde o speaker foi encontrado e como é o conector:',
+    hardQ:'Foi difícil identificar o conector do speaker?' }
+];
+const TOTAL = 10; // steps 0-9 + result = screen 10
+
+// ═══════════════════════════════ STATE ═════════════════════════════════
+function defaultState(){
+  return {
+    step: 0,
+    names: [''],
+    date: new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}),
+    practical: PRACTICAL.map(()=>({photo:null,desc:'',hard:null})),
+    essay: '',
+    obs: { text:'', problem:null, step:'', symptom:'' }
+  };
+}
+let S = defaultState();
+function loadS(){
+  try{
+    const r=localStorage.getItem(SK);
+    if(r){ const p=JSON.parse(r); if(p&&p.names) S=p; }
+  }catch(e){}
+}
+function saveS(){
+  try{ localStorage.setItem(SK,JSON.stringify(S)); }
+  catch(e){ toast('Armazenamento cheio — tente remover fotos.',true); }
+}
+
+// ═══════════════════════════════ RENDER ════════════════════════════════
+function render(){
+  updateProgress();
+  const app=document.getElementById('app');
+  if(S.step===0) app.innerHTML=renderNames();
+  else if(S.step>=1&&S.step<=7) app.innerHTML=renderPractical(S.step-1);
+  else if(S.step===8) app.innerHTML=renderEssay();
+  else if(S.step===9) app.innerHTML=renderObs();
+  else app.innerHTML=renderResult();
+
+  document.getElementById('btn-back').style.display = S.step===0?'none':'flex';
+  const nb=document.getElementById('btn-next');
+  nb.textContent = S.step>=10 ? '' : S.step===TOTAL-1 ? '✓ Concluir' : 'Avançar →';
+  nb.style.display = S.step===10 ? 'none' : 'flex';
+  nb.style.alignItems = 'center';
+  nb.style.justifyContent = 'center';
+  bindEvents();
+}
+
+function updateProgress(){
+  const pct=Math.round((S.step/TOTAL)*100);
+  document.getElementById('prog-bar-fill').style.width=pct+'%';
+  document.getElementById('prog-count').textContent=S.step+' / '+TOTAL;
+  const titles=['Identificação','Etapa 1','Etapa 2','Etapa 3','Etapa 4','Etapa 5','Etapa 6','Etapa 7','Questão Boot','Observações','Concluído'];
+  document.getElementById('prog-title').textContent=titles[Math.min(S.step,10)]||'Lab 03';
+}
+
+// ── Step 0: Names ──────────────────────────────────────────────────────
+function renderNames(){
+  const rows=S.names.map((n,i)=>`
+    <div class="name-row">
+      <span class="name-num">${i+1}.</span>
+      <input class="field-text" id="name-${i}" type="text" placeholder="Nome completo do aluno ${i+1}"
+        value="${esc(n)}" oninput="S.names[${i}]=this.value;saveS()">
+      ${i>0?`<button class="btn-remove-name" onclick="removeName(${i})" title="Remover">✕</button>`:''}
+    </div>`).join('');
+  const canAdd=S.names.length<8;
+  return `<div class="step-panel">
+    <div class="card">
+      <div class="card-head"><span class="step-badge">INÍCIO</span></div>
+      <div class="card-title">Identificação do Grupo</div>
+      <div class="card-sub">Insira os nomes dos integrantes do grupo (até 8 alunos).</div>
+    </div>
+    <div class="card">
+      <div class="field-group">
+        <label class="field-label">Alunos do grupo</label>
+        <div class="names-list">${rows}</div>
+        ${canAdd?`<button class="btn-add-name" onclick="addName()">+ Adicionar aluno</button>`:''}
+      </div>
+      <div class="field-group">
+        <label class="field-label">Data da atividade</label>
+        <input class="field-text" type="text" value="${esc(S.date)}" readonly>
+        <div class="field-hint">Preenchida automaticamente com a data de hoje.</div>
+      </div>
+    </div>
+  </div>`;
+}
+function addName(){ if(S.names.length<8){S.names.push('');saveS();render();} }
+function removeName(i){ S.names.splice(i,1);saveS();render(); }
+
+// ── Steps 1-7: Practical ───────────────────────────────────────────────
+function renderPractical(idx){
+  const cfg=PRACTICAL[idx];
+  const d=S.practical[idx];
+  const hbtn=(val,label,cls)=>`
+    <button class="hard-btn ${d.hard===val?cls:''}" onclick="setHard(${idx},'${val}')">${label}</button>`;
+  const photoSection=cfg.hasPhoto?`
+    <div class="field-group">
+      <label class="field-label">📷 Fotografia da etapa</label>
+      <div class="photo-zone" id="pzone-${idx}" ondragover="event.preventDefault();this.classList.add('dragover')"
+        ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,${idx})">
+        <input type="file" accept="image/*" capture="environment" onchange="handlePhoto(event,${idx})">
+        ${d.photo?'':`<div class="photo-icon">📸</div>
+        <div class="photo-label">Toque para tirar foto ou <span>escolher da galeria</span></div>`}
+        ${d.photo?`<img class="photo-preview visible" id="prev-${idx}" src="${d.photo}" alt="Foto etapa ${idx+1}">`:
+          `<img class="photo-preview" id="prev-${idx}" src="" alt="">`}
+      </div>
+      <div class="photo-actions ${d.photo?'visible':''}" id="pact-${idx}">
+        <button class="btn-sm danger" onclick="clearPhoto(${idx})">✕ Remover foto</button>
+      </div>
+    </div>`:
+    `<div class="task-box"><span class="task-icon">🔧</span><span>${cfg.task}</span></div>`;
+
+  return `<div class="step-panel">
+    <div class="card">
+      <div class="card-head"><span class="step-badge">ETAPA ${idx+1}</span></div>
+      <div class="card-title">${cfg.title}</div>
+      <div class="card-sub">${cfg.sub}</div>
+    </div>
+    <div class="card">
+      ${cfg.hasPhoto?`<div class="task-box"><span class="task-icon">🔧</span><span>${cfg.task}</span></div>`:''}
+      ${photoSection}
+      <div class="field-group">
+        <label class="field-label" for="desc-${idx}">${cfg.descQ}</label>
+        <textarea class="field" id="desc-${idx}" placeholder="Escreva suas observações aqui..."
+          oninput="S.practical[${idx}].desc=this.value;saveS()">${esc(d.desc)}</textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">${cfg.hardQ}</label>
+        <div class="hard-row">
+          ${hbtn('sim','✅ Sim','sel-yes')}
+          ${hbtn('nao','❌ Não','sel-no')}
+          ${hbtn('parcial','⚡ Parcialmente','sel-parcial')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function setHard(idx,val){ S.practical[idx].hard=val;saveS();render(); }
+
+// ── Step 8: Essay ──────────────────────────────────────────────────────
+function renderEssay(){
+  const len=S.essay.length;
+  const pct=Math.min(100,Math.round((len/100)*100));
+  const barColor=len>=100?'var(--ok)':len>60?'var(--warn)':'var(--acc)';
+  const cc=len>=100?'ok':len>60?'warn':'';
+  return `<div class="step-panel">
+    <div class="card">
+      <div class="card-head"><span class="step-badge">ETAPA 8</span></div>
+      <div class="card-title">Questão — Sequência de Boot</div>
+      <div class="card-sub">Responda com suas próprias palavras. Mínimo de 100 caracteres.</div>
+    </div>
+    <div class="card">
+      <div class="field-group">
+        <label class="field-label">O que ocorre em um computador após o botão Power ser pressionado?</label>
+        <div class="field-hint" style="margin-bottom:8px">Descreva a sequência de eventos, desde o botão até a imagem aparecer na tela.</div>
+        <textarea class="field essay-area" id="essay-field" placeholder="Descreva a sequência de boot com suas palavras..."
+          oninput="S.essay=this.value;saveS();updateEssayUI()">${esc(S.essay)}</textarea>
+        <div class="essay-bar"><div class="essay-bar-fill" id="essay-bar" style="width:${pct}%;background:${barColor}"></div></div>
+        <div class="char-count ${cc}" id="essay-count">${len} / 100 caracteres ${len>=100?'✓':''}</div>
+      </div>
+    </div>
+  </div>`;
+}
+function updateEssayUI(){
+  const len=S.essay.length;
+  const pct=Math.min(100,Math.round((len/100)*100));
+  const bar=document.getElementById('essay-bar');
+  const cnt=document.getElementById('essay-count');
+  if(bar){bar.style.width=pct+'%';bar.style.background=len>=100?'var(--ok)':len>60?'var(--warn)':'var(--acc)';}
+  if(cnt){cnt.textContent=`${len} / 100 caracteres ${len>=100?'✓':''}`;cnt.className='char-count '+(len>=100?'ok':len>60?'warn':'');}
+  document.getElementById('btn-next').disabled=(len<100);
+}
+
+// ── Step 9: Observations ───────────────────────────────────────────────
+function renderObs(){
+  const o=S.obs;
+  return `<div class="step-panel">
+    <div class="card">
+      <div class="card-head"><span class="step-badge">ETAPA 9</span></div>
+      <div class="card-title">Observações do Boot</div>
+      <div class="card-sub">Após ligar o computador montado pelo grupo, responda:</div>
+    </div>
+    <div class="card">
+      <div class="field-group">
+        <label class="field-label">O que foi observado ao pressionar o botão Power?</label>
+        <textarea class="field" id="obs-text" placeholder="Ex: Fans giraram, LEDs acenderam, apareceu tela do BIOS..."
+          oninput="S.obs.text=this.value;saveS()">${esc(o.text)}</textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Este computador apresentou algum problema?</label>
+        <div class="obs-problem-row">
+          <button class="obs-btn ${o.problem===true?'active-yes':''}" onclick="setProblem(true)">⚠️ Sim</button>
+          <button class="obs-btn ${o.problem===false?'active-no':''}" onclick="setProblem(false)">✅ Não — tudo OK</button>
+        </div>
+      </div>
+      <div class="obs-extra ${o.problem===true?'visible':''}" id="obs-extra">
+        <div class="field-group">
+          <label class="field-label">Em qual etapa da sequência de boot o erro ocorreu?</label>
+          <input class="field-text" id="obs-step" type="text" placeholder="Ex: Etapa 7 — POST / RAM"
+            value="${esc(o.step)}" oninput="S.obs.step=this.value;saveS()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Qual foi o sintoma exato?</label>
+          <textarea class="field" id="obs-sym" placeholder="Ex: Beep longo repetido, nenhuma imagem na tela..."
+            oninput="S.obs.symptom=this.value;saveS()">${esc(o.symptom)}</textarea>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function setProblem(v){
+  S.obs.problem=v;saveS();
+  document.querySelectorAll('.obs-btn').forEach(b=>b.className='obs-btn');
+  if(v===true) document.querySelectorAll('.obs-btn')[0].className='obs-btn active-yes';
+  else document.querySelectorAll('.obs-btn')[1].className='obs-btn active-no';
+  const ex=document.getElementById('obs-extra');
+  if(ex) ex.className='obs-extra'+(v?' visible':'');
+}
+
+// ── Step 10: Result ────────────────────────────────────────────────────
+function renderResult(){
+  const filled=S.practical.filter(p=>p.desc.trim()).length;
+  const photos=S.practical.filter(p=>p.photo).length;
+  return `<div class="step-panel">
+    <div class="card result-hero">
+      <div class="check">🎉</div>
+      <h2>Atividade Concluída!</h2>
+      <p>Gere o código LaTeX e compile no Texpage.com</p>
+    </div>
+    <div class="card">
+      <div class="steps-summary">
+        <div class="sum-row"><span class="sum-label">Alunos</span><span class="sum-val">${S.names.filter(n=>n.trim()).join(', ')||'—'}</span></div>
+        <div class="sum-row"><span class="sum-label">Data</span><span class="sum-val">${S.date}</span></div>
+        <div class="sum-row"><span class="sum-label">Etapas preenchidas</span><span class="sum-val">${filled} / 7</span></div>
+        <div class="sum-row"><span class="sum-label">Fotos tiradas</span><span class="sum-val">${photos} / 6</span></div>
+        <div class="sum-row"><span class="sum-label">Questão boot</span><span class="sum-val">${S.essay.length>=100?'✓ Respondida':'⚠ Incompleta'}</span></div>
+        <div class="sum-row"><span class="sum-label">Observações</span><span class="sum-val">${S.obs.text?'✓ Preenchidas':'— Não preenchidas'}</span></div>
+      </div>
+      <button class="btn-copy" id="btn-copy-latex" onclick="copyLatex()">
+        <span>📋</span><span>Copiar código LaTeX</span>
+      </button>
+      <div class="instructions-box">
+        <h4>📌 Como compilar no Texpage.com</h4>
+        <ol>
+          <li>Acesse <code>texpage.com</code> → <em>New Project → Blank</em></li>
+          <li>Cole o código copiado no editor (<code>main.tex</code>)</li>
+          <li>Faça upload das fotos com os nomes:<br>
+            <code>foto_etapa1.jpg</code>, <code>foto_etapa2.jpg</code> ... <code>foto_etapa7.jpg</code><br>
+            <em>(exceto etapa 4 que não tem foto)</em></li>
+          <li>Clique em <strong>Compile</strong> (ou Ctrl+Enter)</li>
+          <li>Baixe o PDF gerado</li>
+        </ol>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn-sm" style="width:100%;padding:10px;color:var(--acc);border-color:var(--acc)" onclick="if(confirm('Isso apagará todos os dados. Confirma?')){localStorage.removeItem('${SK}');S=defaultState();render();}">🗑 Reiniciar ficha</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── LaTeX Generation ───────────────────────────────────────────────────
+function genLatex(){
+  const ns=S.names.filter(n=>n.trim());
+  const nl=ns.map((n,i)=>`  \\textbf{Aluno(a) ${i+1}:} ${latexEsc(n)}`).join(' \\\\\n');
+  const blocks=S.practical.map((d,i)=>{
+    const cfg=PRACTICAL[i];
+    const hardMap={'sim':'Sim','nao':'Não','parcial':'Parcialmente',null:'Não respondido'};
+    const photoLine=cfg.hasPhoto?
+      `  \\fotovazia{foto_etapa${i===3?'':(i+1)}.jpg}\n  \\\\[6pt]`:
+      `  \\begin{tcolorbox}[resposta]\n    (Etapa sem fotografia)\n  \\end{tcolorbox}`;
+    return `
+% ── Etapa ${i+1}: ${cfg.title} ──
+\\begin{tcolorbox}[etapa={${latexEsc(cfg.title)}}]
+  \\begin{minipage}[t]{${cfg.hasPhoto?'0.44':'0.98'}\\linewidth}
+${photoLine}
+  \\end{minipage}
+  ${cfg.hasPhoto?'\\hfill\n  \\begin{minipage}[t]{0.52\\linewidth}':''}
+  \\campo{${latexEsc(cfg.descQ)}}{%
+    ${latexEsc(d.desc)||'\\vspace{2.5cm}'}
+  }
+  \\\\[4pt]
+  \\textbf{\\small ${latexEsc(cfg.hardQ)}}\\\\[3pt]
+  Resposta: \\textbf{${hardMap[d.hard]}}
+  ${cfg.hasPhoto?'\\end{minipage}':''}
+\\end{tcolorbox}
+\\vspace{8pt}
+`;}).join('\n');
+
+  const problemText=S.obs.problem===true?
+    `\\item \\textbf{Problema identificado:} Sim\\\\
+    Etapa: ${latexEsc(S.obs.step)||'Não especificada'}\\\\
+    Sintoma: ${latexEsc(S.obs.symptom)||'Não descrito'}`:
+    `\\item \\textbf{Problema identificado:} ${S.obs.problem===false?'Não — funcionou corretamente':'Não informado'}`;
+
+  return `\\documentclass[a4paper,11pt]{article}
+\\usepackage[a4paper,top=2cm,bottom=2cm,left=2.5cm,right=2.5cm]{geometry}
+\\usepackage[brazil]{babel}
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage{graphicx}
+\\usepackage{xcolor}
+\\usepackage{tcolorbox}
+\\usepackage{booktabs}
+\\usepackage{lmodern}
+\\usepackage{fancyhdr}
+\\tcbuselibrary{skins,breakable}
+
+\\definecolor{primary}{RGB}{0,74,127}
+\\definecolor{accent}{RGB}{220,50,47}
+\\definecolor{lightgray}{RGB}{245,245,245}
+\\definecolor{photobg}{RGB}{230,234,240}
+
+\\pagestyle{fancy}\\fancyhf{}
+\\fancyhead[L]{\\textcolor{primary}{\\small\\textbf{UENF}} | INF01112 -- Arquitetura de Computadores}
+\\fancyhead[R]{\\textcolor{primary}{\\small Lab 03}}\\fancyfoot[C]{\\thepage}
+
+\\tcbset{
+  etapa/.style={enhanced,colback=lightgray,colframe=primary,colbacktitle=primary,coltitle=white,
+    fonttitle=\\bfseries\\small,title=#1,top=4pt,bottom=4pt,left=6pt,right=6pt,boxrule=0.8pt,arc=4pt,breakable},
+  foto/.style={enhanced,colback=photobg,colframe=primary!40,boxrule=0.6pt,arc=4pt,
+    halign=center,valign=center,fontupper=\\small\\color{primary!60},height=5.5cm},
+  resposta/.style={enhanced,colback=white,colframe=primary!30,boxrule=0.5pt,arc=4pt,breakable},
+  alerta/.style={enhanced,colback=accent!8,colframe=accent,colbacktitle=accent,coltitle=white,
+    fonttitle=\\bfseries\\small,boxrule=0.6pt,arc=4pt,breakable}
+}
+\\newcommand{\\campo}[2]{\\begin{tcolorbox}[resposta,title=\\textcolor{primary}{\\small #1}]#2\\end{tcolorbox}}
+\\newcommand{\\fotovazia}[1]{\\begin{tcolorbox}[foto]\\textit{Inserir foto:}\\\\[4pt]\\texttt{\\small #1}\\end{tcolorbox}}
+
+\\begin{document}
+\\begin{center}
+  {\\Large\\bfseries\\color{primary}Ficha de Atividade Pr\\'atica -- Laborat\\'orio 03}\\\\[4pt]
+  {\\large Cabos, Headers do Painel e Primeiro Boot}\\\\[8pt]
+  {\\small\\color{gray}UENF -- CCT \\quad|\\quad INF01112 \\quad|\\quad Prof.\\ Dr.\\ Luis Ramirez}
+\\end{center}
+\\vspace{4pt}\\noindent\\rule{\\linewidth}{1.2pt}\\vspace{6pt}
+
+\\begin{tcolorbox}[etapa={Identifica\\c{c}\\~ao do Grupo}]
+${nl}\\\\[4pt]
+  \\textbf{Data:} ${latexEsc(S.date)} \\hspace{2cm} \\textbf{Turma:} \\hrulefill
+\\end{tcolorbox}
+\\vspace{10pt}
+
+${blocks}
+\\newpage
+
+\\begin{tcolorbox}[alerta={Etapa 8 -- Quest\\~ao Dissertativa (m\\'inimo 100 caracteres)}]
+  \\textbf{O que ocorre em um computador ap\\'os o bot\\~ao Power ser pressionado?}\\\\
+  \\textit{Descreva a sequ\\^encia de eventos, desde o bot\\~ao at\\'e a imagem aparecer na tela.}
+  \\tcblower
+  ${latexEsc(S.essay)||'\\vspace{5cm}'}
+\\end{tcolorbox}
+\\vspace{8pt}
+
+\\begin{tcolorbox}[etapa={Etapa 9 -- Observa\\c{c}\\~oes do Boot}]
+  \\campo{O que foi observado ao ligar este computador?}{${latexEsc(S.obs.text)||'\\vspace{3cm}'}}
+  \\begin{itemize}
+    ${problemText}
+  \\end{itemize}
+\\end{tcolorbox}
+
+\\vspace{12pt}
+\\begin{center}
+  \\begin{tabular}{p{0.44\\linewidth}p{0.44\\linewidth}}
+    \\centering\\rule{0.42\\linewidth}{0.4pt}\\\\{\\small Assinatura do Professor} &
+    \\centering\\rule{0.42\\linewidth}{0.4pt}\\\\{\\small Data de entrega}
+  \\end{tabular}
+\\end{center}
+\\end{document}`;
+}
+
+function copyLatex(){
+  const code=genLatex();
+  navigator.clipboard.writeText(code).then(()=>{
+    const btn=document.getElementById('btn-copy-latex');
+    btn.innerHTML='<span>✓</span><span>Copiado!</span>';
+    btn.classList.add('copied');
+    toast('Código LaTeX copiado! Agora cole no Texpage.com',false,true);
+    setTimeout(()=>{btn.innerHTML='<span>📋</span><span>Copiar código LaTeX</span>';btn.classList.remove('copied');},3000);
+  }).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=code;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('Código LaTeX copiado!',false,true);
+  });
+}
+
+// ── Navigation ─────────────────────────────────────────────────────────
+function navigate(dir){
+  if(dir===1){
+    if(S.step===8&&S.essay.length<100){toast('Escreva pelo menos 100 caracteres na questão!',true);return;}
+    if(S.step===0&&!S.names.filter(n=>n.trim()).length){toast('Adicione pelo menos um nome!',true);return;}
+    if(S.step>=TOTAL) return;
+  } else {
+    if(S.step<=0) return;
+  }
+  S.step+=dir;
+  saveS();render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── Photo Handling ──────────────────────────────────────────────────────
+function handlePhoto(e,idx){
+  const f=e.target.files[0];
+  if(!f) return;
+  compressImg(f,b64=>{S.practical[idx].photo=b64;saveS();render();});
+}
+function handleDrop(e,idx){
+  e.preventDefault();
+  document.getElementById(`pzone-${idx}`).classList.remove('dragover');
+  const f=e.dataTransfer.files[0];
+  if(!f||!f.type.startsWith('image/')) return;
+  compressImg(f,b64=>{S.practical[idx].photo=b64;saveS();render();});
+}
+function clearPhoto(idx){ S.practical[idx].photo=null;saveS();render(); }
+function compressImg(file,cb){
+  const r=new FileReader();
+  r.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      const max=900; const sc=Math.min(1,max/Math.max(img.width,img.height));
+      canvas.width=img.width*sc; canvas.height=img.height*sc;
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      cb(canvas.toDataURL('image/jpeg',.72));
+    };
+    img.src=e.target.result;
+  };
+  r.readAsDataURL(file);
+}
+
+// ── Utilities ──────────────────────────────────────────────────────────
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function latexEsc(s){
+  return(s||'').replace(/\\/g,'\\textbackslash{}')
+    .replace(/~/g,'\\textasciitilde{}').replace(/\^/g,'\\textasciicircum{}')
+    .replace(/([&%$#_{}])/g,'\\$1');
+}
+function toast(msg,warn,ok){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='show'+(warn?' warn-toast':ok?' ok-toast':'');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.className='',3200);
+}
+
+// ── Bind dynamic events (essay min-length check) ────────────────────────
+function bindEvents(){
+  if(S.step===8){
+    const nb=document.getElementById('btn-next');
+    if(nb) nb.disabled=(S.essay.length<100);
+  }
+}
+
+// ── Init ───────────────────────────────────────────────────────────────
+loadS();render();
+</script>
+
+<script>
+/* Integração não invasiva: comunica altura e mudanças ao portal.
+   Todas as respostas continuam a ser salvas pelas funções originais. */
+(() => {
+  if (window.parent === window) return;
+  let task;
+  const tell = () => {
+    const height = Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight || 0);
+    window.parent.postMessage({type:"adc:resize",height},window.location.origin);
+  };
+  const notify = () => {
+    window.parent.postMessage({type:"adc:progress"},window.location.origin);
+    clearTimeout(task);
+    task = setTimeout(tell,100);
+  };
+  const queue = () => requestAnimationFrame(tell);
+  window.addEventListener("load",queue);
+  window.addEventListener("resize",queue);
+  document.addEventListener("input",notify,true);
+  document.addEventListener("change",notify,true);
+  document.addEventListener("click",() => setTimeout(notify,120),true);
+  if ("ResizeObserver" in window) new ResizeObserver(queue).observe(document.body);
+  queue();
+})();
+</script>
+</body>
+</html>

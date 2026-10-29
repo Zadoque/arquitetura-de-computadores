@@ -120,6 +120,18 @@ Por compatibilidade, algumas particularidades dos exercícios continuam existent
 4. Se a aula tiver `localStorage`, escolha uma chave única e acrescente-a à lista `STORAGE_KEYS` para habilitar backup e detecção de dados salvos.
 5. Verifique a experiência em celular, navegação por teclado, ida e volta entre aulas, recarga de página, persistência, fotos e LaTeX.
 
+## Testes automatizados
+
+A pasta `tests/` contém verificações sem dependências externas, executáveis com Node.js 22+:
+
+```bash
+node --test tests/smoke.test.mjs
+```
+
+Os testes verificam: existência das cinco aulas, caminhos da navegação, chaves de armazenamento, integridade da integração, sintaxe dos scripts internos, recursos da apresentação e suporte a backup. O workflow `.github/workflows/validate.yml` executa esses testes automaticamente em pushes e pull requests. **Eles são testes estáticos**: para certificar fotos, LaTeX, navegação de etapas e funcionamento em dispositivos reais, continue usando o checklist manual abaixo.
+
+**Nota de UX:** o Laboratório 3 mantém a barra de navegação original fixa dentro do seu quadro, com rolagem interna no conteúdo, para que os botões de avanço e retorno permaneçam acessíveis durante o preenchimento. Os demais módulos ajustam a altura de sua área de exibição conforme o conteúdo.
+
 ## Checklist de teste manual recomendado
 
 - Abrir o portal em 360 px, 390 px, tablet e desktop, sem rolagem horizontal.

@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-module="aula4-relatorio">
+<head>
+  <meta charset="UTF-8" />
+  <title>Arquitetura de Computadores - Aula 4</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-soft: #0b1020;
+      --bg-card: #111827;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59, 130, 246, 0.12);
+      --accent-strong: #2563eb;
+      --danger: #dc2626;
+      --text: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(148, 163, 184, 0.3);
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
+      --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 45%, #000 100%);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 900px;
+      background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), transparent 55%),
+                  radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.18), transparent 55%),
+                  var(--bg-soft);
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: var(--shadow-soft);
+      padding: 1.5rem 1.25rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding: 2rem;
+      }
+      .app-shell {
+        padding: 1.75rem 1.75rem 1.5rem;
+      }
+    }
+
+    header.app-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-soft);
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      padding: 0.25rem 0.8rem;
+      backdrop-filter: blur(8px);
+      width: fit-content;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
+    }
+
+    .app-title {
+      font-size: clamp(1.35rem, 4vw, 1.7rem);
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.35rem;
+    }
+
+    .app-title span.highlight {
+      background: linear-gradient(135deg, #60a5fa, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .meta-line {
+      margin-top: 0.25rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .meta-line strong {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .progress-shell {
+      margin-top: 0.6rem;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .progress-bar {
+      position: relative;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.95);
+      overflow: hidden;
+      border: 1px solid rgba(30, 64, 175, 0.7);
+    }
+
+    .progress-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #3b82f6, #22c55e);
+      transition: width var(--transition);
+      box-shadow: 0 0 24px rgba(59, 130, 246, 0.7);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin-top: 0.75rem;
+    }
+
+    .card {
+      flex: 1;
+      border-radius: var(--radius-lg);
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 1.1rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .card {
+        padding: 1.25rem 1.4rem;
+      }
+    }
+
+    .step {
+      display: none;
+      flex-direction: column;
+      gap: 0.75rem;
+      height: 100%;
+    }
+
+    .step.active {
+      display: flex;
+    }
+
+    .step-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      align-items: baseline;
+    }
+
+    .step-title span.index {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .step-description {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .fields {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-top: 0.25rem;
+      overflow: auto;
+      padding-right: 0.1rem;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+
+    .field-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .field-inline {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .field-inline .field-row {
+      flex: 1 1 140px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="url"],
+    textarea {
+      width: 100%;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      padding: 0.55rem 0.7rem;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(148, 163, 184, 0.7);
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent-strong);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
+      background: rgba(15, 23, 42, 0.98);
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .hint {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .error {
+      font-size: 0.8rem;
+      color: var(--danger);
+      margin-top: 0.15rem;
+    }
+
+    .students-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .student-card {
+      padding: 0.5rem 0.55rem;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .student-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .student-header strong {
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+
+    .student-header span {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 0.55rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition), transform var(--transition), box-shadow var(--transition), opacity var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #22c55e);
+      color: white;
+      box-shadow: 0 14px 35px rgba(37, 99, 235, 0.5);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 45px rgba(37, 99, 235, 0.65);
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--accent);
+      border: 1px dashed rgba(59, 130, 246, 0.6);
+    }
+
+    .btn[disabled] {
+      opacity: 0.45;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .footer-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.75rem;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-nav-left,
+    .footer-nav-right {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .copy-area {
+      margin-top: 0.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .copy-area textarea {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.72rem;
+      line-height: 1.4;
+      height: 220px;
+      background: rgba(15, 23, 42, 0.98);
+    }
+
+    .copy-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .copy-status {
+      font-size: 0.8rem;
+      color: #22c55e;
+    }
+
+    .welcome-hero {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .welcome-box {
+      border-radius: 18px;
+      padding: 0.8rem 0.9rem;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.99));
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .welcome-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .welcome-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.2rem;
+    }
+
+    .pill {
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--text-muted);
+    }
+
+    .teacher-line {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .teacher-line strong {
+      color: #e5e7eb;
+    }
+
+    .students-line {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .students-line strong {
+      color: #e5e7eb;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #020617;
+      border-radius: 16px;
+      padding: 1rem 1rem 0.9rem;
+      width: min(360px, 90vw);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .modal-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .modal-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .modal-footer {
+      margin-top: 0.6rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.4rem;
+    }
+
+    footer.app-footer {
+      margin-top: 0.25rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.4);
+      padding-top: 0.4rem;
+    }
+
+    footer.app-footer strong {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+  </style>
+  <link rel="stylesheet" href="../../assets/lesson-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        <span>Aula 4 · Laboratório</span>
+      </div>
+      <div class="app-title">
+        <span>Relatório de Montagem</span>
+        <span class="highlight">HDD, BIOS e SO</span>
+      </div>
+      <p class="subtitle">
+        Preencha cada etapa com as observações do grupo. Ao final, copie o código LaTeX e cole no texpage.com.
+      </p>
+      <div class="meta-line">
+        <strong>Professor:</strong> Dr. Luis Ramirez ·
+        <strong>Equipe base:</strong> Zadoque Carneiro &amp; Emanuel Peixoto
+      </div>
+      <div id="progressShell" class="progress-shell" style="display:none;">
+        <div class="progress-label">
+          <span id="progressText">Etapa 1 de 10</span>
+          <span id="progressPercent">10%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="card">
+        <!-- Etapa 0: Boas-vindas -->
+        <section id="step-0" class="step active">
+          <div class="welcome-hero">
+            <div class="welcome-box">
+              <div class="welcome-title">Bem-vindo ao Relatório da 4ª Aula</div>
+              <p class="welcome-text">
+                Nesta aula você vai trabalhar com um HD (HDD), BIOS e escolha de Sistema Operacional.
+                O objetivo deste site é gerar automaticamente um relatório em LaTeX para ser compilado no texpage.com.
+              </p>
+              <div class="pill-row">
+                <span class="pill">Montagem e testes com HDD</span>
+                <span class="pill">Registro fotográfico das etapas</span>
+                <span class="pill">Configurações de BIOS</span>
+                <span class="pill">Escolha do Sistema Operacional</span>
+              </div>
+            </div>
+            <div class="welcome-box">
+              <p class="teacher-line">
+                <strong>Professor responsável:</strong> Dr. Luis Ramirez
+              </p>
+              <p class="students-line">
+                <strong>Alunos base:</strong> Zadoque Carneiro &amp; Emanuel Peixoto
+              </p>
+              <p class="welcome-text">
+                Clique em <strong>Começar</strong>, cadastre os nomes e matrículas do grupo e avance pelas etapas.
+                No final, o grupo copia o código LaTeX gerado e cola diretamente no texpage.com.
+              </p>
+            </div>
+            <div>
+              <button id="startBtn" class="btn btn-primary">
+                Começar
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Etapa 1: Alunos -->
+        <section id="step-1" class="step">
+          <div class="step-title">
+            <span>Identificação do grupo</span>
+            <span class="index">Etapa 1 · Alunos</span>
+          </div>
+          <p class="step-description">
+            Cadastre o nome e a matrícula de todos os membros do grupo. Pelo menos 2 alunos são obrigatórios.
+          </p>
+          <div class="fields">
+            <div class="students-list" id="studentsList"></div>
+            <button id="addStudentBtn" type="button" class="btn btn-ghost">
+              + Adicionar aluno
+            </button>
+            <p class="hint">
+              Dica: escreva o nome normalmente; o sistema ajusta automaticamente as iniciais para maiúsculas.
+            </p>
+            <p id="studentsError" class="error" style="display:none;"></p>
+          </div>
+        </section>
+
+        <!-- Etapa 2: HDD que funcionou -->
+        <section id="step-2" class="step">
+          <div class="step-title">
+            <span>HDD que funcionou</span>
+            <span class="index">Etapa 2 · HDD</span>
+          </div>
+          <p class="step-description">
+            Registre as informações do HD (HDD) que funcionou corretamente no computador.
+          </p>
+          <div class="fields">
+            <div class="field-row">
+              <label>Nome do arquivo da foto (para o LaTeX)</label>
+              <input type="text" value="foto_hd_funcionando.png" disabled />
+              <p class="hint">Tire a foto do HDD que funcionou e salve como <strong>foto_hd_funcionando.png</strong>.</p>
+            </div>
+            <div class="field-inline">
+              <div class="field-row">
+                <label for="hddBrand">Marca / Fabricante do HDD</label>
+                <input id="hddBrand" name="hddBrand" type="text" placeholder="Ex.: Seagate, Western Digital..." />
+              </div>
+              <div class="field-row">
+                <label for="hddCapacity">Capacidade (GB ou TB)</label>
+                <input id="hddCapacity" name="hddCapacity" type="text" placeholder="Ex.: 500 GB, 1 TB" />
+              </div>
+              <div class="field-row">
+                <label for="hddRpm">Velocidade de rotação (RPM)</label>
+                <input id="hddRpm" name="hddRpm" type="text" placeholder="Ex.: 5400 RPM, 7200 RPM" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Etapa 3: HDD no gabinete e conectado -->
+        <section id="step-3" class="step">
+          <div class="step-title">
+            <span>HDD no gabinete e conectado</span>
+            <span class="index">Etapa 3 · HDD + SATA</span>
+          </div>
+          <p class="step-description">
+            Registre o processo até encontrar uma combinação de HDD + cabo SATA que funcionou corretamente.
+          </p>
+          <div class="fields">
+            <div class="field-row">
+              <label>Nome do arquivo da foto (para o LaTeX)</label>
+              <input type="text" value="foto_hd_gabinete_placa_mae.png" disabled />
+              <p class="hint">
+                Foto do HDD dentro do gabinete e conectado na placa-mãe.
+                Salvar como <strong>foto_hd_gabinete_placa_mae.png</strong>.
+              </p>
+            </div>
+            <div class="field-inline">
+              <div class="field-row">
+                <label for="hddCountTested">Quantos HDDs foram testados até encontrar um funcionando?</label>
+                <input id="hddCountTested" name="hddCountTested" type="number" min="0" inputmode="numeric" />
+              </div>
+              <div class="field-row">
+                <label for="sataCountTested">Quantos cabos SATA foram testados até funcionar?</label>
+                <input id="sataCountTested" name="sataCountTested" type="number" min="0" inputmode="numeric" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Etapa 4: Placa-mãe -->
+        <section id="step-4" class="step">
+          <div class="step-title">
+            <span>Placa-mãe utilizada</span>
+            <span class="index">Etapa 4 · Motherboard</span>
+          </div>
+          <p class="step-description">
+            Identifique o modelo da placa-mãe utilizada no computador montado.
+          </p>
+          <div class="fields">
+            <div class="field-row">
+              <label>Nome do arquivo da foto (para o LaTeX)</label>
+              <input type="text" value="foto_mobo.png" disabled />
+              <p class="hint">Foto nítida da placa-mãe. Salvar como <strong>foto_mobo.png</strong>.</p>
+            </div>
+            <div class="field-row">
+              <label for="moboModel">Marca e modelo da placa-mãe</label>
+              <input id="moboModel" name="moboModel" type="text" placeholder="Ex.: ASUS P8H61-M LX3 R2.0" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Etapa 5: BIOS -->
+        <section id="step-5" class="step">
+          <div class="step-title">
+            <span>Informações da BIOS</span>
+            <span class="index">Etapa 5 · BIOS</span>
+          </div>
+          <p class="step-description">
+            Registre a tela principal da BIOS, incluindo tecla de acesso e versão instalada.
+          </p>
+          <div class="fields">
+            <div class="field-row">
+              <label>Nome do arquivo da foto (para o LaTeX)</label>
+              <input type="text" value="foto_bios.png" disabled />
+              <p class="hint">Foto da tela principal da BIOS. Salvar como <strong>foto_bios.png</strong>.</p>
+            </div>
+            <div class="field-inline">
+              <div class="field-row">
+                <label for="biosKey">Tecla para acessar a BIOS</label>
+                <input id="biosKey" name="biosKey" type="text" placeholder="Ex.: DEL, F2, F10..." />
+              </div>
+              <div class="field-row">
+                <label for="biosVersion">Versão da BIOS</label>
+                <input id="biosVersion" name="biosVersion" type="text" placeholder="Ex.: 2203, 1.0.0, 1404..." />
+              </div>
+            </div>
+            <div class="field-row">
+              <label for="biosNeedsUpdate">A BIOS precisa ser atualizada? Justifique brevemente.</label>
+              <textarea id="biosNeedsUpdate" name="biosNeedsUpdate" placeholder="Explique se seria ou não recomendado atualizar a BIOS nesse computador."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- Etapa 6: CPU na BIOS -->
+        <section id="step-6" class="step">
+          <div class="step-title">
+            <span>Processador na BIOS</span>
+            <span class="index">Etapa 6 · CPU</span>
+          </div>
+          <p class="step-description">
+            Registre o modelo do processador conforme aparece na BIOS e seu desempenho em benchmark.
+          </p>
+          <div class="fields">
+            <div class="field-row">
+              <label>Nome do arquivo da foto (para o LaTeX)</label>
+              <input type="text" value="foto_cpu_bios.png" disabled />
+              <p class="hint">
+                Foto da tela da BIOS que mostra o modelo do processador. Salvar como <strong>foto_cpu_bios.png</strong>.
+              </p>
+            </div>
+            <div class="field-row">
+              <label for="cpuBenchmark">Score em benchmark (e qual benchmark foi usado)</label>
+              <textarea id="cpuBenchmark" name="cpuBenchmark" placeholder="Ex.: 3200 pontos no Cinebench R23 (multi-core)."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- Etapa 7: HDD reconhecido na BIOS -->
+        <section id="step-7" class="step">
+          <div class="step-title">
+            <span>HDD reconhecido na BIOS</span>
+            <span class="index">Etapa 7 · HDD na BIOS</span>
+          </div>
+          <p class="step-description">
+            Comprove que o HD foi reconhecido corretamente na BIOS, incluindo a capacidade detectada.
+          </p>
+          <div class="fields">
+            <div class="field-row">
+              <label>Nome do arquivo da foto (para o LaTeX)</label>
+              <input type="text" value="foto_hd_bios.png" disabled />
+              <p class="hint">
+                Foto da tela da BIOS listando o HDD e sua capacidade. Salvar como <strong>foto_hd_bios.png</strong>.
+              </p>
+            </div>
+            <div class="field-row">
+              <label for="hddCapacityConfirmed">A capacidade foi confirmada na BIOS? Descreva.</label>
+              <textarea id="hddCapacityConfirmed" name="hddCapacityConfirmed" placeholder="Ex.: BIOS mostra 465 GB para um HDD de 500 GB (capacidade formatada)."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- Etapa 8: Temperatura na BIOS -->
+        <section id="step-8" class="step">
+          <div class="step-title">
+            <span>Temperatura na BIOS</span>
+            <span class="index">Etapa 8 · Temperatura</span>
+          </div>
+          <p class="step-description">
+            Observe a temperatura do processador na BIOS e verifique se ela se mantém estável após alguns minutos.
+          </p>
+          <div class="fields">
+            <div class="field-row">
+              <label>Nome do arquivo da foto (para o LaTeX)</label>
+              <input type="text" value="foto_temperatura_bios.png" disabled />
+              <p class="hint">
+                Foto da tela da BIOS exibindo a temperatura do processador. Salvar como <strong>foto_temperatura_bios.png</strong>.
+              </p>
+            </div>
+            <div class="field-row">
+              <label for="tempStable">A temperatura fica estável? Descreva o comportamento observado.</label>
+              <textarea id="tempStable" name="tempStable" placeholder="Ex.: Após 5 minutos, a temperatura ficou entre 40°C e 45°C, sem oscilações bruscas."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- Etapa 9: Sistema Operacional -->
+        <section id="step-9" class="step">
+          <div class="step-title">
+            <span>Sistema Operacional escolhido</span>
+            <span class="index">Etapa 9 · SO</span>
+          </div>
+          <p class="step-description">
+            Escolha um Sistema Operacional para este computador e justifique a escolha. O link e o QR Code serão incluídos no LaTeX.
+          </p>
+          <div class="fields">
+            <div class="field-row">
+              <label for="osName">Qual Sistema Operacional?</label>
+              <input id="osName" name="osName" type="text" placeholder="Ex.: Windows 10, Ubuntu 24.04 LTS, Linux Mint 22..." />
+            </div>
+            <div class="field-row">
+              <label for="osDownloadUrl">Link oficial de download do SO</label>
+              <input id="osDownloadUrl" name="osDownloadUrl" type="url" placeholder="Cole aqui o link de download oficial do Sistema Operacional" />
+              <p class="hint">
+                Este link aparecerá no relatório em LaTeX e também será usado para gerar o QR Code.
+              </p>
+            </div>
+            <div class="field-row">
+              <label for="osWhy">Por que esse Sistema Operacional?</label>
+              <textarea id="osWhy" name="osWhy" placeholder="Explique os motivos da escolha (compatibilidade, leveza, suporte, etc.)."></textarea>
+            </div>
+            <div class="field-row">
+              <label for="osUsage">Qual uso esperado com esse SO?</label>
+              <textarea id="osUsage" name="osUsage" placeholder="Ex.: Navegação, edição de texto, planilhas, jogos específicos, laboratório de programação..."></textarea>
+            </div>
+            <div class="field-row">
+              <label for="osYears">Quantos anos esse PC poderá ser usado com esse SO?</label>
+              <input id="osYears" name="osYears" type="text" placeholder="Ex.: Aproximadamente 3 anos com atualizações de segurança." />
+            </div>
+          </div>
+        </section>
+
+        <!-- Etapa 10: Conclusão + LaTeX -->
+        <section id="step-10" class="step">
+          <div class="step-title">
+            <span>Conclusão do grupo + LaTeX</span>
+            <span class="index">Etapa 10 · Final</span>
+          </div>
+          <p class="step-description">
+            Escreva a conclusão do grupo sobre a montagem, testes com o HDD e escolha do Sistema Operacional. Em seguida, copie o código LaTeX gerado.
+          </p>
+          <div class="fields">
+            <div class="field-row">
+              <label for="conclusion">Conclusão final do grupo</label>
+              <textarea id="conclusion" name="conclusion" placeholder="Relate o que aprenderam, principais dificuldades encontradas e quais cuidados são importantes ao montar um computador com HDD."></textarea>
+            </div>
+            <div class="copy-area">
+              <p class="copy-hint">
+                Abaixo está o código LaTeX pronto. Após finalizar o preenchimento, clique em
+                <strong>Copiar LaTeX</strong> e cole diretamente no <strong>texpage.com</strong>.
+              </p>
+              <textarea id="latexOutput" readonly></textarea>
+              <div class="footer-nav-right" style="justify-content:flex-start;">
+                <button id="copyLatexBtn" type="button" class="btn btn-primary">
+                  Copiar LaTeX
+                </button>
+                <span id="copyStatus" class="copy-status" style="display:none;">Copiado!</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="footer-nav">
+        <div class="footer-nav-left">
+          <button id="backBtn" type="button" class="btn btn-secondary" disabled>
+            ← Voltar
+          </button>
+        </div>
+        <div class="footer-nav-right">
+          <button id="nextBtn" type="button" class="btn btn-primary">
+            Avançar →
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <span><strong>Professor:</strong> Dr. Luis Ramirez</span>
+      <span><strong>Alunos base:</strong> Zadoque Carneiro &amp; Emanuel Peixoto</span>
+    </footer>
+  </div>
+
+  <!-- Modal de confirmação de foto -->
+  <div id="photoModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal">
+      <div class="modal-title">Você tirou a foto desta etapa?</div>
+      <p class="modal-text">
+        Lembre-se de registrar a foto correspondente a esta etapa para anexar depois na compilação do LaTeX no texpage.com.
+      </p>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="modalCancelBtn">Ainda não</button>
+        <button type="button" class="btn btn-primary" id="modalConfirmBtn">Sim, pode avançar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TOTAL_STEPS = 10;
+    const STORAGE_KEY = 'arquitetura4_relatorio_v1';
+
+    const state = {
+      currentStep: 0,
+      students: [
+        { name: '', matricula: '' },
+        { name: '', matricula: '' }
+      ],
+      hddBrand: '',
+      hddCapacity: '',
+      hddRpm: '',
+      hddCountTested: '',
+      sataCountTested: '',
+      moboModel: '',
+      biosKey: '',
+      biosVersion: '',
+      biosNeedsUpdate: '',
+      cpuBenchmark: '',
+      hddCapacityConfirmed: '',
+      tempStable: '',
+      osName: '',
+      osDownloadUrl: '',
+      osWhy: '',
+      osUsage: '',
+      osYears: '',
+      conclusion: ''
+    };
+
+    const steps = [];
+    for (let i = 0; i <= TOTAL_STEPS; i++) {
+      const el = document.getElementById('step-' + i);
+      if (el) steps[i] = el;
+    }
+
+    const progressShell = document.getElementById('progressShell');
+    const progressText = document.getElementById('progressText');
+    const progressPercent = document.getElementById('progressPercent');
+    const progressFill = document.getElementById('progressFill');
+
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const startBtn = document.getElementById('startBtn');
+    const studentsList = document.getElementById('studentsList');
+    const addStudentBtn = document.getElementById('addStudentBtn');
+    const studentsError = document.getElementById('studentsError');
+    const latexOutput = document.getElementById('latexOutput');
+    const copyLatexBtn = document.getElementById('copyLatexBtn');
+    const copyStatus = document.getElementById('copyStatus');
+
+    const photoModal = document.getElementById('photoModal');
+    const modalCancelBtn = document.getElementById('modalCancelBtn');
+    const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+    let pendingStepChange = null;
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        // ignore storage errors
+      }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          Object.assign(state, parsed);
+          if (!Array.isArray(state.students) || state.students.length < 2) {
+            state.students = [
+              { name: '', matricula: '' },
+              { name: '', matricula: '' }
+            ];
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    function capitalizeName(str) {
+      if (!str) return '';
+      return str
+        .split(' ')
+        .filter(p => p.trim().length > 0)
+        .map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
+        .join(' ');
+    }
+
+    function renderStudents() {
+      studentsList.innerHTML = '';
+      state.students.forEach((s, index) => {
+        const card = document.createElement('div');
+        card.className = 'student-card';
+
+        const header = document.createElement('div');
+        header.className = 'student-header';
+        header.innerHTML = `<strong>Aluno ${index + 1}</strong><span>Nome e matrícula</span>`;
+        card.appendChild(header);
+
+        const nameRow = document.createElement('div');
+        nameRow.className = 'field-row';
+        const nameLabel = document.createElement('label');
+        nameLabel.textContent = 'Nome completo';
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.name = 'studentName-' + index;
+        nameInput.value = s.name || '';
+        nameInput.placeholder = 'Ex.: João da Silva';
+        nameInput.addEventListener('input', handleInputChange);
+        nameRow.appendChild(nameLabel);
+        nameRow.appendChild(nameInput);
+
+        const matRow = document.createElement('div');
+        matRow.className = 'field-row';
+        const matLabel = document.createElement('label');
+        matLabel.textContent = 'Matrícula';
+        const matInput = document.createElement('input');
+        matInput.type = 'text';
+        matInput.name = 'studentMatricula-' + index;
+        matInput.inputMode = 'numeric';
+        matInput.pattern = '\\d*';
+        matInput.value = s.matricula || '';
+        matInput.placeholder = 'Somente números';
+        matInput.addEventListener('input', handleInputChange);
+        matRow.appendChild(matLabel);
+        matRow.appendChild(matInput);
+
+        card.appendChild(nameRow);
+        card.appendChild(matRow);
+        studentsList.appendChild(card);
+      });
+    }
+
+    function showStep(step) {
+      steps.forEach((el, idx) => {
+        if (!el) return;
+        if (idx === step) el.classList.add('active');
+        else el.classList.remove('active');
+      });
+
+      state.currentStep = step;
+      updateProgress();
+      updateNavButtons();
+      if (step === 10) {
+        updateLatex();
+      }
+      saveState();
+    }
+
+    function updateProgress() {
+      if (state.currentStep === 0) {
+        progressShell.style.display = 'none';
+        return;
+      }
+      progressShell.style.display = 'block';
+      const n = state.currentStep;
+      const pct = Math.round((n / TOTAL_STEPS) * 100);
+      progressText.textContent = `Etapa ${n} de ${TOTAL_STEPS}`;
+      progressPercent.textContent = `${pct}%`;
+      progressFill.style.width = `${pct}%`;
+    }
+
+    function updateNavButtons() {
+      backBtn.disabled = state.currentStep === 0;
+      if (state.currentStep === 0) {
+        nextBtn.textContent = 'Avançar →';
+      } else if (state.currentStep === TOTAL_STEPS) {
+        nextBtn.textContent = 'Finalizado';
+        nextBtn.disabled = false;
+      } else {
+        nextBtn.textContent = 'Avançar →';
+        nextBtn.disabled = false;
+      }
+    }
+
+    function validateStep(step) {
+      if (step === 1) {
+        const validStudents = state.students.filter(
+          s => s.name.trim().length > 0 && s.matricula.trim().length > 0
+        );
+        if (validStudents.length < 2) {
+          studentsError.style.display = 'block';
+          studentsError.textContent = 'Cadastre pelo menos 2 alunos com nome e matrícula.';
+          return false;
+        } else {
+          studentsError.style.display = 'none';
+        }
+      }
+      return true;
+    }
+
+    function openPhotoModal(targetStep) {
+      pendingStepChange = targetStep;
+      photoModal.classList.add('active');
+    }
+
+    function closePhotoModal() {
+      photoModal.classList.remove('active');
+      pendingStepChange = null;
+    }
+
+    function handleNext() {
+      if (state.currentStep === 0) {
+        showStep(1);
+        return;
+      }
+      if (!validateStep(state.currentStep)) {
+        return;
+      }
+      const nextStep = Math.min(TOTAL_STEPS, state.currentStep + 1);
+      openPhotoModal(nextStep);
+    }
+
+    function handleBack() {
+      if (state.currentStep === 0) return;
+      const prevStep = Math.max(0, state.currentStep - 1);
+      showStep(prevStep);
+    }
+
+    function handleInputChange(e) {
+      const { name, value } = e.target;
+      if (name && name.startsWith('studentName-')) {
+        const idx = parseInt(name.split('-')[1], 10);
+        state.students[idx].name = capitalizeName(value);
+        e.target.value = state.students[idx].name;
+      } else if (name && name.startsWith('studentMatricula-')) {
+        const idx = parseInt(name.split('-')[1], 10);
+        state.students[idx].matricula = value.replace(/[^\d]/g, '');
+        e.target.value = state.students[idx].matricula;
+      } else if (name && name in state) {
+        state[name] = value;
+      }
+      saveState();
+      if (state.currentStep === 10) {
+        updateLatex();
+      }
+    }
+
+    function addStudent() {
+      state.students.push({ name: '', matricula: '' });
+      renderStudents();
+      saveState();
+    }
+
+    function escapeLatex(str) {
+      if (!str) return '';
+      return str
+        .replace(/\\/g, '\\textbackslash{}')
+        .replace(/%/g, '\\%')
+        .replace(/&/g, '\\&')
+        .replace(/_/g, '\\_')
+        .replace(/\$/g, '\\$')
+        .replace(/#/g, '\\#')
+        .replace(/{/g, '\\{')
+        .replace(/}/g, '\\}')
+        .replace(/\^/g, '\\^{}')
+        .replace(/~/g, '\\textasciitilde{}');
+    }
+
+    function generateLatex() {
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const year = today.getFullYear();
+
+      const alunosValidos = state.students.filter(
+        s => s.name.trim().length > 0 && s.matricula.trim().length > 0
+      );
+
+      const alunosTableRows = alunosValidos
+        .map(s => `${escapeLatex(s.name)} & ${escapeLatex(s.matricula)} \\\\`)
+        .join('\n');
+
+      const osUrl = state.osDownloadUrl.trim();
+
+      return `
+\\documentclass[a4paper,12pt]{article}
+
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage[brazil]{babel}
+\\usepackage{geometry}
+\\usepackage{graphicx}
+\\usepackage{float}
+\\usepackage{placeins}
+\\usepackage{hyperref}
+\\usepackage{qrcode}
+\\usepackage{array}
+\\usepackage{setspace}
+
+\\geometry{margin=2.2cm}
+\\setstretch{1.2}
+
+\\title{Relatório - Aula 4: HDD, BIOS e Sistema Operacional}
+\\author{Disciplina de Arquitetura de Computadores}
+\\date{${day}/${month}/${year}}
+
+\\begin{document}
+
+\\maketitle
+
+\\section*{Identificação}
+
+\\textbf{Professor:} Dr. Luis Ramirez\\\\
+\\textbf{Grupo de alunos:}
+
+\\vspace{0.5cm}
+
+\\begin{tabular}{|p{0.55\\textwidth}|p{0.3\\textwidth}|}
+  \\hline
+  \\textbf{Nome} & \\textbf{Matrícula} \\\\ \\hline
+  ${alunosTableRows || '\\textit{(Preencher nome e matrícula dos alunos).} & \\\\'}
+  \\hline
+\\end{tabular}
+
+\\FloatBarrier
+
+\\section{HDD que funcionou}
+
+\\begin{figure}[H]
+  \\centering
+  \\includegraphics[width=0.7\\linewidth]{foto_hd_funcionando.png}
+  \\caption{HDD que funcionou corretamente no computador.}
+\\end{figure}
+\\FloatBarrier
+
+\\noindent
+\\textbf{Marca / Fabricante do HDD:} ${escapeLatex(state.hddBrand)}\\\\
+\\textbf{Capacidade:} ${escapeLatex(state.hddCapacity)}\\\\
+\\textbf{Velocidade de rotação (RPM):} ${escapeLatex(state.hddRpm)}\\\\
+
+\\section{HDD no gabinete e conectado à placa-mãe}
+
+\\begin{figure}[H]
+  \\centering
+  \\includegraphics[width=0.7\\linewidth]{foto_hd_gabinete_placa_mae.png}
+  \\caption{HDD instalado no gabinete e conectado à placa-mãe.}
+\\end{figure}
+\\FloatBarrier
+
+\\noindent
+\\textbf{Quantidade de HDDs testados até funcionar:} ${escapeLatex(String(state.hddCountTested || ''))}\\\\
+\\textbf{Quantidade de cabos SATA testados até funcionar:} ${escapeLatex(String(state.sataCountTested || ''))}\\\\
+
+\\section{Placa-mãe utilizada}
+
+\\begin{figure}[H]
+  \\centering
+  \\includegraphics[width=0.7\\linewidth]{foto_mobo.png}
+  \\caption{Placa-mãe utilizada no computador montado.}
+\\end{figure}
+\\FloatBarrier
+
+\\noindent
+\\textbf{Marca e modelo da placa-mãe:} ${escapeLatex(state.moboModel)}\\\\
+
+\\section{Informações da BIOS}
+
+\\begin{figure}[H]
+  \\centering
+  \\includegraphics[width=0.7\\linewidth]{foto_bios.png}
+  \\caption{Tela principal da BIOS do computador.}
+\\end{figure}
+\\FloatBarrier
+
+\\noindent
+\\textbf{Tecla para acessar a BIOS:} ${escapeLatex(state.biosKey)}\\\\
+\\textbf{Versão da BIOS:} ${escapeLatex(state.biosVersion)}\\\\
+
+\\vspace{0.3cm}
+
+\\noindent
+\\textbf{A BIOS precisa ser atualizada? Justifique:}
+
+${escapeLatex(state.biosNeedsUpdate)}
+
+\\section{Processador exibido na BIOS}
+
+\\begin{figure}[H]
+  \\centering
+  \\includegraphics[width=0.7\\linewidth]{foto_cpu_bios.png}
+  \\caption{Tela da BIOS exibindo o modelo do processador.}
+\\end{figure}
+\\FloatBarrier
+
+\\noindent
+\\textbf{Score em benchmark do processador:}
+
+${escapeLatex(state.cpuBenchmark)}
+
+\\section{HDD reconhecido na BIOS}
+
+\\begin{figure}[H]
+  \\centering
+  \\includegraphics[width=0.7\\linewidth]{foto_hd_bios.png}
+  \\caption{HDD reconhecido na BIOS e capacidade detectada.}
+\\end{figure}
+\\FloatBarrier
+
+\\noindent
+\\textbf{Capacidade confirmada na BIOS:}
+
+${escapeLatex(state.hddCapacityConfirmed)}
+
+\\section{Temperatura na BIOS}
+
+\\begin{figure}[H]
+  \\centering
+  \\includegraphics[width=0.7\\linewidth]{foto_temperatura_bios.png}
+  \\caption{Temperatura do processador exibida na BIOS.}
+\\end{figure}
+\\FloatBarrier
+
+\\noindent
+\\textbf{A temperatura fica estável? Descreva:}
+
+${escapeLatex(state.tempStable)}
+
+\\section{Sistema Operacional escolhido}
+
+\\noindent
+\\textbf{Sistema Operacional escolhido:} ${escapeLatex(state.osName)}\\\\
+
+\\vspace{0.2cm}
+
+\\noindent
+\\textbf{Por que esse Sistema Operacional foi escolhido?}
+
+${escapeLatex(state.osWhy)}
+
+\\vspace{0.3cm}
+
+\\noindent
+\\textbf{Uso esperado com esse SO:}
+
+${escapeLatex(state.osUsage)}
+
+\\vspace{0.3cm}
+
+\\noindent
+\\textbf{Por quantos anos esse PC deverá ser utilizável com esse SO?}
+
+${escapeLatex(state.osYears)}
+
+\\vspace{0.5cm}
+
+\\noindent
+\\textbf{Link de download do Sistema Operacional:}\\\\
+${osUrl ? '\\url{' + escapeLatex(osUrl) + '}' : '\\textit{(Link não informado pelo grupo.)}'}
+
+\\vspace{0.4cm}
+
+\\begin{center}
+  ${osUrl ? '\\qrcode[height=3cm]{' + escapeLatex(osUrl) + '}' : '\\textit{(QR Code não gerado porque o link não foi informado.)}'}
+\\end{center}
+\\FloatBarrier
+
+\\section{Conclusão do grupo}
+
+${escapeLatex(state.conclusion)}
+
+\\end{document}
+`.trim();
+    }
+
+    function updateLatex() {
+      latexOutput.value = generateLatex();
+    }
+
+    function copyLatex() {
+      if (!navigator.clipboard) {
+        latexOutput.select();
+        document.execCommand('copy');
+        showCopyStatus();
+        return;
+      }
+      navigator.clipboard.writeText(latexOutput.value).then(showCopyStatus).catch(showCopyStatus);
+    }
+
+    function showCopyStatus() {
+      copyStatus.style.display = 'inline';
+      setTimeout(() => {
+        copyStatus.style.display = 'none';
+      }, 2000);
+    }
+
+    function init() {
+      loadState();
+      renderStudents();
+      if (typeof state.currentStep === 'number' && state.currentStep >= 1 && state.currentStep <= TOTAL_STEPS) {
+        showStep(state.currentStep);
+      } else {
+        showStep(0);
+      }
+
+      document.querySelectorAll('input, textarea').forEach(el => {
+        el.addEventListener('input', handleInputChange);
+      });
+
+      if (startBtn) {
+        startBtn.addEventListener('click', () => {
+          showStep(1);
+        });
+      }
+
+      addStudentBtn.addEventListener('click', addStudent);
+      backBtn.addEventListener('click', handleBack);
+      nextBtn.addEventListener('click', handleNext);
+      copyLatexBtn.addEventListener('click', copyLatex);
+
+      modalCancelBtn.addEventListener('click', () => {
+        closePhotoModal();
+      });
+
+      modalConfirmBtn.addEventListener('click', () => {
+        if (pendingStepChange !== null) {
+          showStep(pendingStepChange);
+        }
+        closePhotoModal();
+      });
+
+      if (state.currentStep === 10) {
+        updateLatex();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+
+<script>
+/* Integração não invasiva: comunica altura e mudanças ao portal.
+   Todas as respostas continuam a ser salvas pelas funções originais. */
+(() => {
+  if (window.parent === window) return;
+  let task;
+  const tell = () => {
+    const height = Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight || 0);
+    window.parent.postMessage({type:"adc:resize",height},window.location.origin);
+  };
+  const notify = () => {
+    window.parent.postMessage({type:"adc:progress"},window.location.origin);
+    clearTimeout(task);
+    task = setTimeout(tell,100);
+  };
+  const queue = () => requestAnimationFrame(tell);
+  window.addEventListener("load",queue);
+  window.addEventListener("resize",queue);
+  document.addEventListener("input",notify,true);
+  document.addEventListener("change",notify,true);
+  document.addEventListener("click",() => setTimeout(notify,120),true);
+  if ("ResizeObserver" in window) new ResizeObserver(queue).observe(document.body);
+  queue();
+})();
+</script>
+</body>
+</html>
